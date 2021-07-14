@@ -1,6 +1,7 @@
 package com.example.speechynew.connectDB;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -35,6 +36,11 @@ public class Continuemax extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+    public Cursor getAlldata(){
+        SQLiteDatabase db =this.getWritableDatabase();
+        Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME10,null);
+        return resDat;
     }
 
 }

@@ -16,6 +16,7 @@ import static com.example.speechynew.connectDB.Rawdatainterface.SECONDWORD;
 import static com.example.speechynew.connectDB.Rawdatainterface.TABLE_NAME4;
 import static com.example.speechynew.connectDB.Rawdatainterface.ALLWORD;
 import static com.example.speechynew.connectDB.Rawdatainterface.YEARWORD;
+import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 
 public class Rawdata extends SQLiteOpenHelper {
 
@@ -36,6 +37,11 @@ public class Rawdata extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+    public Cursor getAlldata(){
+        SQLiteDatabase db =this.getWritableDatabase();
+        Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME4,null);
+        return resDat;
     }
 
 }

@@ -2,11 +2,13 @@ package com.example.speechynew.connectDB;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 
+import static com.example.speechynew.connectDB.Schedulerinterface.TABLE_NAME9;
 import static com.example.speechynew.connectDB.Settinginterface.CHADAY;
 import static com.example.speechynew.connectDB.Settinginterface.NATIVELANG;
 import static com.example.speechynew.connectDB.Settinginterface.PERCENTAGENONE;
@@ -41,5 +43,11 @@ public class Setting extends SQLiteOpenHelper {
         content.put("chaday",chaday);
         db.update(TABLE_NAME0,content,"_id=?",new String[]{String.valueOf(1)});
         return true;
+    }
+
+    public Cursor getAlldata(){
+        SQLiteDatabase db =this.getWritableDatabase();
+        Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME0,null);
+        return resDat;
     }
 }

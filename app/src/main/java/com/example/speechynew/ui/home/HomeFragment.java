@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -26,13 +27,24 @@ import com.example.speechynew.MainActivity;
 import com.example.speechynew.R;
 import com.example.speechynew.analysis.Translator;
 import com.example.speechynew.connectDB.Continuemax;
+import com.example.speechynew.connectDB.DataAnyword;
+import com.example.speechynew.connectDB.DataContinuemax;
+import com.example.speechynew.connectDB.DataEngword;
+import com.example.speechynew.connectDB.DataRawdata;
+import com.example.speechynew.connectDB.DataScheduler;
+import com.example.speechynew.connectDB.DataSetting;
+import com.example.speechynew.connectDB.DataTime;
+import com.example.speechynew.connectDB.DataWrongword;
 import com.example.speechynew.connectDB.Data_User;
 import com.example.speechynew.connectDB.Engword;
+import com.example.speechynew.connectDB.Rawdata;
+import com.example.speechynew.connectDB.Scheduler;
 import com.example.speechynew.connectDB.Setting;
 import com.example.speechynew.connectDB.Timeprocess;
 import com.example.speechynew.connectDB.User;
 import com.example.speechynew.connectDB.Word;
 import com.example.speechynew.connectDB.Wrongword;
+import com.example.speechynew.connectDB.backup;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -50,16 +62,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.Buffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static com.example.speechynew.connectDB.Continuemaxinterface.TABLE_NAME10;
 import static com.example.speechynew.connectDB.Engwordinterface.TABLE_NAME2;
 import static com.example.speechynew.connectDB.Timeprocessinterface.TABLE_NAME5;
 import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 import static com.example.speechynew.connectDB.Wrongwordinterface.TABLE_NAME11;
+
 
 import  com.example.speechynew.Rertofit.ApiClient;
 import  com.example.speechynew.Rertofit.ApiInterface;
@@ -93,10 +110,12 @@ public class HomeFragment extends Fragment {
     //database
     Engword eng;
     Word anothereng;
-    Setting setting;
     Timeprocess time;
     Continuemax continuemax;
     Wrongword wrongword;
+    Rawdata rawdata;
+    Scheduler scheduler;
+    Setting setting;
 
     //calendar
     Calendar c ;
@@ -121,6 +140,12 @@ public class HomeFragment extends Fragment {
     String[] wordtrans = new String[3];
     String showday;
     private FirebaseAuth firebaseAuth;
+
+    int indextotalengword = 0;
+    int indextotalanyword = 0;
+    int indextotalall = 0;
+
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -147,6 +172,9 @@ public class HomeFragment extends Fragment {
         continuemax = new Continuemax(root.getContext());
         wrongword = new Wrongword(root.getContext());
 
+        rawdata = new Rawdata(root.getContext());
+        scheduler = new Scheduler(root.getContext());
+
         resulttype = false;
 
         c = Calendar.getInstance();
@@ -167,6 +195,9 @@ public class HomeFragment extends Fragment {
         wordmin();
         continuemaxday();
         wrongwordday();
+
+
+
 
         mChart.getDescription().setEnabled(false);
         mChart.setFitBars(true);
@@ -798,8 +829,66 @@ public class HomeFragment extends Fragment {
             }
         }
         ///wordtop[0]="TEST1";wordtop[1]="TEST2";wordtop[2]="TEST3";
+
+
+
         savedata();
         getdata();
+        BackupAnyword();
+        BackupContinuemax();
+        BackupEngword();
+        BackupRawdata();
+        BackupScheduler();
+        BackupSetting();
+        BackupTime();
+        BackupWrongword();
+
+        getdataAnyword();
+        getdataContinuemax();
+        //getdataEngword();
+        getdataTime();
+        getdataWrongword();
+
+        getdataViewtotalday();
+
+
+
+
+        //update();
+        //backupdata.getcontinuemax();
+
+
+        Cursor resDef = continuemax.getAlldata();
+
+
+        StringBuffer buffer = new StringBuffer();
+        StringBuffer bufferandwrod = new StringBuffer();
+
+       /* if(resDef.getCount()==0){
+            Log.d("TEST_GET_DATA","No data");
+        }
+        else {
+            while (resDef.moveToNext()) {
+                buffer.append("Continuemax: "+resDef.getString(0)+"\n");
+                buffer.append("MAXCON: " + resDef.getString(1) + "\n");
+                buffer.append("DAY: " + resDef.getString(2) + "\n");
+                buffer.append("DATE: " + resDef.getString(3) + "\n");
+                buffer.append("MONTH: " + resDef.getString(4) + "\n");
+                buffer.append("YEAR: " + resDef.getString(5) + "\n");
+                buffer.append("HOUR: " + resDef.getString(6) + "\n");
+                buffer.append("MINUTE: " + resDef.getString(7) + "\n");
+                buffer.append("SECOND: " + resDef.getString(8) + "\n");
+                buffer.append("===============================================");
+            }
+
+            Log.d("TEST_GET_DATA",buffer.toString());
+        }
+
+        */
+
+
+
+
 
 
 
@@ -831,40 +920,7 @@ public class HomeFragment extends Fragment {
     public void savedata(){
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         int Y =getFormattedYear+1900;
-       /* data_user =new Data_User();
-        ref = database.getInstance().getReference().child("user");
 
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    maxid = (int)snapshot.getChildrenCount();
-                }
-                else {}
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        data_user.setMail1("test1");
-        data_user.setDay1(Integer.toString(getFormattedDay));
-        data_user.setMonth1(monthname);
-        data_user.setYear1(Integer.toString(Y));
-        data_user.setTotalwordday1(totalwordday);
-        data_user.setTotaltimeeng1(Integer.toString(totaltimeeng));
-        data_user.setWordminday1(Double.toString(wordminday));
-        data_user.setContinuemaxday1(Integer.toString(continuemaxday));
-        data_user.setWordtop1(wordtop[0]);
-        data_user.setWordtop2(wordtop[1]);
-        data_user.setWordtop3(wordtop[2]);
-
-        ref.child(String.valueOf(maxid + 1)).setValue(data_user); */
-
-       String eemail ="Test1";
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String email = firebaseUser.getEmail();
@@ -881,12 +937,14 @@ public class HomeFragment extends Fragment {
            public void onResponse(Call<UserData> call, Response<UserData> response) {
                 UserData userData = response.body();
                if(response.isSuccessful()){
-                   Log.d("API_SAVE_DATA","SaveSuccessful");
-                   Log.d("API_SAVE_DATA","MS:"+userData.getMessages());
-                   Log.d("API_SAVE_DATA",email+" "+totalwordday+" "+totaltimeday+"" +
+                    /* Log.d("API_SAVE_DATA","SaveSuccessful");
+                     Log.d("API_SAVE_DATA","MS:"+userData.getMessages());
+                     Log.d("API_SAVE_DATA",email+" "+totalwordday+" "+totaltimeday+"" +
                            " "+wordminday1+" "+continuemaxday+" "
                            +wordtop[0]+" "+wordtop[1]+" "+wordtop[2]+" "
                            +getFormattedDay+" "+monthname+" "+Y);
+
+                     */
 
 
                }
@@ -921,12 +979,17 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<UserData> call, Response<UserData> response) {
                 if(response.body()!=null) {
                     UserData userData = response.body();
+
                Log.d("API_GET_DATA","Email:"+email+"\ntotalwordday:"+userData.getTotalwordday1()
                         +"\ntotaltimeday:"+userData.getTotaltimeday1()+"\nwordminday1:"+userData.getWordminday1()
                 +"\ncontinuemaxday:"+userData.getContinuemaxday1()+"\nwordtop1:"+userData.getWordtop1()+"\nwordtop2:"+userData.getWordtop2()
                         +"\nwordtop3"+userData.getWordtop3()+"\nDay:"+userData.getDay1()+"\nMonth1:"+userData.getMonth1()+"\nYear1:"+userData.getYear1());
                 Log.d("API_GET_DATA","MS:"+userData.getMessages());
                     //Log.d("API_GET_DATA", "totalwordday: " + userData.getTotalwordday1());
+                    //totalwordday="TEST";
+
+
+
                 }
             }
 
@@ -937,8 +1000,839 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+    public void BackupAnyword(){
+        Cursor reDef1 = anothereng.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        String email = firebaseUser.getEmail();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupAnyword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                buffer.append("anyword: "+reDef1.getString(0)+"\n");
+                buffer.append("word: " + reDef1.getString(1) + "\n");
+                buffer.append("DAY: " + reDef1.getString(2) + "\n");
+                buffer.append("DATE: " + reDef1.getString(3) + "\n");
+                buffer.append("MONTH: " + reDef1.getString(4) + "\n");
+                buffer.append("YEAR: " + reDef1.getString(5) + "\n");
+                buffer.append("HOUR: " + reDef1.getString(6) + "\n");
+                buffer.append("MINUTE: " + reDef1.getString(7) + "\n");
+                buffer.append("SECOND: " + reDef1.getString(8) + "\n");
+                buffer.append("===============================================\n");
+
+                Call<DataAnyword>calldataAnyword =apiInterface.DataAnyword(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                                reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataAnyword.enqueue(new Callback<DataAnyword>() {
+                    @Override
+                    public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
+                        DataAnyword dataAnyword = response.body();
+                        if (dataAnyword!=null){
+                            Log.d("API_DATA_BackupAnyword","SaveSuccessful");
+                            Log.d("API_DATA_BackupAnyword","MS:"+dataAnyword.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupAnyword","MS:"+dataAnyword.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataAnyword> call, Throwable t) {
+                        Log.d("API_DATA_BackupAnyword","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        Log.d("API_DATA_BackupAnyword",buffer.toString());
 
 
+
+    }
+
+    public void BackupContinuemax(){
+        Cursor reDef1 = continuemax.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        String email = firebaseUser.getEmail();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_Continuemax","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                buffer.append("Continuemax: "+reDef1.getString(0)+"\n");
+                buffer.append("MAXCON: " + reDef1.getString(1) + "\n");
+                buffer.append("DAY: " + reDef1.getString(2) + "\n");
+                buffer.append("DATE: " + reDef1.getString(3) + "\n");
+                buffer.append("MONTH: " + reDef1.getString(4) + "\n");
+                buffer.append("YEAR: " + reDef1.getString(5) + "\n");
+                buffer.append("HOUR: " + reDef1.getString(6) + "\n");
+                buffer.append("MINUTE: " + reDef1.getString(7) + "\n");
+                buffer.append("SECOND: " + reDef1.getString(8) + "\n");
+                buffer.append("===============================================\n");
+
+                Call<DataContinuemax>calldataContinuemax =apiInterface.DataContinuemax(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataContinuemax.enqueue(new Callback<DataContinuemax>() {
+                    @Override
+                    public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
+                        DataContinuemax dataContinuemax = response.body();
+                        if (dataContinuemax!=null){
+                            Log.d("API_DATA_Continuemax","SaveSuccessful");
+                            Log.d("API_DATA_Continuemax","MS:"+dataContinuemax.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_Continuemax","MS:"+dataContinuemax.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataContinuemax> call, Throwable t) {
+                        Log.d("API_DATA_Continuemax","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        Log.d("API_DATA_Continuemax",buffer.toString());
+
+    }
+
+    public void BackupEngword(){
+        Cursor reDef1 = eng.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer1 = new StringBuffer();
+        String email = firebaseUser.getEmail();
+    int i=1;
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupEngword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                    if (i%2==0){
+
+                        buffer1.append("Continuemax: " + reDef1.getString(0) + "\n");
+                        buffer1.append("MAXCON: " + reDef1.getString(1) + "\n");
+                        buffer1.append("DAY: " + reDef1.getString(2) + "\n");
+                        buffer1.append("DATE: " + reDef1.getString(3) + "\n");
+                        buffer1.append("MONTH: " + reDef1.getString(4) + "\n");
+                        buffer1.append("YEAR: " + reDef1.getString(5) + "\n");
+                        buffer1.append("HOUR: " + reDef1.getString(6) + "\n");
+                        buffer1.append("MINUTE: " + reDef1.getString(7) + "\n");
+                        buffer1.append("SECOND: " + reDef1.getString(8) + "\n");
+                        buffer1.append("===============================================\n");
+                    }
+                    else {
+                        buffer.append("Continuemax: " + reDef1.getString(0) + "\n");
+                        buffer.append("MAXCON: " + reDef1.getString(1) + "\n");
+                        buffer.append("DAY: " + reDef1.getString(2) + "\n");
+                        buffer.append("DATE: " + reDef1.getString(3) + "\n");
+                        buffer.append("MONTH: " + reDef1.getString(4) + "\n");
+                        buffer.append("YEAR: " + reDef1.getString(5) + "\n");
+                        buffer.append("HOUR: " + reDef1.getString(6) + "\n");
+                        buffer.append("MINUTE: " + reDef1.getString(7) + "\n");
+                        buffer.append("SECOND: " + reDef1.getString(8) + "\n");
+                        buffer.append("===============================================\n");
+                    }
+                    i++;
+
+
+                Call<DataEngword>calldataEngword =apiInterface.DataEngword(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataEngword.enqueue(new Callback<DataEngword>() {
+                    @Override
+                    public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
+                        DataEngword dataEngword = response.body();
+                        if (dataEngword!=null){
+                            Log.d("API_DATA_BackupEngword","SaveSuccessful");
+                            Log.d("API_DATA_BackupEngword","MS:"+dataEngword.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupEngword","MS:"+dataEngword.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataEngword> call, Throwable t) {
+                        Log.d("API_DATA_BackupEngword","Savefail T "+t);
+
+                    }
+                });
+
+
+            }
+
+        }
+        Log.d("API_DATA_BackupEngword",buffer.toString());
+        Log.d("API_DATA_BackupEngword","Leng :"+buffer.length());
+
+        Log.d("API_DATA_BackupEngword",buffer1.toString());
+
+    }
+
+    public void BackupRawdata(){
+
+        Cursor reDef1 = rawdata.getAlldata();
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer1 = new StringBuffer();
+        String email = firebaseUser.getEmail();
+        int i=1;
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupEngword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+                if (i<25) {
+                    buffer.append("rawdata: " + reDef1.getString(0) + "\n");
+                    buffer.append("totalword: " + reDef1.getString(1) + "\n");
+                    buffer.append("DAY: " + reDef1.getString(2) + "\n");
+                    buffer.append("DATE: " + reDef1.getString(3) + "\n");
+                    buffer.append("MONTH: " + reDef1.getString(4) + "\n");
+                    buffer.append("YEAR: " + reDef1.getString(5) + "\n");
+                    buffer.append("HOUR: " + reDef1.getString(6) + "\n");
+                    buffer.append("MINUTE: " + reDef1.getString(7) + "\n");
+                    buffer.append("SECOND: " + reDef1.getString(8) + "\n");
+                    buffer.append("===============================================\n");
+                }
+                else {
+                    buffer1.append("rawdata: " + reDef1.getString(0) + "\n");
+                    buffer1.append("totalword: " + reDef1.getString(1) + "\n");
+                    buffer1.append("DAY: " + reDef1.getString(2) + "\n");
+                    buffer1.append("DATE: " + reDef1.getString(3) + "\n");
+                    buffer1.append("MONTH: " + reDef1.getString(4) + "\n");
+                    buffer1.append("YEAR: " + reDef1.getString(5) + "\n");
+                    buffer1.append("HOUR: " + reDef1.getString(6) + "\n");
+                    buffer1.append("MINUTE: " + reDef1.getString(7) + "\n");
+                    buffer1.append("SECOND: " + reDef1.getString(8) + "\n");
+                    buffer1.append("===============================================\n");
+                }
+                i++;
+                Log.d("API_DATA_BackupRawdata","rawdata: " + reDef1.getString(0) + "\n"+
+                        "totalword: " + reDef1.getString(1) + "\n"+
+                        "DAY: " + reDef1.getString(2) + "\n"+
+                        "MONTH: " + reDef1.getString(4) + "\n"+
+                        "YEAR: " + reDef1.getString(5) + "\n"+
+                        "HOUR: " + reDef1.getString(6) + "\n"+
+                        "MINUTE: " + reDef1.getString(7) + "\n"+
+                        "SECOND: " + reDef1.getString(8) + "\n"+
+                        "===============================================\n");
+
+                Call<DataRawdata>calldatarawdata =apiInterface.DataRawdata(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldatarawdata.enqueue(new Callback<DataRawdata>() {
+                    @Override
+                    public void onResponse(Call<DataRawdata> call, Response<DataRawdata> response) {
+                        DataRawdata dataRawdata = response.body();
+                        if (dataRawdata!=null){
+                            Log.d("API_DATA_BackupRawdata","SaveSuccessful");
+                            Log.d("API_DATA_BackupRawdata","MS:"+dataRawdata.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupRawdata","MS:"+dataRawdata.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataRawdata> call, Throwable t) {
+                        Log.d("API_DATA_BackupRawdata","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        //Log.d("API_DATA_BackupRawdata",buffer.toString());
+        //Log.d("API_DATA_BackupRawdata",buffer1.toString());
+
+    }
+
+    public void BackupScheduler(){
+
+        Cursor reDef1 = scheduler.getAlldata();
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer1 = new StringBuffer();
+        String email = firebaseUser.getEmail();
+
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_Scheduler","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                    buffer.append("scheduler: " + reDef1.getString(0) + "\n");
+                    buffer.append("DAY: " + reDef1.getString(1) + "\n");
+                    buffer.append("DATE: " + reDef1.getString(2) + "\n");
+                    buffer.append("MONTH: " + reDef1.getString(3) + "\n");
+                    buffer.append("YEAR: " + reDef1.getString(4) + "\n");
+                    buffer.append("starthour: " + reDef1.getString(5) + "\n");
+                    buffer.append("startminute: " + reDef1.getString(6) + "\n");
+                    buffer.append("stophour: " + reDef1.getString(7) + "\n");
+                    buffer.append("stopminute: " + reDef1.getString(8) + "\n");
+                    buffer.append("status: " + reDef1.getString(9) + "\n");
+                    buffer.append("===============================================\n");
+
+
+
+
+                Call<DataScheduler>calldataScheduler =apiInterface.DataScheduler(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8),reDef1.getString(9));
+
+                calldataScheduler.enqueue(new Callback<DataScheduler>() {
+                    @Override
+                    public void onResponse(Call<DataScheduler> call, Response<DataScheduler> response) {
+                        DataScheduler dataScheduler = response.body();
+                        if (dataScheduler!=null){
+                            Log.d("API_DATA_Scheduler","SaveSuccessful");
+                            Log.d("API_DATA_Scheduler","MS:"+dataScheduler.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_Scheduler","MS:"+dataScheduler.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataScheduler> call, Throwable t) {
+                        Log.d("API_DATA_Scheduler","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        Log.d("API_DATA_Scheduler",buffer.toString());
+
+
+    }
+
+    public void BackupSetting(){
+
+        Cursor reDef1 = setting.getAlldata();
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer1 = new StringBuffer();
+        String email = firebaseUser.getEmail();
+
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_Scheduler","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                buffer.append("setting: " + reDef1.getString(0) + "\n");
+                buffer.append("nativelang: " + reDef1.getString(1) + "\n");
+                buffer.append("percentagenone: " + reDef1.getString(2) + "\n");
+                buffer.append("chaday: " + reDef1.getString(3) + "\n");
+                buffer.append("===============================================\n");
+
+
+
+
+                Call<DataSetting>calldataSetting =apiInterface.DataSetting(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3));
+
+                calldataSetting.enqueue(new Callback<DataSetting>() {
+                    @Override
+                    public void onResponse(Call<DataSetting> call, Response<DataSetting> response) {
+                        DataSetting dataSetting = response.body();
+                        if (dataSetting!=null){
+                            Log.d("API_DATA_BackupSetting","SaveSuccessful");
+                            Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataSetting> call, Throwable t) {
+                        Log.d("API_DATA_BackupSetting","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        Log.d("API_DATA_BackupSetting",buffer.toString());
+
+
+    }
+
+    public void BackupTime(){
+        Cursor reDef1 = time.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        String email = firebaseUser.getEmail();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupTime","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                buffer.append("time: "+reDef1.getString(0)+"\n");
+                buffer.append("DAY: " + reDef1.getString(1) + "\n");
+                buffer.append("DATE: " + reDef1.getString(2) + "\n");
+                buffer.append("MONTH: " + reDef1.getString(3) + "\n");
+                buffer.append("YEAR: " + reDef1.getString(4) + "\n");
+                buffer.append("HOUR: " + reDef1.getString(5) + "\n");
+                buffer.append("MINUTE: " + reDef1.getString(6) + "\n");
+                buffer.append("SECOND: " + reDef1.getString(7) + "\n");
+                buffer.append("totaltime: " + reDef1.getString(8) + "\n");
+                buffer.append("===============================================\n");
+
+                Call<DataTime>calldataTime =apiInterface.DataTime(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataTime.enqueue(new Callback<DataTime>() {
+                    @Override
+                    public void onResponse(Call<DataTime> call, Response<DataTime> response) {
+                        DataTime dataTime = response.body();
+                        if (dataTime!=null){
+                            Log.d("API_DATA_BackupTime","SaveSuccessful");
+                            Log.d("API_DATA_BackupTime","MS:"+dataTime.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupTime","MS:"+dataTime.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataTime> call, Throwable t) {
+                        Log.d("API_DATA_BackupTime","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        Log.d("API_DATA_BackupTime",buffer.toString());
+
+    }
+
+    public void BackupWrongword(){
+        Cursor reDef1 = wrongword.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        StringBuffer buffer = new StringBuffer();
+        String email = firebaseUser.getEmail();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_Wrongword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                buffer.append("Wrongword: "+reDef1.getString(0)+"\n");
+                buffer.append("word: " + reDef1.getString(1) + "\n");
+                buffer.append("DAY: " + reDef1.getString(2) + "\n");
+                buffer.append("DATE: " + reDef1.getString(3) + "\n");
+                buffer.append("MONTH: " + reDef1.getString(4) + "\n");
+                buffer.append("YEAR: " + reDef1.getString(5) + "\n");
+                buffer.append("HOUR: " + reDef1.getString(6) + "\n");
+                buffer.append("MINUTE: " + reDef1.getString(7) + "\n");
+                buffer.append("SECOND: " + reDef1.getString(8) + "\n");
+                buffer.append("===============================================\n");
+
+                Call<DataWrongword>calldataWrongword =apiInterface.DataWrongword(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataWrongword.enqueue(new Callback<DataWrongword>() {
+                    @Override
+                    public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
+                        DataWrongword dataWrongword = response.body();
+                        if (dataWrongword!=null){
+                            Log.d("API_DATA_Wrongword","SaveSuccessful");
+                            Log.d("API_DATA_Wrongword","MS:"+dataWrongword.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_Wrongwordd","MS:"+dataWrongword.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataWrongword> call, Throwable t) {
+                        Log.d("API_DATA_Wrongword","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+        Log.d("API_DATA_Wrongword",buffer.toString());
+
+    }
+
+    public void getdataAnyword(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_day= Integer.valueOf(getFormattedDay).toString();
+        String S_month =Integer.valueOf(getFormattedMonth+1).toString();
+        String S_year =Integer.valueOf(getFormattedYear+1900).toString();
+        String email = firebaseUser.getEmail();
+
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+
+        Call<List<DataAnyword>>listcallgetdata = apiInterface.getDataAnyword(email,S_day,S_month,S_year);
+            listcallgetdata.enqueue(new Callback<List<DataAnyword>>() {
+                @Override
+                public void onResponse(Call<List<DataAnyword>> call, Response<List<DataAnyword>> response) {
+                    if (response.isSuccessful()) {
+                        List<DataAnyword> listdata = response.body();
+                        if (listdata.size() == 0) {
+                            totalanother[0] = 0;
+                        } else {
+                            for (int i = 0; i < listdata.size(); i++) {
+                                totalanother[0] += Integer.parseInt(listdata.get(i).getWord());
+                                indextotalanyword = totalanother[0];
+
+                            }
+
+                            Log.e("Data_View", "indextotalanyword :" + indextotalanyword);
+
+                        }
+                        Log.e("TEST_GET_LISTDATA","================= getdataAnyword =================");
+                        Log.e("TEST_GET_LISTDATA","Successful");
+
+                        for(int i= 0;i<listdata.size();i++){
+                            Log.e("TEST_GET_LISTDATA","Anyword: "+listdata.get(i).getAnyword());
+                            Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+
+                        }
+
+                    }
+                    else{
+                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<DataAnyword>> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA",t+"");
+                }
+            });
+
+
+
+    }
+
+    public void getdataContinuemax(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        int Y =getFormattedYear+1900;
+        String email = firebaseUser.getEmail();
+
+        Call<List<DataContinuemax>>listcallgetdata = apiInterface.getDataContinuemax(email);
+        listcallgetdata.enqueue(new Callback<List<DataContinuemax>>() {
+            @Override
+            public void onResponse(Call<List<DataContinuemax>> call, Response<List<DataContinuemax>> response) {
+                if (response.isSuccessful()) {
+                    List<DataContinuemax> listdata = response.body();
+                    Log.e("TEST_GET_LISTDATA","================= getdataContinuemax =================");
+                    Log.e("TEST_GET_LISTDATA","Successful");
+                    Log.e("TEST_GET_LISTDATA",listdata.get(1).getEmail());
+                    for(int i= 0;i<listdata.size();i++){
+                        Log.e("TEST_GET_LISTDATA","Continuemax: "+listdata.get(i).getContinuemax());
+                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataContinuemax>> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+    public void getdataEngword(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_day= Integer.valueOf(getFormattedDay).toString();
+        String S_month =Integer.valueOf(getFormattedMonth+1).toString();
+        String S_year =Integer.valueOf(getFormattedYear+1900).toString();
+        String email = firebaseUser.getEmail();
+
+
+
+        Call<List<DataEngword>>listcallgetdata = apiInterface.getDataEngword(email,S_day,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<List<DataEngword>>() {
+            @Override
+            public void onResponse(Call<List<DataEngword>> call, Response<List<DataEngword>> response) {
+                int totalall = 0;
+                int totaleng = 0;
+                int totalanother = 0;
+                if (response.isSuccessful()) {
+                    List<DataEngword> listdata = response.body();
+                    if (listdata.size()==0){
+                        totaleng=0;
+                    }
+                    else {
+
+                        for(int i= 0;i<listdata.size();i++){
+                            totaleng+=Integer.parseInt(listdata.get(i).getWord());
+                        }
+                    }
+
+
+
+                    Log.e("TEST_GET_LISTDATA","================= getdataEngword =================");
+                    Log.e("TEST_GET_LISTDATA","Successful");
+                    Log.e("TEST_GET_LISTDATA",listdata.get(1).getEmail());
+                    for(int i= 0;i<listdata.size();i++){
+                        Log.e("TEST_GET_LISTDATA","Engword: "+listdata.get(i).getEngword());
+                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataEngword>> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+    public void getdataTime(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_day= Integer.valueOf(getFormattedDay).toString();
+        String S_month =Integer.valueOf(getFormattedMonth+1).toString();
+        String S_year =Integer.valueOf(getFormattedYear+1900).toString();
+        String email = firebaseUser.getEmail();
+
+
+
+        Call<List<DataTime>>listcallgetdata = apiInterface.getDataTime(email,S_day,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<List<DataTime>>() {
+            @Override
+            public void onResponse(Call<List<DataTime>> call, Response<List<DataTime>> response) {
+                if (response.isSuccessful()) {
+                    List<DataTime> listdata = response.body();
+                    int totaltime1 = 0;
+                    if (listdata.size()==0){
+                        totaltime1 = 0;
+                    }
+                    else {
+                        for(int i= 0;i<listdata.size();i++){
+                            totaltime1+=Integer.parseInt(listdata.get(i).getTotaltime());
+                        }
+                        Log.e("Data_View","(totaltime1) totaltimeeng: "+totaltime1);
+                    }
+
+                    int numberOfHours = (totaltime1 % 86400) / 3600;
+                    int numberOfMinutes = ((totaltime1 % 86400) % 3600) / 60;
+                    int numberOfSeconds = ((totaltime1 % 86400) % 3600) % 60;
+
+                    if(numberOfMinutes<10){
+                        if(numberOfSeconds<10){
+                            String text = numberOfHours+" : 0"+numberOfMinutes+" : 0"+numberOfSeconds;
+                            Log.e("Data_View","totaltimeday: "+text);
+                        }else{
+                            String text = numberOfHours+" : 0"+numberOfMinutes+" : "+numberOfSeconds;
+                            Log.e("Data_View","totaltimeday: "+text);
+                        }
+                    }else{
+                        String text = numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
+                        Log.e("Data_View","totaltimeday: "+text);
+                    }
+
+
+
+                    Log.e("TEST_GET_LISTDATA","================= getdataTime =================");
+                    Log.e("TEST_GET_LISTDATA",email+":"+S_day+":"+S_month+":"+S_year);
+                    Log.e("TEST_GET_LISTDATA","Successful");
+
+                    for(int i= 0;i<listdata.size();i++){
+                        Log.e("TEST_GET_LISTDATA","Time: "+listdata.get(i).getTime());
+                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataTime>> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+    public void getdataWrongword(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        getnamemonth(getFormattedMonth);
+        int Y =getFormattedYear+1900;
+        String email = firebaseUser.getEmail();
+
+        Call<List<DataWrongword>>listcallgetdata = apiInterface.getDataWrongword(email);
+        listcallgetdata.enqueue(new Callback<List<DataWrongword>>() {
+            @Override
+            public void onResponse(Call<List<DataWrongword>> call, Response<List<DataWrongword>> response) {
+                if (response.isSuccessful()) {
+                    List<DataWrongword> listdata = response.body();
+                    Log.e("TEST_GET_LISTDATA","================= getdataWrongword =================");
+                    Log.e("TEST_GET_LISTDATA","Successful");
+                    Log.e("TEST_GET_LISTDATA",listdata.get(1).getEmail());
+                    for(int i= 0;i<listdata.size();i++){
+                        Log.e("TEST_GET_LISTDATA","Wrongword: "+listdata.get(i).getWrongword());
+                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataWrongword>> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+    public void getdataViewtotalday() {
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+        String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+        String email = firebaseUser.getEmail();
+
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+
+            Call<List<DataEngword>> listcallgetdataEngword = apiInterface.getDataEngword(email, S_day, S_month, S_year);
+            listcallgetdataEngword.enqueue(new Callback<List<DataEngword>>() {
+                @Override
+                public void onResponse(Call<List<DataEngword>> call, Response<List<DataEngword>> response) {
+
+                    if (response.isSuccessful()) {
+                        List<DataEngword> listdata = response.body();
+                        if (listdata.size() == 0) {
+                            totaleng[0] = 0;
+                        } else {
+
+                            for (int i = 0; i < listdata.size(); i++) {
+                                totaleng[0] += Integer.parseInt(listdata.get(i).getWord());
+
+                            }
+                            indextotalengword = totaleng[0];
+                        }
+
+
+                        totalall[0] = totaleng[0] + totalanother[0];
+                        int TTWE = totaleng[0];
+                        String TTWD = totaleng[0] + " / " + totalall[0];
+
+
+
+                        Log.e("TEST_GET_LISTDATA", "================= getdataEngword =================");
+                        Log.e("TEST_GET_LISTDATA", "Successful");
+
+
+                        for (int i = 0; i < listdata.size(); i++) {
+                            Log.e("TEST_GET_LISTDATA", "Engword: " + listdata.get(i).getEngword());
+                            Log.e("TEST_GET_LISTDATA", "DATE: " + listdata.get(i).getDate());
+
+                        }
+                        indextotalall = indextotalanyword + indextotalengword;
+                        String TTWD1 = indextotalengword + " / " + indextotalall;
+
+                        Log.e("Data_View", "indextotalengword :" + indextotalengword);
+                        Log.e("Data_View", "indextotalall :" + TTWD1);
+
+                    } else {
+                        Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<DataEngword>> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA", t + "");
+                }
+            });
+
+
+
+    }
 
 
 

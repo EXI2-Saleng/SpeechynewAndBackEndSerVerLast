@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import static com.example.speechynew.connectDB.Continuemaxinterface.TABLE_NAME10;
 import static com.example.speechynew.connectDB.Engwordinterface.TABLE_NAME2;
 import static com.example.speechynew.connectDB.Engwordinterface.WORDENG;
 import static com.example.speechynew.connectDB.Engwordinterface.DATEENG;
@@ -36,6 +37,12 @@ public class Engword extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public Cursor getAlldata(){
+        SQLiteDatabase db =this.getWritableDatabase();
+        Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME2,null);
+        return resDat;
     }
 
 }

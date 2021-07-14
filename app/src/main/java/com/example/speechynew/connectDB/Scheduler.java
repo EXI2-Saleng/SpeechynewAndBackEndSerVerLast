@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import static com.example.speechynew.connectDB.Continuemaxinterface.TABLE_NAME10;
 import static com.example.speechynew.connectDB.Schedulerinterface.DATESTART;
 import static com.example.speechynew.connectDB.Schedulerinterface.DAYSTART;
 import static com.example.speechynew.connectDB.Schedulerinterface.MONTHSTART;
@@ -69,6 +70,12 @@ public class Scheduler extends SQLiteOpenHelper {
         db.delete(TABLE_NAME9, "_id=?", new String[]{String.valueOf(id)});
         return true;
 
+    }
+
+    public Cursor getAlldata(){
+        SQLiteDatabase db =this.getWritableDatabase();
+        Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME9,null);
+        return resDat;
     }
 
 }

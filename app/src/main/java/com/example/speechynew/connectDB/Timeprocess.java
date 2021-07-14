@@ -2,11 +2,13 @@ package com.example.speechynew.connectDB;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 
+import static com.example.speechynew.connectDB.Settinginterface.TABLE_NAME0;
 import static com.example.speechynew.connectDB.Timeprocessinterface.DATE;
 import static com.example.speechynew.connectDB.Timeprocessinterface.DAY;
 import static com.example.speechynew.connectDB.Timeprocessinterface.HOUR;
@@ -50,4 +52,9 @@ public class Timeprocess extends SQLiteOpenHelper {
         return true;
     } */
 
+    public Cursor getAlldata(){
+        SQLiteDatabase db =this.getWritableDatabase();
+        Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME5,null);
+        return resDat;
+    }
 }

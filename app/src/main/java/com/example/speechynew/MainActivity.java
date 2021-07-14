@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("onCreateMain");
 
 
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -118,6 +120,13 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }else{
             String email = firebaseUser.getEmail();
+            Log.e("Show Data User ","DisplayName: "+firebaseUser.getDisplayName());
+            Log.e("Show Data User ","Email: "+firebaseUser.getEmail());
+            Log.e("Show Data User ","PhoneNumber: "+firebaseUser.getPhoneNumber());
+            Log.e("Show Data User ","ProviderId: "+firebaseUser.getProviderId());
+            Log.e("Show Data User ","TenantId: "+firebaseUser.getTenantId());
+            Log.e("Show Data User ","Uid: "+firebaseUser.getUid());
+
 
             //binding.PF.setImageURI(firebaseUser.getPhotoUrl());
             Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(binding.PF);

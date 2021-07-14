@@ -36,6 +36,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.speechynew.databinding.ActivityGoogleLoginBinding;
 
 public class GoogleLogin extends AppCompatActivity {
+
+
     private ActivityGoogleLoginBinding binding;
     User user;
     int maxid = 0;
@@ -54,7 +56,20 @@ public class GoogleLogin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoogleLoginBinding.inflate(getLayoutInflater());
+        Button buttonskip = findViewById(R.id.skiplogin);
+
         setContentView(binding.getRoot());
+
+        binding.skiplogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent i = new Intent(GoogleLogin.this,MainActivity.class);
+                //startActivity(i);
+                startActivity(new Intent(GoogleLogin.this, MainActivity.class));
+                finish();
+            }
+        });
+
         /*
         user=new User();
         ref = database.getInstance().getReference().child("user");
@@ -94,6 +109,7 @@ public class GoogleLogin extends AppCompatActivity {
                 Log.d(TAG, "onClick: begin Google SignIn");
                 Intent intent = googleSignInClient.getSignInIntent();
                 startActivityForResult(intent,RC_SIGN_IN);
+
             }
         });
 
