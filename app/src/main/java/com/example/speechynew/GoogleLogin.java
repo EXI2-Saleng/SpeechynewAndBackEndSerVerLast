@@ -56,41 +56,10 @@ public class GoogleLogin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoogleLoginBinding.inflate(getLayoutInflater());
-        Button buttonskip = findViewById(R.id.skiplogin);
 
         setContentView(binding.getRoot());
 
-        binding.skiplogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Intent i = new Intent(GoogleLogin.this,MainActivity.class);
-                //startActivity(i);
-                startActivity(new Intent(GoogleLogin.this, MainActivity.class));
-                finish();
-            }
-        });
 
-        /*
-        user=new User();
-        ref = database.getInstance().getReference().child("user");
-
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    maxid = (int)snapshot.getChildrenCount();
-                }
-                else {}
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-         */
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -160,34 +129,6 @@ public class GoogleLogin extends AppCompatActivity {
                         String uid = firebaseUser.getUid();
                         final String email = firebaseUser.getEmail();
                         String name = firebaseUser.getDisplayName();
-
-
-                       /* String x=ref.child(String.valueOf(maxid)).getRoot().toString();
-                        Log.d(TAG,"xDAB: "+x);
-                        user.setUID(uid);
-                        user.setMail(email);
-                        user.setName(name);
-
-                        ref_user = database.getInstance().getReference().child("user").child(name);
-                        ref_user.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                                    if (snapshot.child("mail").getValue().equals("testtfa2020@gmail.com")){
-                                        Log.d(TAG,"OK");
-                                    }
-
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });*/
-
-                        //ref.child(name).setValue(user);
-                        //ref.child(String.valueOf(maxid + 1)).setValue(user);
 
 
                         Log.d(TAG, "onSuccess: Email: "+email);

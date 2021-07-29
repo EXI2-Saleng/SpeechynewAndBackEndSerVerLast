@@ -144,8 +144,10 @@ public class HomeFragment extends Fragment {
     int indextotalengword = 0;
     int indextotalanyword = 0;
     int indextotalall = 0;
+    int indextotalmeeng =0;
 
-
+    int[] arraytesteng1 = new int[24];
+    int[] arraytestnone1 = new int[24];
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -195,7 +197,6 @@ public class HomeFragment extends Fragment {
         wordmin();
         continuemaxday();
         wrongwordday();
-
 
 
 
@@ -292,12 +293,14 @@ public class HomeFragment extends Fragment {
                 if(resulttype==false){
                     resulttype=true;
                     newviewAllday();
+                    getdataViewtotalday();
                     changetype.setText("Word count");
 
                 //change from Percentage to word count
                 }else if(resulttype==true){
                     resulttype=false;
                     newviewAllday();
+                    getdataViewtotalday();
                     changetype.setText("Percentage");
                 }
 
@@ -441,6 +444,10 @@ public class HomeFragment extends Fragment {
             mChart.setPinchZoom(true);
             mChart.fitScreen();
 
+
+
+
+
         }else if(resulttype==true){ //view percentage
 
             ArrayList<BarEntry> dataVals = new ArrayList<>();
@@ -491,6 +498,7 @@ public class HomeFragment extends Fragment {
                 arrayall[i] +=arraytestnone[i];
             }
 
+
             //set data in bar chart
             for (int i = 0; i < manyhour; ++i) {
                 float valueseng;
@@ -510,9 +518,9 @@ public class HomeFragment extends Fragment {
                 } else {
                     valuesno = (float) testvalno * 100;
                 }
-
                 dataVals.add(new BarEntry(i, new float[]{valueseng,valuesno}));
             }
+
 
             //setting bar chart
             BarDataSet barDataSet = new BarDataSet(dataVals, " ");
@@ -546,6 +554,8 @@ public class HomeFragment extends Fragment {
             mChart.setDoubleTapToZoomEnabled(true);
             mChart.setPinchZoom(true);
             mChart.fitScreen();
+
+
         }
 
     }
@@ -737,8 +747,8 @@ public class HomeFragment extends Fragment {
 
         while (resdbwrong.moveToNext()){
             wordfromdb.add(resdbwrong.getString(1));
-        }
 
+        }
 
         //wordcount
         int N = wordfromdb.size();
@@ -823,17 +833,18 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void run() {
                             wordtrans[finalI] = t.trans();
+
                         }
                     };handler.postDelayed(runnable,4000);
                 }
             }
         }
+
         ///wordtop[0]="TEST1";wordtop[1]="TEST2";wordtop[2]="TEST3";
 
 
 
-        savedata();
-        getdata();
+
         BackupAnyword();
         BackupContinuemax();
         BackupEngword();
@@ -844,49 +855,18 @@ public class HomeFragment extends Fragment {
         BackupWrongword();
 
         getdataAnyword();
+        //getdataAnyword();
         getdataContinuemax();
         //getdataEngword();
-        getdataTime();
-        getdataWrongword();
-
-        getdataViewtotalday();
-
-
-
-
-        //update();
-        //backupdata.getcontinuemax();
-
-
-        Cursor resDef = continuemax.getAlldata();
-
-
-        StringBuffer buffer = new StringBuffer();
-        StringBuffer bufferandwrod = new StringBuffer();
-
-       /* if(resDef.getCount()==0){
-            Log.d("TEST_GET_DATA","No data");
-        }
-        else {
-            while (resDef.moveToNext()) {
-                buffer.append("Continuemax: "+resDef.getString(0)+"\n");
-                buffer.append("MAXCON: " + resDef.getString(1) + "\n");
-                buffer.append("DAY: " + resDef.getString(2) + "\n");
-                buffer.append("DATE: " + resDef.getString(3) + "\n");
-                buffer.append("MONTH: " + resDef.getString(4) + "\n");
-                buffer.append("YEAR: " + resDef.getString(5) + "\n");
-                buffer.append("HOUR: " + resDef.getString(6) + "\n");
-                buffer.append("MINUTE: " + resDef.getString(7) + "\n");
-                buffer.append("SECOND: " + resDef.getString(8) + "\n");
-                buffer.append("===============================================");
+        getdataViewtotaltimeday();
+        getdataViewWrongword();
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                getdataViewtotalday();
             }
-
-            Log.d("TEST_GET_DATA",buffer.toString());
-        }
-
-        */
-
-
+        };handler.postDelayed(runnable,100);
 
 
 
@@ -917,89 +897,7 @@ public class HomeFragment extends Fragment {
     Data_User data_user;
     int maxid=0;
 
-    public void savedata(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        int Y =getFormattedYear+1900;
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String email = firebaseUser.getEmail();
-        getnamemonth(getFormattedMonth);
-        DecimalFormat df = new DecimalFormat("#.##");
-        double wordminday1 = wordminday;
-         df.format(wordminday1);
-
-
-       Call<UserData>callsavedata = apiInterface.DataUser(email,totalwordday,totaltimeday,wordminday1,continuemaxday,wordtop[0],wordtop[1],wordtop[2],getFormattedDay,
-               monthname,Y);
-       callsavedata.enqueue(new Callback<UserData>() {
-           @Override
-           public void onResponse(Call<UserData> call, Response<UserData> response) {
-                UserData userData = response.body();
-               if(response.isSuccessful()){
-                    /* Log.d("API_SAVE_DATA","SaveSuccessful");
-                     Log.d("API_SAVE_DATA","MS:"+userData.getMessages());
-                     Log.d("API_SAVE_DATA",email+" "+totalwordday+" "+totaltimeday+"" +
-                           " "+wordminday1+" "+continuemaxday+" "
-                           +wordtop[0]+" "+wordtop[1]+" "+wordtop[2]+" "
-                           +getFormattedDay+" "+monthname+" "+Y);
-
-                     */
-
-
-               }
-               else {
-                   Log.d("API_SAVE_DATA","MS:"+userData.getMessages());
-               }
-           }
-
-           @Override
-           public void onFailure(Call<UserData> call, Throwable t) {
-               Log.d("API SAVE DATA","Savefail T "+t);
-
-
-           }
-       });
-
-
-
-
-
-    }
-    public void getdata(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        getnamemonth(getFormattedMonth);
-        int Y =getFormattedYear+1900;
-        String email = firebaseUser.getEmail();
-        Call<UserData>callgetdata = apiInterface.getDataUser(email,getFormattedDay,monthname,Y);
-        callgetdata.enqueue(new Callback<UserData>() {
-            @Override
-            public void onResponse(Call<UserData> call, Response<UserData> response) {
-                if(response.body()!=null) {
-                    UserData userData = response.body();
-
-               Log.d("API_GET_DATA","Email:"+email+"\ntotalwordday:"+userData.getTotalwordday1()
-                        +"\ntotaltimeday:"+userData.getTotaltimeday1()+"\nwordminday1:"+userData.getWordminday1()
-                +"\ncontinuemaxday:"+userData.getContinuemaxday1()+"\nwordtop1:"+userData.getWordtop1()+"\nwordtop2:"+userData.getWordtop2()
-                        +"\nwordtop3"+userData.getWordtop3()+"\nDay:"+userData.getDay1()+"\nMonth1:"+userData.getMonth1()+"\nYear1:"+userData.getYear1());
-                Log.d("API_GET_DATA","MS:"+userData.getMessages());
-                    //Log.d("API_GET_DATA", "totalwordday: " + userData.getTotalwordday1());
-                    //totalwordday="TEST";
-
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserData> call, Throwable t) {
-                Log.d("API_GET_DATA","GETDATAFAIL T ="+t);
-
-            }
-        });
-    }
     public void BackupAnyword(){
         Cursor reDef1 = anothereng.getAlldata();
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
@@ -1051,7 +949,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_BackupAnyword",buffer.toString());
+       // Log.d("API_DATA_BackupAnyword",buffer.toString());
 
 
 
@@ -1081,7 +979,6 @@ public class HomeFragment extends Fragment {
                 buffer.append("MINUTE: " + reDef1.getString(7) + "\n");
                 buffer.append("SECOND: " + reDef1.getString(8) + "\n");
                 buffer.append("===============================================\n");
-
                 Call<DataContinuemax>calldataContinuemax =apiInterface.DataContinuemax(email,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
                         reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
 
@@ -1108,7 +1005,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_Continuemax",buffer.toString());
+       // Log.d("API_DATA_Continuemax",buffer.toString());
 
     }
 
@@ -1184,10 +1081,9 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_BackupEngword",buffer.toString());
-        Log.d("API_DATA_BackupEngword","Leng :"+buffer.length());
+       // Log.d("API_DATA_BackupEngword",buffer.toString());
 
-        Log.d("API_DATA_BackupEngword",buffer1.toString());
+       // Log.d("API_DATA_BackupEngword",buffer1.toString());
 
     }
 
@@ -1333,7 +1229,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_Scheduler",buffer.toString());
+     //   Log.d("API_DATA_Scheduler",buffer.toString());
 
 
     }
@@ -1390,7 +1286,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_BackupSetting",buffer.toString());
+      //  Log.d("API_DATA_BackupSetting",buffer.toString());
 
 
     }
@@ -1446,7 +1342,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_BackupTime",buffer.toString());
+       // Log.d("API_DATA_BackupTime",buffer.toString());
 
     }
 
@@ -1501,7 +1397,7 @@ public class HomeFragment extends Fragment {
             }
 
         }
-        Log.d("API_DATA_Wrongword",buffer.toString());
+        // Log.d("API_DATA_Wrongword",buffer.toString());
 
     }
 
@@ -1515,10 +1411,15 @@ public class HomeFragment extends Fragment {
         String S_year =Integer.valueOf(getFormattedYear+1900).toString();
         String email = firebaseUser.getEmail();
 
+
+        String showday1 = S_day+" : "+S_month+" : "+S_year;
+        Log.d("TEST_SHOW_DAY",showday1);
+        Log.d("TEST_SHOW_DAY","Email :"+email);
         int[] totalall = {0};
         int[] totaleng = {0};
         int[] totalanother = {0};
-
+        int[] arraytestnone2 = new int[24];
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
         Call<List<DataAnyword>>listcallgetdata = apiInterface.getDataAnyword(email,S_day,S_month,S_year);
             listcallgetdata.enqueue(new Callback<List<DataAnyword>>() {
                 @Override
@@ -1531,20 +1432,20 @@ public class HomeFragment extends Fragment {
                             for (int i = 0; i < listdata.size(); i++) {
                                 totalanother[0] += Integer.parseInt(listdata.get(i).getWord());
                                 indextotalanyword = totalanother[0];
+                                arraytestnone2[Integer.parseInt(listdata.get(i).getHour())]+=Integer.parseInt(listdata.get(i).getWord());
 
                             }
+                            StringBuffer buffer = new StringBuffer();
+                            arraytestnone1=arraytestnone2;
+                            for(int i = 0;i<24 ;i++){
+                                buffer.append(":"+arraytestnone2[i]+" ");
+                            }
+                            //Log.d("GET_View_G","ARRAY_ANYWORD :"+buffer.toString());
 
-                            Log.e("Data_View", "indextotalanyword :" + indextotalanyword);
-
-                        }
-                        Log.e("TEST_GET_LISTDATA","================= getdataAnyword =================");
-                        Log.e("TEST_GET_LISTDATA","Successful");
-
-                        for(int i= 0;i<listdata.size();i++){
-                            Log.e("TEST_GET_LISTDATA","Anyword: "+listdata.get(i).getAnyword());
-                            Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+                            Log.e("TEST_SHOW_DAY", "indextotalanyword :" + indextotalanyword);
 
                         }
+
 
                     }
                     else{
@@ -1567,24 +1468,36 @@ public class HomeFragment extends Fragment {
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        getnamemonth(getFormattedMonth);
-        int Y =getFormattedYear+1900;
+        String S_day= Integer.valueOf(getFormattedDay).toString();
+        String S_month =Integer.valueOf(getFormattedMonth+1).toString();
+        String S_year =Integer.valueOf(getFormattedYear+1900).toString();
         String email = firebaseUser.getEmail();
 
-        Call<List<DataContinuemax>>listcallgetdata = apiInterface.getDataContinuemax(email);
+
+
+        Call<List<DataContinuemax>>listcallgetdata = apiInterface.getDataContinuemax(email,S_day,S_month,S_year);
         listcallgetdata.enqueue(new Callback<List<DataContinuemax>>() {
             @Override
             public void onResponse(Call<List<DataContinuemax>> call, Response<List<DataContinuemax>> response) {
                 if (response.isSuccessful()) {
                     List<DataContinuemax> listdata = response.body();
-                    Log.e("TEST_GET_LISTDATA","================= getdataContinuemax =================");
-                    Log.e("TEST_GET_LISTDATA","Successful");
-                    Log.e("TEST_GET_LISTDATA",listdata.get(1).getEmail());
-                    for(int i= 0;i<listdata.size();i++){
-                        Log.e("TEST_GET_LISTDATA","Continuemax: "+listdata.get(i).getContinuemax());
-                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+                    int checking = 0;
+                    int continuemaxday1 =0;
+                    if (listdata.size() !=0){
+                        for(int i= 0;i<listdata.size();i++){
+                            checking=Integer.parseInt(listdata.get(i).getMaxcon());
 
+                            if(continuemaxday1 < checking){
+                                continuemaxday1 = checking;
+
+                            }
+
+
+                        }
+                        //continuemaxday =continuemaxday1;
+                        Log.e("TEST_SHOW_DAY","continuemaxday: "+continuemaxday1);
                     }
+
 
                 }
                 else{
@@ -1656,7 +1569,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public void getdataTime(){
+    public void getdataViewtotaltimeday(){
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -1674,6 +1587,7 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     List<DataTime> listdata = response.body();
                     int totaltime1 = 0;
+
                     if (listdata.size()==0){
                         totaltime1 = 0;
                     }
@@ -1681,7 +1595,8 @@ public class HomeFragment extends Fragment {
                         for(int i= 0;i<listdata.size();i++){
                             totaltime1+=Integer.parseInt(listdata.get(i).getTotaltime());
                         }
-                        Log.e("Data_View","(totaltime1) totaltimeeng: "+totaltime1);
+                        indextotalmeeng =totaltime1;
+                        Log.e("TEST_SHOW_DAY","(totaltime1) totaltimeeng: "+totaltime1);
                     }
 
                     int numberOfHours = (totaltime1 % 86400) / 3600;
@@ -1691,26 +1606,17 @@ public class HomeFragment extends Fragment {
                     if(numberOfMinutes<10){
                         if(numberOfSeconds<10){
                             String text = numberOfHours+" : 0"+numberOfMinutes+" : 0"+numberOfSeconds;
-                            Log.e("Data_View","totaltimeday: "+text);
+                            //totaltimeday =text;
+                            Log.e("TEST_SHOW_DAY","totaltimeday: "+text);
                         }else{
                             String text = numberOfHours+" : 0"+numberOfMinutes+" : "+numberOfSeconds;
-                            Log.e("Data_View","totaltimeday: "+text);
+                            //totaltimeday =text;
+                            Log.e("TEST_SHOW_DAY","totaltimeday: "+text);
                         }
                     }else{
                         String text = numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
-                        Log.e("Data_View","totaltimeday: "+text);
-                    }
-
-
-
-                    Log.e("TEST_GET_LISTDATA","================= getdataTime =================");
-                    Log.e("TEST_GET_LISTDATA",email+":"+S_day+":"+S_month+":"+S_year);
-                    Log.e("TEST_GET_LISTDATA","Successful");
-
-                    for(int i= 0;i<listdata.size();i++){
-                        Log.e("TEST_GET_LISTDATA","Time: "+listdata.get(i).getTime());
-                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
-
+                        //totaltimeday =text;
+                        Log.e("TEST_SHOW_DAY","totaltimeday: "+text);
                     }
 
                 }
@@ -1727,29 +1633,135 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public void getdataWrongword(){
+    public void getdataViewWrongword(){
 
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        getnamemonth(getFormattedMonth);
-        int Y =getFormattedYear+1900;
+        String S_day= Integer.valueOf(getFormattedDay).toString();
+        String S_month =Integer.valueOf(getFormattedMonth+1).toString();
+        String S_year =Integer.valueOf(getFormattedYear+1900).toString();
         String email = firebaseUser.getEmail();
 
-        Call<List<DataWrongword>>listcallgetdata = apiInterface.getDataWrongword(email);
+        Call<List<DataWrongword>>listcallgetdata = apiInterface.getDataWrongword(email,S_day,S_month,S_year);
         listcallgetdata.enqueue(new Callback<List<DataWrongword>>() {
             @Override
             public void onResponse(Call<List<DataWrongword>> call, Response<List<DataWrongword>> response) {
                 if (response.isSuccessful()) {
                     List<DataWrongword> listdata = response.body();
-                    Log.e("TEST_GET_LISTDATA","================= getdataWrongword =================");
-                    Log.e("TEST_GET_LISTDATA","Successful");
-                    Log.e("TEST_GET_LISTDATA",listdata.get(1).getEmail());
-                    for(int i= 0;i<listdata.size();i++){
-                        Log.e("TEST_GET_LISTDATA","Wrongword: "+listdata.get(i).getWrongword());
-                        Log.e("TEST_GET_LISTDATA","DATE: "+listdata.get(i).getDate());
+
+                    ArrayList<String> wordfromdb = new ArrayList<>();
+                    String[] wordtop1 = new String[3];
+                    String[] wordtrans1 = new String[3];
+                    if (listdata.size()==0){
+                        return;
+                    }
+                    else {
+                        for(int i= 0;i<listdata.size();i++){
+                            wordfromdb.add(listdata.get(i).getWord());
+                        }
+
+                        //wordcount
+                        int N = wordfromdb.size();
+                        String word[] = new String[N];
+                        int count[] = new int[N];
+
+                        for (int i = 0; i < word.length; i++) {
+                            word[i] = ""; //set default
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            String text = wordfromdb.get(i);
+                            for (int j = 0; j < word.length; j++) {
+                                if (word[j].equals("")) {
+                                    word[j] = text;
+                                    count[j] = 1;
+                                    break;
+                                } else if (word[j].equals(text)) {
+                                    count[j]++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            for (int j = i+1; j < N-1; j++) {
+                                if(count[i] < count[j] && !word[i].equals("") && !word[j].equals("")){
+                                    int temp = count[i];
+                                    count[i] = count[j];
+                                    count[j] = temp;
+
+                                    String tempText = word[i];
+                                    word[i] = word[j];
+                                    word[j] = tempText;
+                                }
+                            }
+                        }
+
+
+                        for (int i = 0; i < word.length; i++) {
+                            if (!word[i].equals("")) {
+                                //System.out.println(word[i] + " " + count[i]);
+                            }
+                        }
+
+
+
+                        if(word.length<3){
+                            for(int i=0;i<word.length;++i){
+                                if (!word[i].equals("")) {
+                                    //wordtop[i] = word[i];
+                                    wordtop1[i] = word[i];
+
+                                    //final Translator t = new Translator(wordtop[i],getContext());
+                                    final Translator t = new Translator(wordtop1[i],getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //wordtrans[finalI] = t.trans();
+                                            wordtrans1[finalI] = t.trans();
+
+                                        }
+                                    };handler.postDelayed(runnable,4000);
+
+                                }
+                            }
+
+                        }else{
+                            for (int i = 0; i < 3; i++) {
+                                if (!word[i].equals("")) {
+                                    //wordtop[i] = word[i];
+                                    wordtop1[i] = word[i];
+
+                                   // final Translator t = new Translator(wordtop[i],getContext());
+                                    final Translator t = new Translator(wordtop1[i],getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                           // wordtrans[finalI] = t.trans();
+                                            wordtrans1[finalI] = t.trans();
+                                        }
+                                    };handler.postDelayed(runnable,4000);
+                                }
+                            }
+                        }
+                        ///wordtop[0]="TEST1";wordtop[1]="TEST2";wordtop[2]="TEST3";
+                        Log.e("TEST_SHOW_DAY", "WTop1 MySQL:" +wordtop1[0]+" WTop2 :" +wordtop1[1]+" WTop3 :" +wordtop1[2]);
+                        Log.d("TEST_SHOW_DAY", "WTop1 SQLite:" +wordtop[0]+" WTop2 :" +wordtop[1]+" WTop3 :" +wordtop[2]);
+                       // Log.e("Data_View", "WTrans1 :" +wordtrans1[0]+" WTrans2 :" +wordtrans1[1]+" WTrans3 :" +wordtrans1[2]);
+
 
                     }
+
+
 
                 }
                 else{
@@ -1778,7 +1790,10 @@ public class HomeFragment extends Fragment {
         int[] totalall = {0};
         int[] totaleng = {0};
         int[] totalanother = {0};
+        int[] arraytesteng2 = new int[24];
+        double[] arrayall1 = new double[24];
 
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
             Call<List<DataEngword>> listcallgetdataEngword = apiInterface.getDataEngword(email, S_day, S_month, S_year);
             listcallgetdataEngword.enqueue(new Callback<List<DataEngword>>() {
                 @Override
@@ -1792,8 +1807,11 @@ public class HomeFragment extends Fragment {
 
                             for (int i = 0; i < listdata.size(); i++) {
                                 totaleng[0] += Integer.parseInt(listdata.get(i).getWord());
-
+                                arraytesteng2[Integer.parseInt(listdata.get(i).getHour())]+=Integer.parseInt(listdata.get(i).getWord());
                             }
+
+                            arraytesteng1=arraytesteng2;
+
                             indextotalengword = totaleng[0];
                         }
 
@@ -1802,22 +1820,141 @@ public class HomeFragment extends Fragment {
                         int TTWE = totaleng[0];
                         String TTWD = totaleng[0] + " / " + totalall[0];
 
-
-
-                        Log.e("TEST_GET_LISTDATA", "================= getdataEngword =================");
-                        Log.e("TEST_GET_LISTDATA", "Successful");
-
-
-                        for (int i = 0; i < listdata.size(); i++) {
-                            Log.e("TEST_GET_LISTDATA", "Engword: " + listdata.get(i).getEngword());
-                            Log.e("TEST_GET_LISTDATA", "DATE: " + listdata.get(i).getDate());
-
-                        }
                         indextotalall = indextotalanyword + indextotalengword;
                         String TTWD1 = indextotalengword + " / " + indextotalall;
 
-                        Log.e("Data_View", "indextotalengword :" + indextotalengword);
-                        Log.e("Data_View", "indextotalall :" + TTWD1);
+                        if(resulttype == false) {
+                            StringBuffer buffer1 = new StringBuffer();
+                            StringBuffer buffer2 = new StringBuffer();
+                            for (int i = 0; i < 24; ++i) {
+                                int valueseng = arraytesteng2[i];
+                                int valuesno = arraytestnone1[i];
+                                buffer1.append(":" + arraytestnone1[i] + " ");
+                                buffer2.append(":" + arraytesteng2[i] + " ");
+                                dataVals.add(new BarEntry(i, new float[]{valueseng, valuesno}));
+                            }
+                            Log.d("GET_View_G", "ARRAYENG_THAI :" + buffer1.toString());
+                            Log.d("GET_View_G", "ARRAYENG_WORD :" + buffer2.toString());
+
+                            //setting bar chart
+                        /*
+                        BarDataSet barDataSet = new BarDataSet(dataVals, " ");
+                        barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
+                        barDataSet.setStackLabels(new String[]{"Number of English words", "Number of non-English words"});
+
+                        BarData data = new BarData(barDataSet);
+                        mChart.setData(data);
+
+                        data.setValueFormatter(new MyValueFormatter());
+
+                        mChart.getLegend().setXEntrySpace(12);//ระยะห่างระหว่างข้อมูล
+                        mChart.getLegend().setFormToTextSpace(3);//ระยะห่างระหว่างรูปกับคำอธิบาย
+
+                        String[] time = new String[]{"00","01","02","03","04","05","06","07","08","09","10","11",
+                                "12","13","14","15","16","17","18","19","20","21","22","23"};
+
+                        XAxis xAxis = mChart.getXAxis();
+                        xAxis.setValueFormatter(new IndexAxisValueFormatter(time));
+                        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                        xAxis.setGranularity(1);
+                        xAxis.setCenterAxisLabels(false);
+                        xAxis.setGranularityEnabled(true);
+                        xAxis.setAxisMaximum(24);
+                        xAxis.setDrawGridLines(false); //เส้นตาราง
+
+                        mChart.setDragEnabled(true);
+                        mChart.getAxisRight().setAxisMinimum(0);
+                        mChart.getAxisLeft().setAxisMinimum(0);
+                        mChart.setVisibleXRangeMaximum(24);
+                        mChart.invalidate();
+                        mChart.animateXY(2000, 4000);
+                        mChart.setDoubleTapToZoomEnabled(true);
+                        mChart.setPinchZoom(true);
+                        mChart.fitScreen();
+
+                         */
+
+
+                        }
+                        else if(resulttype == true){
+                            //get all word
+                            for(int i = 0; i < 24; ++i){
+                                arrayall1[i] = arraytesteng2[i];
+                                arrayall1[i] += arraytestnone1[i];
+                            }
+                            StringBuffer buffer1 = new StringBuffer();
+                            StringBuffer buffer2 = new StringBuffer();
+                            //set data in bar chart
+                            for (int i = 0; i < 24; ++i) {
+                                float valueseng;
+                                double testvaleng = arraytesteng2[i] / arrayall1[i];
+
+                                if (Double.isNaN(testvaleng)) {
+                                    valueseng = (float) 0;
+                                } else {
+                                    valueseng = (float) testvaleng * 100;
+                                }
+
+                                float valuesno;
+                                double testvalno = arraytestnone1[i] / arrayall1[i];
+
+                                if (Double.isNaN(testvalno)) {
+                                    valuesno = (float) 0;
+                                } else {
+                                    valuesno = (float) testvalno * 100;
+                                }
+                                buffer1.append(":" + valuesno + " ");
+                                buffer2.append(":" + valueseng + " ");
+
+
+
+                                dataVals.add(new BarEntry(i, new float[]{valueseng,valuesno}));
+                            }
+                            Log.d("GET_View_G", "ARRAYENG_THAI :" + buffer1);
+                            Log.d("GET_View_G", "ARRAYENG_WORD :" + buffer2);
+                            /*
+                            //setting bar chart
+                            BarDataSet barDataSet = new BarDataSet(dataVals, " ");
+                            barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
+                            barDataSet.setStackLabels(new String[]{"Percentage of English words", "Percentage of non-English words"});
+                            BarData data = new BarData(barDataSet);
+                            data.setValueFormatter(new MyValueFormatter());
+
+                            mChart.setData(data);//ระยะห่างระหว่างข้อมูล
+                            mChart.getLegend().setXEntrySpace(12);//ระยะห่างระหว่างรูปกับคำอธิบาย
+                            mChart.getLegend().setFormToTextSpace(3);
+
+                            String[] time = new String[]{"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"
+                                    , "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+                            XAxis xAxis = mChart.getXAxis();
+                            xAxis.setValueFormatter(new IndexAxisValueFormatter(time));
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setGranularity(1);
+                            xAxis.setCenterAxisLabels(false);
+                            xAxis.setGranularityEnabled(true);
+                            xAxis.setAxisMaximum(24);
+                            xAxis.setDrawGridLines(false); //เส้นตาราง
+
+                            mChart.setDragEnabled(true);
+                            mChart.getAxisRight().setAxisMinimum(0);
+                            mChart.getAxisLeft().setAxisMinimum(0);
+                            mChart.setVisibleXRangeMaximum(24);
+                            mChart.invalidate();
+                            mChart.animateXY(2000, 4000);
+                            mChart.setDoubleTapToZoomEnabled(true);
+                            mChart.setPinchZoom(true);
+                            mChart.fitScreen();
+
+                             */
+
+                        }
+
+                        //totalwordday =TTWD1;
+                        Log.e("TEST_SHOW_DAY", "indextotalengword :" + indextotalengword);
+                        Log.e("TEST_SHOW_DAY", "indextotalall :" + TTWD1);
+
+                        getdataViewwordminday(indextotalengword);
 
                     } else {
                         Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
@@ -1830,7 +1967,17 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-
+    }
+    public void getdataViewwordminday(int x){
+        indextotalengword = x;
+        double total1= (double)  indextotalengword * 1.0;
+        double total2 = (double) indextotalmeeng / 60.0;
+        if (total2 == 0.0){
+            total2 =1.0;
+        }
+        double wordminday1 = total1/total2;
+        //wordminday =wordminday1;
+        Log.e("TEST_SHOW_DAY","wordminday: "+wordminday1);
 
     }
 

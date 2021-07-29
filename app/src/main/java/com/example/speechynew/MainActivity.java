@@ -1,33 +1,18 @@
 package com.example.speechynew;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.app.Dialog;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 
 import android.util.Log;
 import android.view.View;
@@ -39,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.speechynew.Rertofit.ApiClient;
+import com.example.speechynew.Rertofit.ApiInterface;
 import com.example.speechynew.agent.Myservice;
 import com.example.speechynew.connectDB.Engword;
 import com.example.speechynew.connectDB.Setting;
@@ -50,13 +37,21 @@ import static com.example.speechynew.connectDB.Engwordinterface.TABLE_NAME2;
 import static com.example.speechynew.connectDB.Settinginterface.TABLE_NAME0;
 import static com.example.speechynew.connectDB.Statusinterface.TABLE_NAME7;
 
-import android.view.View;
-import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
+import com.example.speechynew.connectDB.UserData;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.example.speechynew.databinding.ActivityMainBinding;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -85,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
     Engword eng;
 
     AnimationDrawable speak;
-
+    ApiInterface apiInterface;
+    GoogleSignInClient googleSignInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,39 +97,72 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
-
+        googleSignInClient = GoogleSignIn.getClient(MainActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebaseAuth.signOut();
+                googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            firebaseAuth.signOut();
+                            checkUser();
+                        }
+                    }
+                });
 
-
-                checkUser();
             }
         });
     }
 
     private void checkUser() {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
         if(firebaseUser == null){
             startActivity(new Intent(this,GoogleLogin.class));
             finish();
         }else{
+
+
             String email = firebaseUser.getEmail();
-            Log.e("Show Data User ","DisplayName: "+firebaseUser.getDisplayName());
-            Log.e("Show Data User ","Email: "+firebaseUser.getEmail());
-            Log.e("Show Data User ","PhoneNumber: "+firebaseUser.getPhoneNumber());
-            Log.e("Show Data User ","ProviderId: "+firebaseUser.getProviderId());
-            Log.e("Show Data User ","TenantId: "+firebaseUser.getTenantId());
-            Log.e("Show Data User ","Uid: "+firebaseUser.getUid());
+            String name = firebaseUser.getDisplayName();
+            String devicename = android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL;
+            Call<UserData> calldatauser =apiInterface.DataUser(email,name,devicename);
+            calldatauser.enqueue(new Callback<UserData>() {
+                @Override
+                public void onResponse(Call<UserData> call, Response<UserData> response) {
+                UserData datauser = response.body();
+                    if (datauser!=null){
+                        Log.d("API_DATA_DataUser","SaveSuccessful");
+                        Log.d("API_DATA_DataUser","MS:"+datauser.getMessages());
+                    }
+                    else {
+
+                        Log.d("API_DATA_DataUser","MS:"+datauser.getMessages());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserData> call, Throwable t) {
+                    Log.d("API_DATA_DataUser","Savefail T "+t);
+                }
+            });
+
+            Log.e("Show_Data_User","DisplayName: "+firebaseUser.getDisplayName());
+            Log.e("Show_Data_User","Email: "+firebaseUser.getEmail());
+            Log.e("Show_Data_User","PhoneNumber: "+firebaseUser.getPhoneNumber());
+            Log.e("Show_Data_User","ProviderId: "+firebaseUser.getProviderId());
+            Log.e("Show_Data_User","TenantId: "+firebaseUser.getTenantId());
+            Log.e("Show_Data_User","Uid: "+firebaseUser.getUid());
+            Log.e("Show_Data_User","NAMEPHONE3: "+devicename);
 
 
             //binding.PF.setImageURI(firebaseUser.getPhotoUrl());
             Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(binding.PF);
-            //IM.setImageURI(firebaseUser.getPhotoUrl());
             binding.emailTv.setText("User: "+email);
         }
     }
+
 
 
     public void onResume(){

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/tracktalksplash"
     android:padding="20dp"
     tools:context=".MainActivity">
 
@@ -11,36 +12,23 @@
         android:id="@+id/iconIv"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@drawable/google"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/google" />
 
     <TextView
         android:id="@+id/captionTv"
-        android:layout_below="@+id/iconIv"
+        style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/iconIv"
         android:layout_centerHorizontal="true"
-        android:text="Welcome to Google SignIn"
-        style="@style/TextAppearance.AppCompat.Body1"/>
+        android:text="Welcome to Google SignIn" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/googleSignInBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
-
-    <Button
-        android:id="@+id/skiplogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="79dp"
-        android:layout_marginEnd="266dp"
-        android:layout_marginBottom="171dp"
-        android:text="skip" />
+        android:layout_centerInParent="true"
+        android:paddingTop="150dp" />
 
 </RelativeLayout>

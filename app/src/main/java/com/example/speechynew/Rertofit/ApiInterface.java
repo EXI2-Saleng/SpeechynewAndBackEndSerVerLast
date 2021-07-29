@@ -24,25 +24,14 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     @FormUrlEncoded
-    @POST("savedata.php")
+    @POST("datauser/Datauser.php")
     Call<UserData> DataUser(
                             @Field("email") String email,
-                            @Field("totalwordday1") String totalwordday1,
-                            @Field("totaltimeday1") String totaltimeday1,
-                            @Field("wordminday1") Double wordminday1,
-                            @Field("continuemaxday1") int continuemaxday1,
-                            @Field("wordtop1") String wordtop1,
-                            @Field("wordtop2") String wordtop2,
-                            @Field("wordtop3") String wordtop3,
-                            @Field("Day1") int Day1,
-                            @Field("Month1") String Month1,
-                            @Field("Year1") int Year1);
+                            @Field("name") String name,
+                            @Field("devicename") String devicename);
 
     @GET("getdata.php/{email}")
-    Call<UserData> getDataUser(@Query("email") String email,
-                               @Query("Day1")int Day1,
-                               @Query("Month1")String Month1,
-                               @Query("Year1")int Year1);
+    Call<UserData> getDataUser(@Query("email") String email);
 
     @GET("test.php/{email}")
     Call<UserData> updatedata(@Query("email") String email,
@@ -52,33 +41,72 @@ public interface ApiInterface {
                                @Query("Year1")int Year1);
 
 
-    @GET("getAnyword.php/{email}")
+
+    @GET("getAnyword/getAnyword.php/{email}")
     Call<List<DataAnyword>> getDataAnyword(@Query("email") String email,
                                            @Query("date") String date,
                                            @Query("month") String month,
                                            @Query("year") String year);
 
-    @GET("getContinuemax.php/{email}")
-    Call<List<DataContinuemax>> getDataContinuemax(@Query("email") String email);
+    @GET("getAnyword/getAnywordMonth.php/{email}")
+    Call<List<DataAnyword>> getDataAnywordMonth(@Query("email") String email,
+                                           @Query("month") String month,
+                                           @Query("year") String year);
 
-    @GET("getEngword.php/{email}")
+
+
+
+    @GET("getContinuemax/getContinuemax.php/{email}")
+    Call<List<DataContinuemax>> getDataContinuemax(@Query("email") String email,
+                                                   @Query("date") String date,
+                                                   @Query("month") String month,
+                                                   @Query("year") String year);
+
+    @GET("getContinuemax/getContinuemaxMonth.php/{email}")
+    Call<List<DataContinuemax>> getDataContinuemaxMonth(@Query("email") String email,
+                                                   @Query("month") String month,
+                                                   @Query("year") String year);
+
+    @GET("getEngword/getEngword.php/{email}")
     Call<List<DataEngword>> getDataEngword(@Query("email") String email,
                                            @Query("date") String date,
                                            @Query("month") String month,
                                            @Query("year") String year);
 
-    @GET("getTime.php/{email}")
+    @GET("getEngword/getEngwordMonth.php/{email}")
+    Call<List<DataEngword>> getDataEngwordMonth(@Query("email") String email,
+                                           @Query("month") String month,
+                                           @Query("year") String year);
+
+
+    @GET("getTime/getTime.php/{email}")
     Call<List<DataTime>> getDataTime(@Query("email") String email,
                                      @Query("date") String date,
                                      @Query("month") String month,
                                      @Query("year") String year);
 
-    @GET("getWrongword.php/{email}")
-    Call<List<DataWrongword>> getDataWrongword(@Query("email") String email);
+
+    @GET("getTime/getTimeMonth.php/{email}")
+    Call<List<DataTime>> getDataTimeMonth(@Query("email") String email,
+                                     @Query("month") String month,
+                                     @Query("year") String year);
+
+
+    @GET("getWrongword/getWrongword.php/{email}")
+    Call<List<DataWrongword>> getDataWrongword(@Query("email") String email,
+                                               @Query("date") String date,
+                                               @Query("month") String month,
+                                               @Query("year") String year);
+
+
+    @GET("getWrongword/getWrongwordMonth.php/{email}")
+    Call<List<DataWrongword>> getDataWrongwordMonth(@Query("email") String email,
+                                               @Query("month") String month,
+                                               @Query("year") String year);
 
 
     @FormUrlEncoded
-    @POST("backupAnyword.php")
+    @POST("backup/backupAnyword.php")
     Call<DataAnyword> DataAnyword(
                     @Field("email") String email,
                     @Field("anyword") String anyword,
@@ -92,7 +120,7 @@ public interface ApiInterface {
                     @Field("second") String second);
 
     @FormUrlEncoded
-    @POST("backupContinuemax.php")
+    @POST("backup/backupContinuemax.php")
     Call<DataContinuemax> DataContinuemax(
             @Field("email") String email,
             @Field("continuemax") String continuemax,
@@ -107,7 +135,7 @@ public interface ApiInterface {
 
 
     @FormUrlEncoded
-    @POST("backupEngword.php")
+    @POST("backup/backupEngword.php")
     Call<DataEngword> DataEngword(
             @Field("email") String email,
             @Field("engword") String engword,
@@ -121,7 +149,7 @@ public interface ApiInterface {
             @Field("second") String second);
 
     @FormUrlEncoded
-    @POST("backupRawdata.php")
+    @POST("backup/backupRawdata.php")
     Call<DataRawdata> DataRawdata(
             @Field("email") String email,
             @Field("rawdata") String rawdata,
@@ -136,7 +164,7 @@ public interface ApiInterface {
 
 
     @FormUrlEncoded
-    @POST("backupScheduler.php")
+    @POST("backup/backupScheduler.php")
     Call<DataScheduler> DataScheduler(
             @Field("email") String email,
             @Field("scheduler") String scheduler,
@@ -152,7 +180,7 @@ public interface ApiInterface {
 
 
     @FormUrlEncoded
-    @POST("backupSetting.php")
+    @POST("backup/backupSetting.php")
     Call<DataSetting> DataSetting(
             @Field("email") String email,
             @Field("setting") String setting,
@@ -162,7 +190,7 @@ public interface ApiInterface {
 
 
     @FormUrlEncoded
-    @POST("backupTime.php")
+    @POST("backup/backupTime.php")
     Call<DataTime> DataTime(
             @Field("email") String email,
             @Field("time") String time,
@@ -177,7 +205,7 @@ public interface ApiInterface {
 
 
     @FormUrlEncoded
-    @POST("backupWrongword.php")
+    @POST("backup/backupWrongword.php")
     Call<DataWrongword> DataWrongword(
             @Field("email") String email,
             @Field("wrongword") String wrongword,

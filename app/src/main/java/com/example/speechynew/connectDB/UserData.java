@@ -18,44 +18,13 @@ public class UserData {
     private String email;
 
     @Expose
-    @SerializedName("totalwordday1")
-    private String totalwordday1;
+    @SerializedName("name")
+    private String name;
 
     @Expose
-    @SerializedName("totaltimeday1")
-    private String totaltimeday1;
+    @SerializedName("devicename")
+    private String devicename;
 
-    @Expose
-    @SerializedName("wordminday1")
-    private String wordminday1;
-
-    @Expose
-    @SerializedName("continuemaxday1")
-    private String continuemaxday1;
-
-    @Expose
-    @SerializedName("wordtop1")
-    private String wordtop1;
-
-    @Expose
-    @SerializedName("wordtop2")
-    private String wordtop2;
-
-    @Expose
-    @SerializedName("wordtop3")
-    private String wordtop3;
-
-    @Expose
-    @SerializedName("Day1")
-    private String Day1;
-
-    @Expose
-    @SerializedName("Month1")
-    private String Month1;
-
-    @Expose
-    @SerializedName("Year1")
-    private String Year1;
 
     @Expose
     @SerializedName("success")
@@ -67,6 +36,7 @@ public class UserData {
 
 
     public UserData(){}
+
     public String getUSER_ID() {
         return USER_ID;
     }
@@ -83,84 +53,20 @@ public class UserData {
         this.email = email;
     }
 
-    public String getTotalwordday1() {
-        return totalwordday1;
+    public String getName() {
+        return name;
     }
 
-    public void setTotalwordday1(String totalwordday1) {
-        this.totalwordday1 = totalwordday1;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTotaltimeday1() {
-        return totaltimeday1;
+    public String getDevicename() {
+        return devicename;
     }
 
-    public void setTotaltimeday1(String totaltimeday1) {
-        this.totaltimeday1 = totaltimeday1;
-    }
-
-    public String getWordminday1() {
-        return wordminday1;
-    }
-
-    public void setWordminday1(String wordminday1) {
-        this.wordminday1 = wordminday1;
-    }
-
-    public String getContinuemaxday1() {
-        return continuemaxday1;
-    }
-
-    public void setContinuemaxday1(String continuemaxday1) {
-        this.continuemaxday1 = continuemaxday1;
-    }
-
-    public String getWordtop1() {
-        return wordtop1;
-    }
-
-    public void setWordtop1(String wordtop1) {
-        this.wordtop1 = wordtop1;
-    }
-
-    public String getWordtop2() {
-        return wordtop2;
-    }
-
-    public void setWordtop2(String wordtop2) {
-        this.wordtop2 = wordtop2;
-    }
-
-    public String getWordtop3() {
-        return wordtop3;
-    }
-
-    public void setWordtop3(String wordtop3) {
-        this.wordtop3 = wordtop3;
-    }
-
-    public String getDay1() {
-        return Day1;
-    }
-
-    public void setDay1(String day1) {
-        Day1 = day1;
-    }
-
-    public String getMonth1() {
-        return Month1;
-    }
-
-    public void setMonth1(String month1) {
-        Month1 = month1;
-    }
-
-    public String getYear1() {
-        return Year1;
-    }
-
-    public void setYear1(String year1) {
-        Year1 = year1;
+    public void setDevicename(String devicename) {
+        this.devicename = devicename;
     }
 
     public boolean isSuccess() {
