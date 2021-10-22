@@ -3,14 +3,16 @@ package com.example.speechynew.connectDB;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class DataWrongword {
     @Expose
     @SerializedName("WRONGWORD_ID")
     private int WRONGWORD_ID;
 
     @Expose
-    @SerializedName("email")
-    private String email;
+    @SerializedName("USER_ID")
+    private String USER_ID;
 
     @Expose
     @SerializedName("wrongword")
@@ -57,6 +59,18 @@ public class DataWrongword {
     @SerializedName("messages")
     private String messages;
 
+    @Expose
+    @SerializedName("device")
+    private String device;
+
+    @Expose
+    @SerializedName("datawordMonth")
+    private List<String> datawordMonth;
+
+    @Expose
+    @SerializedName("dataword")
+    private List<String> dataword;
+
     public DataWrongword(){}
 
     public int getWRONGWORD_ID() {
@@ -67,12 +81,12 @@ public class DataWrongword {
         this.WRONGWORD_ID = WRONGWORD_ID;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUSER_ID() {
+        return USER_ID;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUSER_ID(String USER_ID) {
+        this.USER_ID = USER_ID;
     }
 
     public String getWrongword() {
@@ -161,5 +175,29 @@ public class DataWrongword {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public List<String> getDatawordMonth() {
+        return datawordMonth;
+    }
+
+    public void setDatawordMonth(List<String> datawordMonth) {
+        this.datawordMonth = datawordMonth;
+    }
+
+    public List<String> getDataword() {
+        return dataword;
+    }
+
+    public void setDataword(List<String> dataword) {
+        this.dataword = dataword;
     }
 }

@@ -3,14 +3,16 @@ package com.example.speechynew.connectDB;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class DataAnyword {
     @Expose
     @SerializedName("ANYWORD_ID")
     private int ANYWORD_ID;
 
     @Expose
-    @SerializedName("email")
-    private String email;
+    @SerializedName("USER_ID")
+    private String USER_ID;
 
     @Expose
     @SerializedName("anyword")
@@ -58,6 +60,32 @@ public class DataAnyword {
     @SerializedName("messages")
     private String messages;
 
+    @Expose
+    @SerializedName("sumword")
+    private String sumword;
+
+    @Expose
+    @SerializedName("response1")
+    private String response1;
+
+    @Expose
+    @SerializedName("dataword")
+    private List<String>dataword;
+
+    @Expose
+    @SerializedName("datahour")
+    private List<String>datahour;
+
+    @Expose
+    @SerializedName("datadate")
+    private List<String>datadate;
+
+    @Expose
+    @SerializedName("device")
+    private String device;
+
+
+
     public DataAnyword(){}
 
     public int getANYWORD_ID() {
@@ -68,12 +96,12 @@ public class DataAnyword {
         this.ANYWORD_ID = ANYWORD_ID;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUSER_ID() {
+        return USER_ID;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUSER_ID(String USER_ID) {
+        this.USER_ID = USER_ID;
     }
 
     public String getAnyword() {
@@ -162,5 +190,53 @@ public class DataAnyword {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public String getSumword() {
+        return sumword;
+    }
+
+    public void setSumword(String sumword) {
+        this.sumword = sumword;
+    }
+
+    public String getResponse1() {
+        return response1;
+    }
+
+    public void setResponse1(String response1) {
+        this.response1 = response1;
+    }
+
+    public List<String> getDataword() {
+        return dataword;
+    }
+
+    public void setDataword(List<String> dataword) {
+        this.dataword = dataword;
+    }
+
+    public List<String> getDatahour() {
+        return datahour;
+    }
+
+    public void setDatahour(List<String> datahour) {
+        this.datahour = datahour;
+    }
+
+    public List<String> getDatadate() {
+        return datadate;
+    }
+
+    public void setDatadate(List<String> datadate) {
+        this.datadate = datadate;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
     }
 }

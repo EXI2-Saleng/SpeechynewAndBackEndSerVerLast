@@ -9,8 +9,8 @@ public class DataContinuemax {
     private int CONTINUEMAX_ID;
 
     @Expose
-    @SerializedName("email")
-    private String email;
+    @SerializedName("USER_ID")
+    private String USER_ID;
 
     @Expose
     @SerializedName("continuemax")
@@ -58,6 +58,18 @@ public class DataContinuemax {
     @SerializedName("messages")
     private String messages;
 
+    @Expose
+    @SerializedName("ConMax")
+    private int ConMax;
+
+    @Expose
+    @SerializedName("ConMaxMonth")
+    private int ConMaxMonth;
+
+    @Expose
+    @SerializedName("device")
+    private String device;
+
     public DataContinuemax(){}
 
     public int getCONTINUEMAX_ID() {
@@ -68,12 +80,12 @@ public class DataContinuemax {
         this.CONTINUEMAX_ID = CONTINUEMAX_ID;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUSER_ID() {
+        return USER_ID;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUSER_ID(String USER_ID) {
+        this.USER_ID = USER_ID;
     }
 
     public String getContinuemax() {
@@ -162,5 +174,29 @@ public class DataContinuemax {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public int getConMax() {
+        return ConMax;
+    }
+
+    public void setConMax(int conMax) {
+        ConMax = conMax;
+    }
+
+    public int getConMaxMonth() {
+        return ConMaxMonth;
+    }
+
+    public void setConMaxMonth(int conMaxMonth) {
+        ConMaxMonth = conMaxMonth;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
     }
 }

@@ -14,8 +14,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -34,8 +34,6 @@ import com.example.speechynew.connectDB.Engword;
 import com.example.speechynew.connectDB.Timeprocess;
 import com.example.speechynew.connectDB.Word;
 import com.example.speechynew.connectDB.Wrongword;
-import com.example.speechynew.ui.notifications.NotificationsFragment;
-import com.example.speechynew.ui.notifications.NotificationsReport;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -50,16 +48,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.sql.Array;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -73,7 +65,7 @@ import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 import static com.example.speechynew.connectDB.Wrongwordinterface.TABLE_NAME11;
 import static java.lang.StrictMath.abs;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragmentAll extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
     BarChart mChart;
@@ -84,9 +76,6 @@ public class DashboardFragment extends Fragment {
 
     Button changetype;
     boolean resulttype;
-
-    Button viewAll;
-    boolean resultview;
 
     Engword eng;
     Word anothereng;
@@ -150,7 +139,6 @@ public class DashboardFragment extends Fragment {
         changetype = root.findViewById(R.id.changetype);
         nextpage = root.findViewById(R.id.nextpage);
         wait5week = root.findViewById(R.id.wait5week);
-        viewAll = root.findViewById(R.id.testViewAll);
 
         eng = new Engword(root.getContext());
         anothereng = new Word(root.getContext());
@@ -159,7 +147,6 @@ public class DashboardFragment extends Fragment {
         wrongword = new Wrongword(root.getContext());
 
         resulttype = false;
-        resultview = false;
 
         c = Calendar.getInstance();
         df = new SimpleDateFormat("d-MM-yyyy");
@@ -185,7 +172,11 @@ public class DashboardFragment extends Fragment {
         nextpageonclick();
         viewallweek();
         wordmin();
-
+        getdataViewtotalAnyword();
+        getdataViewtotaltimeweek();
+        getdataViewcontinuemax();
+        getdataViewwrongword();
+        getdataViewtotalEngword();
 
         //minus week -
         graphminus.setOnClickListener(new View.OnClickListener() {
@@ -215,31 +206,15 @@ public class DashboardFragment extends Fragment {
                 for (int i = 0; i < 3; i++) {
                     wordtrans[i] = "";
                 }
-                if (resultview == true){
-                    Log.e("TEST_SHOW_WEEK", "TEST CHAEK :" + "-----");
-                    nextpageonclick();
-                    /*
-                    getdataViewtotalAnyword();
-                    getdataViewtotaltimeweek();
-                    getdataViewcontinuemax();
-                    getdataViewwrongword();
-                    getdataViewtotalEngword();
 
-                     */
-                    ////////////////////////
-                    getdataViewtotalAnyword_New();
-                    getdataViewtotaltimeweek_New();
-                    getdataViewcontinuemax_New();
-                    getdataViewwrongword_New();
-                    getdataViewtotalEngword_New();
-
-                }
-                else {
-                    nextpageonclick();
-                    viewallweek();
-                    wordmin();
-                }
-
+                nextpageonclick();
+                viewallweek();
+                wordmin();
+                getdataViewtotalAnyword();
+                getdataViewtotaltimeweek();
+                getdataViewcontinuemax();
+                getdataViewwrongword();
+                getdataViewtotalEngword();
 
             }
         });
@@ -286,30 +261,15 @@ public class DashboardFragment extends Fragment {
                     }
 
                     wait5week.setText(" Please wait 5 second");
-                    if (resultview == true){
-                        Log.e("TEST_SHOW_WEEK", "TEST CHAEK :" + "+++++");
-                        nextpageonclick();
-                    /*
+
+                    nextpageonclick();
+                    viewallweek();
+                    wordmin();
                     getdataViewtotalAnyword();
                     getdataViewtotaltimeweek();
                     getdataViewcontinuemax();
                     getdataViewwrongword();
                     getdataViewtotalEngword();
-
-                     */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotaltimeweek_New();
-                        getdataViewcontinuemax_New();
-                        getdataViewwrongword_New();
-                        getdataViewtotalEngword_New();
-                    }
-                    else {
-                        nextpageonclick();
-                        viewallweek();
-                        wordmin();
-                    }
-
                 }
 
             }
@@ -321,98 +281,20 @@ public class DashboardFragment extends Fragment {
             public void onClick(View v) {
 
                 //change from word count to Percentage
-                if(resultview == false) {
-                    if (resulttype == false) {
-                        resulttype = true;
-
-                        viewallweek();
-
-                        changetype.setText("Word count");
-
-                        //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
-
-                        viewallweek();
-
-                        changetype.setText("Percentage");
-                    }
-                }
-                else {
-                    if (resulttype == false) {
-                        resulttype = true;
-                        /*
-                        getdataViewtotalAnyword();
-                        getdataViewtotalEngword();
-
-                         */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotalEngword_New();
-                        changetype.setText("Word count");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
-                        //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
-                        /*
-                        getdataViewtotalAnyword();
-                        getdataViewtotalEngword();
-
-                         */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotalEngword_New();
-                        changetype.setText("Percentage");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Percentage");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-                    }
-                }
-
-            }
-        });
-
-        viewAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(resultview==false){
-                    resultview=true;
-                    wait5week.setText(" Please wait 5 second");
-                    nextpageonclick();
-                    /*
+                if(resulttype==false){
+                    resulttype=true;
                     getdataViewtotalAnyword();
-                    getdataViewtotaltimeweek();
-                    getdataViewcontinuemax();
-                    getdataViewwrongword();
+                    viewallweek();
                     getdataViewtotalEngword();
-
-                     */
-
-                    ////////////////////////
-                    getdataViewtotalAnyword_New();
-                    getdataViewtotaltimeweek_New();
-                    getdataViewcontinuemax_New();
-                    getdataViewwrongword_New();
-                    getdataViewtotalEngword_New();
-
-                    viewAll.setText("device only");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                    changetype.setText("Word count");
 
                     //change from Percentage to word count
-                }else if(resultview==true){
-                    resultview=false;
-                    wait5week.setText(" Please wait 5 second");
-                    nextpageonclick();
+                }else if(resulttype==true){
+                    resulttype=false;
+                    getdataViewtotalAnyword();
                     viewallweek();
-                    wordmin();
-                    viewAll.setText("VIEW ALL");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
+                    getdataViewtotalEngword();
+                    changetype.setText("Percentage");
                 }
 
             }
@@ -583,7 +465,7 @@ public class DashboardFragment extends Fragment {
             barDataSet.setStackLabels(new String[]{"Number of English words", "Number of non-English words"});
             BarData data = new BarData(barDataSet);
 
-            data.setValueFormatter(new DashboardFragment.MyValueFormatter());
+            data.setValueFormatter(new DashboardFragmentAll.MyValueFormatter());
             mChart.setData(data);//ระยะห่างระหว่างข้อมูล
             mChart.getLegend().setXEntrySpace(12);//ระยะห่างระหว่างรูปกับคำอธิบาย
             mChart.getLegend().setFormToTextSpace(3);
@@ -770,7 +652,7 @@ public class DashboardFragment extends Fragment {
             barDataSet.setStackLabels(new String[]{"Percentage of English words", "Percentage of non-English words"});
             BarData data = new BarData(barDataSet);
 
-            data.setValueFormatter(new DashboardFragment.MyValueFormatter());
+            data.setValueFormatter(new DashboardFragmentAll.MyValueFormatter());
             mChart.setData(data);//ระยะห่างระหว่างข้อมูล
             mChart.getLegend().setXEntrySpace(12);//ระยะห่างระหว่างรูปกับคำอธิบาย
             mChart.getLegend().setFormToTextSpace(3);
@@ -1003,7 +885,7 @@ public class DashboardFragment extends Fragment {
 
 
 
-                            indextotalmeeng = totaltime1;
+                            //indextotalmeeng = totaltime1;
 
                         }
 
@@ -1053,21 +935,21 @@ public class DashboardFragment extends Fragment {
             if (numberOfMinutes < 10) {
                 if (numberOfSeconds < 10) {
                     String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : 0" + numberOfSeconds;
-                    showtotaltime = text;
+                    //showtotaltime = text;
                     Log.d("TEST_SHOW_WEEK_TIME","Showtotaltime :"+text);
                 } else {
                     String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : " + numberOfSeconds;
-                    showtotaltime = text;
+                    //showtotaltime = text;
                     Log.d("TEST_SHOW_WEEK_TIME","Showtotaltime :"+text);
                 }
             }else{
                 String text = numberOfDays + " Day  \n0" + numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
-                showtotaltime = text;
+                //showtotaltime = text;
                 Log.d("TEST_SHOW_WEEK_TIME","Showtotaltime :"+text);
             }
         }else{
             String text = numberOfDays+" Day  \n"+numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
-            showtotaltime = text;
+            //showtotaltime = text;
             Log.d("TEST_SHOW_WEEK_TIME","Showtotaltime :"+text);
         }
 
@@ -1202,7 +1084,7 @@ public class DashboardFragment extends Fragment {
                         indextotalall = indextotalanyword + indextotalengword;
                         String TTWD1 = indextotalengword + " / " + indextotalall;
 
-                        showtotalword =TTWD1;
+                        //showtotalword =TTWD1;
                         Log.d("TEST_SHOW_WEEK_TTW", "indextotalengword :" + indextotalengword);
                         Log.d("TEST_SHOW_WEEK_TTW", "indextotaleAnyword :" + indextotalanyword);
                         Log.d("TEST_SHOW_WEEK_TTW", "showtotalwordweek :" + TTWD1);
@@ -1269,7 +1151,7 @@ public class DashboardFragment extends Fragment {
            // Log.d("TEST_SHOW_WEEK_ARRAY", "ARRAY_THAI :" + buffer2.toString());
             //Log.d("TEST_SHOW_WEEK_ARRAY", "indextimeingraph :" + buffer5.toString());
 
-
+        /*
         BarDataSet barDataSet = new BarDataSet(dataVals, " ");
         barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
         barDataSet.setStackLabels(new String[]{"Number of English words", "Number of non-English words"});
@@ -1299,7 +1181,7 @@ public class DashboardFragment extends Fragment {
         mChart.setPinchZoom(true);
         mChart.fitScreen();
 
-
+         */
 
 
         }
@@ -1338,7 +1220,7 @@ public class DashboardFragment extends Fragment {
            // Log.d("TEST_SHOW_WEEK_ARRAY", "ARRAY_THAI :" + buffer4.toString());
 
 
-
+            /*
             BarDataSet barDataSet = new BarDataSet(dataVals, " ");
             barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
             barDataSet.setStackLabels(new String[]{"Percentage of English words", "Percentage of non-English words"});
@@ -1367,7 +1249,7 @@ public class DashboardFragment extends Fragment {
             mChart.setPinchZoom(true);
             mChart.fitScreen();
 
-
+             */
 
         }
 
@@ -1408,7 +1290,7 @@ public class DashboardFragment extends Fragment {
                                 }
 
                             }
-                            continuemaxweek = indexcontinuemaxweek1;
+                            //continuemaxweek = indexcontinuemaxweek1;
                             Log.d("TEST_SHOW_WEEK_ConMax","continuemaxweek: "+indexcontinuemaxweek1);
                         }
 
@@ -1518,13 +1400,13 @@ public class DashboardFragment extends Fragment {
         String[] wordtop1 = new String[3];
         String[] wordtrans1 = new String[3];
         for (int i = 0; i < 3; i++) {
-            wordtop[i] = "";
-            //wordtop1[i] = "";
+            //wordtop[i] = "";
+            wordtop1[i] = "";
         }
 
         for (int i = 0; i < 3; i++) {
-            wordtrans[i] = "";
-           // wordtrans1[i] = "";
+           // wordtrans[i] = "";
+            wordtrans1[i] = "";
         }
 
         //wordcount
@@ -1576,11 +1458,11 @@ public class DashboardFragment extends Fragment {
         if(word.length<3){
             for(int i=0;i<word.length;++i){
                 if (!word[i].equals("")) {
-                    wordtop[i] = word[i];
-                   // wordtop1[i] = word[i];
+                   // wordtop[i] = word[i];
+                    wordtop1[i] = word[i];
 
-                    final Translator t = new Translator(wordtop[i],getContext());
-                   // final Translator t = new Translator(wordtop1[i],getContext());
+                   // final Translator t = new Translator(wordtop[i],getContext());
+                    final Translator t = new Translator(wordtop1[i],getContext());
                     t.trans();
 
                     Handler handler = new Handler();
@@ -1588,8 +1470,8 @@ public class DashboardFragment extends Fragment {
                     Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
-                            wordtrans[finalI] = t.trans();
-                           // wordtrans1[finalI] = t.trans();
+                           // wordtrans[finalI] = t.trans();
+                            wordtrans1[finalI] = t.trans();
 
                         }
                     };handler.postDelayed(runnable,4000);
@@ -1598,11 +1480,11 @@ public class DashboardFragment extends Fragment {
         }else{
             for (int i = 0; i < 3; i++) {
                 if (!word[i].equals("")) {
-                    wordtop[i] = word[i];
-                   // wordtop1[i] = word[i];
+                   // wordtop[i] = word[i];
+                    wordtop1[i] = word[i];
 
-                    final Translator t = new Translator(wordtop[i],getContext());
-                   // final Translator t = new Translator(wordtop1[i],getContext());
+                   // final Translator t = new Translator(wordtop[i],getContext());
+                    final Translator t = new Translator(wordtop1[i],getContext());
                     t.trans();
 
                     Handler handler = new Handler();
@@ -1610,8 +1492,8 @@ public class DashboardFragment extends Fragment {
                     Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
-                            wordtrans[finalI] = t.trans();
-                           // wordtrans1[finalI] = t.trans();
+                           // wordtrans[finalI] = t.trans();
+                            wordtrans1[finalI] = t.trans();
                         }
                     };handler.postDelayed(runnable,4000);
                 }
@@ -1628,380 +1510,10 @@ public class DashboardFragment extends Fragment {
             total2 =1;
         }
         double wordminweek1 = total1/total2;
-        wordminweek = wordminweek1;
+       // wordminweek = wordminweek1;
         Log.d("TEST_SHOW_WEEK_WMWeek","wordminweek: "+wordminweek1);
+        Log.d("TEST_SHOW_WEEK_WMWeek","wordminweek: "+"TEST");
 
-    }
-
-    /////////////////////// NEW GET DATA /////////////////////
-
-    public void getdataViewtotalAnyword_New(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String email = firebaseUser.getEmail();
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-        String USER_ID = acct.getId();
-
-        indextotalanyword = 0 ;
-        int[] totalanother = {0};
-        int[] arraytestnone2 = new int[24];
-        Log.d("TEST_SHOW_WEEK",dateweek);
-        Log.d("TEST_SHOW_WEEK","Email :"+email);
-        for (int index = 0; index < 7; index++) {
-            String S_day = Integer.valueOf(getFormattedDay).toString();
-            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
-            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
-
-
-            ArrayList<BarEntry> dataVals = new ArrayList<>();
-            Call<DataAnyword>listcallgetdata = apiInterface.getDataAnywordnew(USER_ID,S_day,S_month,S_year);
-            int finalIndex = index;
-            listcallgetdata.enqueue(new Callback<DataAnyword>() {
-                @Override
-                public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
-                    if (response.isSuccessful()) {
-                        DataAnyword listdata = response.body();
-                        if (listdata.getDataword().size()==0) {
-                            indextotalanyword += 0;
-                            arraytestnone2[finalIndex] = 0;
-                        } else {
-                            for (int i = 0; i < listdata.getDataword().size(); i++) {
-                                indextotalanyword += Integer.parseInt(listdata.getDataword().get(i));
-
-                                arraytestnone2[finalIndex]+=Integer.parseInt(listdata.getDataword().get(i));
-
-                            }
-
-                        }  StringBuffer buffer = new StringBuffer();
-                        arraytestnone1=arraytestnone2;
-                        for(int i = 0;i<7 ;i++){
-                            buffer.append(":"+arraytestnone2[i]+" ");
-                            //  Log.d("TEST_SHOW_WEEK_ARRAY_AW","ARRAY_ANYWORD :"+buffer.toString());
-
-                            // Log.d("TEST_SHOW_WEEK_TTW", "indextotalanyword :" + indextotalanyword);
-
-                        }
-
-
-                    }
-                    else{
-                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DataAnyword> call, Throwable t) {
-                    Log.d("TEST_GET_LISTDATA",t+"");
-                }
-            });
-            c.add(Calendar.DATE, -1);
-            formattedDate = df.format(c.getTime());
-            getFormattedDay = c.getTime().getDate();
-            getFormattedMonth = c.getTime().getMonth();
-            getFormattedYear = c.getTime().getYear();
-
-
-        }
-
-        c.add(Calendar.DATE, +7);
-        formattedDate = df.format(c.getTime());
-        getFormattedDay = c.getTime().getDate();
-        getFormattedMonth = c.getTime().getMonth();
-        getFormattedYear = c.getTime().getYear();
-
-    }
-
-    public void getdataViewtotaltimeweek_New(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String email = firebaseUser.getEmail();
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-        String USER_ID = acct.getId();
-        totaltime1=0;
-
-        for (int index = 0; index < 7; index++) {
-            String S_day = Integer.valueOf(getFormattedDay).toString();
-            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
-            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
-
-
-            Call<DataTime> listcallgetdata = apiInterface.getDataTimenew(USER_ID, S_day, S_month, S_year);
-            int finalIndex = index;
-            listcallgetdata.enqueue(new Callback<DataTime>() {
-                @Override
-                public void onResponse(Call<DataTime> call, Response<DataTime> response) {
-                    if (response.isSuccessful()) {
-                        DataTime listdata = response.body();
-
-
-                        if (listdata.getSumtime() == 0) {
-                            totaltime1 += 0;
-                        } else {
-                            totaltime1+=listdata.getSumtime();
-                            //Log.e("TEST_SHOW_WEEK_TIME", "totaltime1 :" + totaltime1);
-                            indextotalmeeng = totaltime1;
-
-                        }
-
-                    } else {
-                        Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DataTime> call, Throwable t) {
-                    Log.d("TEST_GET_LISTDATA", t + "");
-                }
-            });
-            c.add(Calendar.DATE, -1);
-            formattedDate = df.format(c.getTime());
-            getFormattedDay = c.getTime().getDate();
-            getFormattedMonth = c.getTime().getMonth();
-            getFormattedYear = c.getTime().getYear();
-
-
-        }
-
-        c.add(Calendar.DATE, +7);
-        formattedDate = df.format(c.getTime());
-        getFormattedDay = c.getTime().getDate();
-        getFormattedMonth = c.getTime().getMonth();
-        getFormattedYear = c.getTime().getYear();
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                Showtotaltime(totaltime1);
-                indextotalmeeng = totaltime1;
-            }
-        };handler.postDelayed(runnable,200);
-
-    }
-    public void getdataViewcontinuemax_New(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-        String USER_ID = acct.getId();
-        String email = firebaseUser.getEmail();
-
-        indexcontinuemaxweek1=0;
-
-
-        for (int index = 0; index < 7; index++) {
-            String S_day = Integer.valueOf(getFormattedDay).toString();
-            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
-            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
-
-
-            Call<DataContinuemax>listcallgetdata = apiInterface.getDataContinuemaxnew(USER_ID,S_day,S_month,S_year);
-            listcallgetdata.enqueue(new Callback<DataContinuemax>() {
-                @Override
-                public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
-                    if (response.isSuccessful()) {
-                        DataContinuemax listdata = response.body();
-                        int checking = 0;
-
-                        if (listdata !=null){
-
-                                if(indexcontinuemaxweek1 < listdata.getConMax()){
-                                    indexcontinuemaxweek1 = listdata.getConMax();
-                                }
-                            continuemaxweek = indexcontinuemaxweek1;
-                            Log.d("TEST_SHOW_WEEK_ConMax","continuemaxweek: "+indexcontinuemaxweek1);
-                        }
-
-
-                    }
-                    else{
-                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DataContinuemax> call, Throwable t) {
-                    Log.d("TEST_GET_LISTDATA",t+"");
-                }
-            });
-            c.add(Calendar.DATE, -1);
-            formattedDate = df.format(c.getTime());
-            getFormattedDay = c.getTime().getDate();
-            getFormattedMonth = c.getTime().getMonth();
-            getFormattedYear = c.getTime().getYear();
-
-
-        }
-
-        c.add(Calendar.DATE, +7);
-        formattedDate = df.format(c.getTime());
-        getFormattedDay = c.getTime().getDate();
-        getFormattedMonth = c.getTime().getMonth();
-        getFormattedYear = c.getTime().getYear();
-
-    }
-
-    public void getdataViewtotalEngword_New(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String email = firebaseUser.getEmail();
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-        String USER_ID = acct.getId();
-
-        indextotalengword = 0;
-        int[] totalall = {0};
-        int[] totaleng = {0};
-        int[] totalanother = {0};
-        int[] arraytesteng2 = new int[24];
-        double[] arrayall1 = new double[24];
-        String timeingraph[] = new String[7];
-        for (int index = 0; index < 7; index++) {
-            String S_day = Integer.valueOf(getFormattedDay).toString();
-            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
-            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
-
-
-            ArrayList<BarEntry> dataVals = new ArrayList<>();
-            Call<DataEngword> listcallgetdataEngword = apiInterface.getDataEngwordnew(USER_ID, S_day, S_month, S_year);
-            int finalIndex = index;
-            listcallgetdataEngword.enqueue(new Callback<DataEngword>() {
-                @Override
-                public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
-
-                    if (response.isSuccessful()) {
-                        DataEngword listdata = response.body();
-                        if (listdata.getDataword().size() == 0) {
-                            indextotalengword += 0;
-                            arraytesteng2[finalIndex]=0;
-                        }
-                        else {
-
-                            for (int i = 0; i < listdata.getDataword().size(); i++) {
-                                indextotalengword += Integer.parseInt(listdata.getDataword().get(i));
-                                arraytesteng2[finalIndex]+=Integer.parseInt(listdata.getDataword().get(i));
-                            }
-
-                        }
-
-                        arraytesteng1=arraytesteng2;
-                        totalall[0] = totaleng[0] + totalanother[0];
-                        int TTWE = totaleng[0];
-                        String TTWD = totaleng[0] + " / " + totalall[0];
-
-                        indextotalall = indextotalanyword + indextotalengword;
-                        String TTWD1 = indextotalengword + " / " + indextotalall;
-
-                        showtotalword =TTWD1;
-                        Log.d("TEST_SHOW_WEEK_TTW", "indextotalengword :" + indextotalengword);
-                        Log.d("TEST_SHOW_WEEK_TTW", "indextotaleAnyword :" + indextotalanyword);
-                        Log.d("TEST_SHOW_WEEK_TTW", "showtotalwordweek :" + TTWD1);
-
-
-                    } else {
-                        Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DataEngword> call, Throwable t) {
-                    Log.d("TEST_GET_LISTDATA", t + "");
-                }
-            });
-            indextimeingraph[abs(finalIndex-6)] = getFormattedDay+"/"+(getFormattedMonth+1);
-            c.add(Calendar.DATE, -1);
-            formattedDate = df.format(c.getTime());
-            getFormattedDay = c.getTime().getDate();
-            getFormattedMonth = c.getTime().getMonth();
-            getFormattedYear = c.getTime().getYear();
-
-
-        }
-
-        c.add(Calendar.DATE, +7);
-        formattedDate = df.format(c.getTime());
-        getFormattedDay = c.getTime().getDate();
-        getFormattedMonth = c.getTime().getMonth();
-        getFormattedYear = c.getTime().getYear();
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                getdatashowgraph(arraytesteng1,arraytestnone1);
-                getdataViewwordminweek(indextotalengword);
-            }
-        };handler.postDelayed(runnable,300);
-    }
-
-    public void getdataViewwrongword_New(){
-        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        firebaseAuth = FirebaseAuth.getInstance();
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
-        String USER_ID = acct.getId();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        String email = firebaseUser.getEmail();
-        WordWrong =new ArrayList<>();
-
-
-
-        for (int index = 0; index < 7; index++) {
-            String S_day = Integer.valueOf(getFormattedDay).toString();
-            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
-            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
-
-
-            Call<DataWrongword>listcallgetdata = apiInterface.getDataWrongwordnew(USER_ID,S_day,S_month,S_year);
-            listcallgetdata.enqueue(new Callback<DataWrongword>() {
-                @Override
-                public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
-                    if (response.isSuccessful()) {
-                        DataWrongword listdata = response.body();
-                        if (listdata.getDataword().size()==0){
-                            return;
-                        }
-                        else {
-                            for (int i = 0; i < listdata.getDataword().size(); i++) {
-                                WordWrong.add(listdata.getDataword().get(i));
-                            }
-                        }
-                    }
-                    else{
-                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DataWrongword> call, Throwable t) {
-                    Log.d("TEST_GET_LISTDATA",t+"");
-                }
-            });
-            c.add(Calendar.DATE, -1);
-            formattedDate = df.format(c.getTime());
-            getFormattedDay = c.getTime().getDate();
-            getFormattedMonth = c.getTime().getMonth();
-            getFormattedYear = c.getTime().getYear();
-
-
-        }
-
-        c.add(Calendar.DATE, +7);
-        formattedDate = df.format(c.getTime());
-        getFormattedDay = c.getTime().getDate();
-        getFormattedMonth = c.getTime().getMonth();
-        getFormattedYear = c.getTime().getYear();
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                //top3
-                if(WordWrong.size()==0){
-                    //nothing
-                }else{
-                    getWrongWordTop3(WordWrong);
-                }
-            }
-        };handler.postDelayed(runnable,150);
 
     }
 

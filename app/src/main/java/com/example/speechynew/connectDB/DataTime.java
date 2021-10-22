@@ -9,8 +9,8 @@ public class DataTime {
     private int TIME_ID;
 
     @Expose
-    @SerializedName("email")
-    private String email;
+    @SerializedName("USER_ID")
+    private String USER_ID;
 
     @Expose
     @SerializedName("time")
@@ -57,6 +57,18 @@ public class DataTime {
     @SerializedName("messages")
     private String messages;
 
+    @Expose
+    @SerializedName("sumtime")
+    private int sumtime ;
+
+    @Expose
+    @SerializedName("sumtimeMonth")
+    private int sumtimeMonth;
+
+    @Expose
+    @SerializedName("device")
+    private String device;
+
     public DataTime(){}
 
     public int getTIME_ID() {
@@ -67,12 +79,12 @@ public class DataTime {
         this.TIME_ID = TIME_ID;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUSER_ID() {
+        return USER_ID;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUSER_ID(String USER_ID) {
+        this.USER_ID = USER_ID;
     }
 
     public String getTime() {
@@ -161,5 +173,29 @@ public class DataTime {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public int getSumtime() {
+        return sumtime;
+    }
+
+    public void setSumtime(int sumtime) {
+        this.sumtime = sumtime;
+    }
+
+    public int getSumtimeMonth() {
+        return sumtimeMonth;
+    }
+
+    public void setSumtimeMonth(int sumtimeMonth) {
+        this.sumtimeMonth = sumtimeMonth;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
     }
 }

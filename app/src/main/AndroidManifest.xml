@@ -17,7 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".ui.ViewReportAllActivity"></activity>
+        <activity
+            android:name=".PopActivity"
+            android:theme="@style/AppTheme.PopMe" />
         <activity android:name=".Viewschedulerreport" />
         <activity android:name=".Viewscheduler" />
         <activity android:name=".ViewsearchreportActivity" />
@@ -36,14 +39,12 @@
         <activity android:name=".ViewsearchActivity" />
         <activity android:name=".SearchActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".GoogleLogin"/>
+        <activity android:name=".GoogleLogin" />
         <activity
             android:name=".ViewReportActivity"
             android:label="@string/title_activity_view_report" />
         <activity android:name=".SettinglangActivity" />
-
         <activity android:name=".SplashscreenActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -45,6 +45,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -82,6 +84,10 @@ public class NotificationsFragment extends Fragment {
 
     Button changetype;
     boolean resulttype;
+
+    Button viewAll;
+    boolean resultview;
+
     TextView wait5month;
 
     Calendar c;
@@ -119,6 +125,7 @@ public class NotificationsFragment extends Fragment {
     int[] arraytesteng1 = new int[32];
     int[] arraytestnone1 = new int[32];
 
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         notificationsViewModel = ViewModelProviders.of(this).get(NotificationsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
@@ -132,8 +139,10 @@ public class NotificationsFragment extends Fragment {
         graphplus = root.findViewById(R.id.graphplus);
         changetype = root.findViewById(R.id.changetype);
         wait5month = root.findViewById(R.id.wait5month);
+        viewAll = root.findViewById(R.id.testViewAll);
 
         resulttype = false;
+        resultview = false;
 
         eng = new Engword(root.getContext());
         anothereng = new Word(root.getContext());
@@ -165,11 +174,6 @@ public class NotificationsFragment extends Fragment {
         continuemaxmonth();
         wrongwordtop3();
 
-        getdataViewAnywordMonth();
-        getdataViewtotaltimemonth();
-        getdataViewcontinuemaxMonth();
-        getdataViewWrongwordMonth();
-        getdataViewtotalMonth();
 
         //minus month -
         graphminus.setOnClickListener(new View.OnClickListener() {
@@ -184,20 +188,37 @@ public class NotificationsFragment extends Fragment {
 
                 wait5month.setText(" Please wait 5 second");
 
-                nextpageonclick();
-                checkmonth();
-                viewdatamonth();
-                viewtotalmonth();
-                viewtotaltimemonth();
-                wordminmonth();
-                continuemaxmonth();
-                wrongwordtop3();
+                if (resultview == true){
+                    Log.e("TEST_SHOW_MONTH", "TEST CHAEK :" + "-----");
+                    nextpageonclick();
+                    /*
+                    getdataViewAnywordMonth();
+                    getdataViewtotaltimemonth();
+                    getdataViewcontinuemaxMonth();
+                    getdataViewWrongwordMonth();
+                    getdataViewtotalMonth();
+                     */
 
-                getdataViewAnywordMonth();
-                getdataViewtotaltimemonth();
-                getdataViewcontinuemaxMonth();
-                getdataViewWrongwordMonth();
-                getdataViewtotalMonth();
+                    ///////////
+                    getdataViewAnywordMonthNew();
+                    getdataViewtotaltimemonthNew();
+                    getdataViewcontinuemaxMonthNew();
+                    getdataViewWrongwordMonthNew();
+                    getdataViewtotalMonthNew();
+
+                }
+                else {
+                    nextpageonclick();
+                    checkmonth();
+                    viewdatamonth();
+                    viewtotalmonth();
+                    viewtotaltimemonth();
+                    wordminmonth();
+                    continuemaxmonth();
+                    wrongwordtop3();
+                }
+
+
 
             }
         });
@@ -226,20 +247,34 @@ public class NotificationsFragment extends Fragment {
 
                     wait5month.setText(" Please wait 5 second");
 
-                    nextpageonclick();
-                    checkmonth();
-                    viewdatamonth();
-                    viewtotalmonth();
-                    viewtotaltimemonth();
-                    wordminmonth();
-                    continuemaxmonth();
-                    wrongwordtop3();
-
+                    if (resultview == true){
+                        Log.e("TEST_SHOW_MONTH", "TEST CHAEK :" + "+++++");
+                        nextpageonclick();
+                    /*
                     getdataViewAnywordMonth();
                     getdataViewtotaltimemonth();
                     getdataViewcontinuemaxMonth();
                     getdataViewWrongwordMonth();
                     getdataViewtotalMonth();
+                     */
+                        ///////////
+                        getdataViewAnywordMonthNew();
+                        getdataViewtotaltimemonthNew();
+                        getdataViewcontinuemaxMonthNew();
+                        getdataViewWrongwordMonthNew();
+                        getdataViewtotalMonthNew();
+                    }
+                    else {
+                        nextpageonclick();
+                        checkmonth();
+                        viewdatamonth();
+                        viewtotalmonth();
+                        viewtotaltimemonth();
+                        wordminmonth();
+                        continuemaxmonth();
+                        wrongwordtop3();
+                    }
+
                 }
             }
         });
@@ -249,18 +284,100 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //change from word count to Percentage
-                if (resulttype == false) {
-                    resulttype = true;
-                    viewdatamonth();
+                if (resultview == false) {
+                    if (resulttype == false) {
+                        resulttype = true;
+                        viewdatamonth();
+
+                        changetype.setText("Word count");
+
+                        //change from Percentage to word count
+                    } else if (resulttype == true) {
+                        resulttype = false;
+                        viewdatamonth();
+
+                        changetype.setText("Percentage");
+                    }
+                }
+                else {
+                    if (resulttype == false) {
+                        resulttype = true;
+                        /*
+                        getdataViewAnywordMonth();
+                        getdataViewtotalMonth();
+
+                         */
+                        /////////////////////
+                        getdataViewAnywordMonthNew();
+                        getdataViewtotalMonthNew();
+                        changetype.setText("Word count");
+                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+                        //change from Percentage to word count
+                    } else if (resulttype == true) {
+                        resulttype = false;
+                        /*
+                        getdataViewAnywordMonth();
+                        getdataViewtotalMonth();
+
+                         */
+                        ////////////////////
+                        getdataViewAnywordMonthNew();
+                        getdataViewtotalMonthNew();
+                        changetype.setText("Percentage");
+                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Percentage");
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                    }
+                }
+            }
+        });
+
+        viewAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(resultview==false){
+                    resultview=true;
+                    wait5month.setText(" Please wait 5 second");
+                    nextpageonclick();
+
+                    /*
+                    getdataViewAnywordMonth();
+                    getdataViewtotaltimemonth();
+                    getdataViewcontinuemaxMonth();
+                    getdataViewWrongwordMonth();
                     getdataViewtotalMonth();
-                    changetype.setText("Word count");
+                     */
+                    ///////////
+
+                    getdataViewAnywordMonthNew();
+                    getdataViewtotaltimemonthNew();
+                    getdataViewcontinuemaxMonthNew();
+                    getdataViewWrongwordMonthNew();
+                    getdataViewtotalMonthNew();
+
+                    viewAll.setText("device only");
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
                     //change from Percentage to word count
-                } else if (resulttype == true) {
-                    resulttype = false;
+                }else if(resultview==true){
+                    resultview=false;
+                    wait5month.setText(" Please wait 5 second");
+                    nextpageonclick();
+                    checkmonth();
                     viewdatamonth();
-                    getdataViewtotalMonth();
-                    changetype.setText("Percentage");
+                    viewtotalmonth();
+                    viewtotaltimemonth();
+                    wordminmonth();
+                    continuemaxmonth();
+                    wrongwordtop3();
+                    viewAll.setText("VIEW ALL");
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
                 }
             }
         });
@@ -827,8 +944,10 @@ public class NotificationsFragment extends Fragment {
         String S_month =Integer.valueOf(getFormattedMonth).toString();
         String S_year =Integer.valueOf(getFormattedYear).toString();
         String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
         indextotalmeeng=0;
-        Call<List<DataTime>>listcallgetdata = apiInterface.getDataTimeMonth(email,S_month,S_year);
+        Call<List<DataTime>>listcallgetdata = apiInterface.getDataTimeMonth(USER_ID,S_month,S_year);
         listcallgetdata.enqueue(new Callback<List<DataTime>>() {
             @Override
             public void onResponse(Call<List<DataTime>> call, Response<List<DataTime>> response) {
@@ -857,22 +976,22 @@ public class NotificationsFragment extends Fragment {
                         if (numberOfMinutes < 10) {
                             if (numberOfSeconds < 10) {
                                 String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : 0" + numberOfSeconds;
-                                //showtotaltimemonth = text;
+                                showtotaltimemonth = text;
                                 Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
 
                             } else {
                                 String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : " + numberOfSeconds;
-                                //showtotaltimemonth = text;
+                                showtotaltimemonth = text;
                                 Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
                             }
                         }else{
                             String text = numberOfDays + " Day  \n0" + numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
-                            //showtotaltimemonth = text;
+                            showtotaltimemonth = text;
                             Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
                         }
                     }else{
                         String text = numberOfDays+" Day  \n"+numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds ;
-                        //showtotaltimemonth = text;
+                        showtotaltimemonth = text;
                         Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
                     }
 
@@ -897,6 +1016,8 @@ public class NotificationsFragment extends Fragment {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String S_month =Integer.valueOf(getFormattedMonth).toString();
         String S_year =Integer.valueOf(getFormattedYear).toString();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
         String email = firebaseUser.getEmail();
         Log.d("TEST_SHOW_MONTH",datemonth);
         Log.d("TEST_SHOW_MONTH","Email :"+email);
@@ -906,7 +1027,7 @@ public class NotificationsFragment extends Fragment {
         int[] totalanother = {0};
         int[] arraytestnone2 = new int[32];
         ArrayList<BarEntry> dataVals = new ArrayList<>();
-        Call<List<DataAnyword>>listcallgetdata = apiInterface.getDataAnywordMonth(email,S_month,S_year);
+        Call<List<DataAnyword>>listcallgetdata = apiInterface.getDataAnywordMonth(USER_ID,S_month,S_year);
         listcallgetdata.enqueue(new Callback<List<DataAnyword>>() {
             @Override
             public void onResponse(Call<List<DataAnyword>> call, Response<List<DataAnyword>> response) {
@@ -962,6 +1083,8 @@ public class NotificationsFragment extends Fragment {
         String S_month = Integer.valueOf(getFormattedMonth).toString();
         String S_year = Integer.valueOf(getFormattedYear).toString();
         String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
 
         int[] totalall = {0};
         int[] totaleng = {0};
@@ -974,7 +1097,7 @@ public class NotificationsFragment extends Fragment {
         }
 
         ArrayList<BarEntry> dataVals = new ArrayList<>();
-        Call<List<DataEngword>> listcallgetdataEngword = apiInterface.getDataEngwordMonth(email, S_month, S_year);
+        Call<List<DataEngword>> listcallgetdataEngword = apiInterface.getDataEngwordMonth(USER_ID, S_month, S_year);
         listcallgetdataEngword.enqueue(new Callback<List<DataEngword>>() {
             @Override
             public void onResponse(Call<List<DataEngword>> call, Response<List<DataEngword>> response) {
@@ -1022,7 +1145,7 @@ public class NotificationsFragment extends Fragment {
                 getdatashowgraphMonth(arraytesteng1,arraytestnone1);
                 getdataViewwordminmonth(indextotalengword);
 
-                //showtotalwordmonth =TTWD1;
+                showtotalwordmonth =TTWD1;
                 Log.d("TEST_SHOW_MONTH_ENGWORD", "indextotalengwordMonth :" + indextotalengword);
                 Log.d("TEST_SHOW_MONTH_WNGWORD", "indextotalallMonth :" + TTWD1);
             }
@@ -1049,10 +1172,10 @@ public class NotificationsFragment extends Fragment {
                 buffer2.append(":"+valuesno+" ");
 
             }
-            Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_ENG :" + buffer1.toString());
-            Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_THAI :" + buffer2.toString());
+           // Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_ENG :" + buffer1.toString());
+           // Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_THAI :" + buffer2.toString());
 
-            /*
+
             BarDataSet barDataSet = new BarDataSet(dataVals, " ");
             barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
             barDataSet.setStackLabels(new String[]{"Number of English words", "Number of non-English words"});
@@ -1087,7 +1210,7 @@ public class NotificationsFragment extends Fragment {
             mChart.setPinchZoom(true);
             mChart.fitScreen();
 
-             */
+
 
 
         }
@@ -1124,10 +1247,10 @@ public class NotificationsFragment extends Fragment {
                 buffer4.append(":" + valuesno + " ");
 
             }
-            Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_ENG :" + buffer3.toString());
-            Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_THAI :" + buffer4.toString());
+           // Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_ENG :" + buffer3.toString());
+           // Log.d("TEST_SHOW_MONTH_ARRAY", "ARRAY_THAI :" + buffer4.toString());
 
-            /*
+
             BarDataSet barDataSet = new BarDataSet(dataVals, " ");
             barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
             barDataSet.setStackLabels(new String[]{"Percentage of English words", "Percentage of non-English words"});
@@ -1161,7 +1284,7 @@ public class NotificationsFragment extends Fragment {
             mChart.setPinchZoom(true);
             mChart.fitScreen();
 
-             */
+
 
 
 
@@ -1177,8 +1300,10 @@ public class NotificationsFragment extends Fragment {
         String S_month =Integer.valueOf(getFormattedMonth).toString();
         String S_year =Integer.valueOf(getFormattedYear).toString();
         String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
 
-        Call<List<DataContinuemax>>listcallgetdata = apiInterface.getDataContinuemaxMonth(email,S_month,S_year);
+        Call<List<DataContinuemax>>listcallgetdata = apiInterface.getDataContinuemaxMonth(USER_ID,S_month,S_year);
         listcallgetdata.enqueue(new Callback<List<DataContinuemax>>() {
             @Override
             public void onResponse(Call<List<DataContinuemax>> call, Response<List<DataContinuemax>> response) {
@@ -1196,8 +1321,11 @@ public class NotificationsFragment extends Fragment {
                             }
 
                         }
-                        //continuemaxmonth = indexcontinuemaxmonth1;
+                        continuemaxmonth = indexcontinuemaxmonth1;
                         Log.d("TEST_SHOW_MONTH_ConMax","continuemaxmonth: "+indexcontinuemaxmonth1);
+                    }
+                    else {
+                        continuemaxmonth = 0;
                     }
 
 
@@ -1222,8 +1350,10 @@ public class NotificationsFragment extends Fragment {
         String S_month =Integer.valueOf(getFormattedMonth).toString();
         String S_year =Integer.valueOf(getFormattedYear).toString();
         String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
 
-        Call<List<DataWrongword>>listcallgetdata = apiInterface.getDataWrongwordMonth(email,S_month,S_year);
+        Call<List<DataWrongword>>listcallgetdata = apiInterface.getDataWrongwordMonth(USER_ID,S_month,S_year);
         listcallgetdata.enqueue(new Callback<List<DataWrongword>>() {
             @Override
             public void onResponse(Call<List<DataWrongword>> call, Response<List<DataWrongword>> response) {
@@ -1233,6 +1363,9 @@ public class NotificationsFragment extends Fragment {
                     String[] wordtop1 = new String[3];
                     String[] wordtrans1 = new String[3];
                     if (listdata.size()==0){
+                        wordtop[0]= "";
+                        wordtop[1]= "";
+                        wordtop[2]= "";
                         return;
                     }
                     else {
@@ -1289,12 +1422,12 @@ public class NotificationsFragment extends Fragment {
                         if (word.length < 3) {
                             for (int i = 0; i < word.length; ++i) {
                                 if (!word[i].equals("")) {
-                                    //wordtop[i] = word[i];
-                                    wordtop1[i] = word[i];
+                                    wordtop[i] = word[i];
+                                    //wordtop1[i] = word[i];
                                     System.out.println(word[i] + "   " + count[i]);
 
-                                   // final Translator t = new Translator(wordtop[i], getContext());
-                                    final Translator t = new Translator(wordtop1[i], getContext());
+                                    final Translator t = new Translator(wordtop[i], getContext());
+                                   // final Translator t = new Translator(wordtop1[i], getContext());
                                     t.trans();
 
                                     Handler handler = new Handler();
@@ -1302,8 +1435,8 @@ public class NotificationsFragment extends Fragment {
                                     Runnable runnable = new Runnable() {
                                         @Override
                                         public void run() {
-                                           //wordtrans[finalI] = t.trans();
-                                            wordtrans1[finalI] = t.trans();
+                                           wordtrans[finalI] = t.trans();
+                                           // wordtrans1[finalI] = t.trans();
 
                                         }
                                     };
@@ -1313,11 +1446,11 @@ public class NotificationsFragment extends Fragment {
                         } else {
                             for (int i = 0; i < 3; i++) {
                                 if (!word[i].equals("")) {
-                                   // wordtop[i] = word[i];
-                                    wordtop1[i] = word[i];
+                                    wordtop[i] = word[i];
+                                   // wordtop1[i] = word[i];
                                     System.out.println(word[i] + "   " + count[i]);
-                                   // final Translator t = new Translator(wordtop[i], getContext());
-                                    final Translator t = new Translator(wordtop1[i], getContext());
+                                    final Translator t = new Translator(wordtop[i], getContext());
+                                   // final Translator t = new Translator(wordtop1[i], getContext());
                                     t.trans();
 
                                     Handler handler = new Handler();
@@ -1325,15 +1458,15 @@ public class NotificationsFragment extends Fragment {
                                     Runnable runnable = new Runnable() {
                                         @Override
                                         public void run() {
-                                          //  wordtrans[finalI] = t.trans();
-                                            wordtrans1[finalI] = t.trans();
+                                            wordtrans[finalI] = t.trans();
+                                          //  wordtrans1[finalI] = t.trans();
                                         }
                                     };
                                     handler.postDelayed(runnable, 4000);
                                 }
                             }
                         }
-                        ///wordtop[0]="TEST1";wordtop[1]="TEST2";wordtop[2]="TEST3";
+
                         Log.e("TEST_SHOW_MONTH_WW", "WTop1 MySQL:" +wordtop1[0]+" WTop2 :" +wordtop1[1]+" WTop3 :" +wordtop1[2]);
                         Log.d("TEST_SHOW_MONTH_WW", "WTop1 SQLite:" +wordtop[0]+" WTop2 :" +wordtop[1]+" WTop3 :" +wordtop[2]);
 
@@ -1363,11 +1496,424 @@ public class NotificationsFragment extends Fragment {
             total2 =1;
         }
         double wordminmonth1 = total1/total2;
-        //wordminmonth = wordminmonth1;
+        wordminmonth = wordminmonth1;
         Log.d("TEST_SHOW_MONTH_WORDMIN","wordminmonth: "+wordminmonth1);
+        //Log.e("TEST_SHOW_MONTH_WORDMIN","totaltimeeng: "+totaltimeeng);
 
 
     }
+
+
+    ////////////// NEW GET DATA ///////
+    public void getdataViewAnywordMonthNew(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String email = firebaseUser.getEmail();
+        Log.d("TEST_SHOW_MONTH",datemonth);
+        Log.d("TEST_SHOW_MONTH","Email :"+email);
+
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytestnone2 = new int[32];
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
+        Call<DataAnyword>listcallgetdata = apiInterface.getDataAnywordMonthnew(USER_ID,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataAnyword>() {
+            @Override
+            public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
+                if (response.isSuccessful()) {
+                    DataAnyword listdata = response.body();
+                    if (listdata == null) {
+                        totalanother[0] = 0;
+                    } else {
+                        for (int i = 0; i < listdata.getDataword().size(); i++) {
+                            totalanother[0] += Integer.parseInt(listdata.getDataword().get(i));
+
+                            arraytestnone2[Integer.parseInt(listdata.getDatadate().get(i))]+=Integer.parseInt(listdata.getDataword().get(i));
+
+                        }
+                        StringBuffer buffer1 = new StringBuffer();
+                        for(int i = 0;i<32 ;i++){
+                            buffer1.append(":"+arraytestnone2[i]+" ");
+                        }
+
+                    }
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataAnyword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                indextotalanyword = totalanother[0];
+                arraytestnone1=arraytestnone2;
+                Log.d("TEST_SHOW_MONTH_ANYWORD", "ANYCOUNT :" + indextotalanyword);
+
+            }
+        };handler.postDelayed(runnable,100);
+
+    }
+    public void getdataViewtotaltimemonthNew(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        indextotalmeeng=0;
+        Call<DataTime>listcallgetdata = apiInterface.getDataTimeMonthnew(USER_ID,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataTime>() {
+            @Override
+            public void onResponse(Call<DataTime> call, Response<DataTime> response) {
+                if (response.isSuccessful()) {
+                    DataTime listdata = response.body();
+                    int totaltime1 = 0;
+
+                    if (listdata == null){
+                        totaltime1 = 0;
+                    }
+                    else {
+
+                        totaltime1 =listdata.getSumtimeMonth();
+                        indextotalmeeng =totaltime1;
+
+                        Log.d("TEST_SHOW_MONTH_TIME","(totaltime1) totaltimeeng: "+totaltime1);
+                    }
+
+                    int numberOfDays = totaltime1 / 86400;
+                    int numberOfHours = (totaltime1 % 86400) / 3600;
+                    int numberOfMinutes = ((totaltime1 % 86400) % 3600) / 60;
+                    int numberOfSeconds = ((totaltime1 % 86400) % 3600) % 60;
+
+
+                    if(numberOfHours<10) {
+                        if (numberOfMinutes < 10) {
+                            if (numberOfSeconds < 10) {
+                                String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : 0" + numberOfSeconds;
+                                showtotaltimemonth = text;
+                                Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+
+                            } else {
+                                String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : " + numberOfSeconds;
+                                showtotaltimemonth = text;
+                                Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+                            }
+                        }else{
+                            String text = numberOfDays + " Day  \n0" + numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
+                            showtotaltimemonth = text;
+                            Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+                        }
+                    }else{
+                        String text = numberOfDays+" Day  \n"+numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds ;
+                        showtotaltimemonth = text;
+                        Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataTime> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+    public void getdataViewtotalMonthNew() {
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth).toString();
+        String S_year = Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytesteng2 = new int[32];
+        double[] arrayall1 = new double[32];
+        indextotalengword=0;
+        for(int i = 0;i<32 ;i++){
+            arraytesteng1[i]=0;
+        }
+
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
+        Call<DataEngword> listcallgetdataEngword = apiInterface.getDataEngwordMonthnew(USER_ID, S_month, S_year);
+        listcallgetdataEngword.enqueue(new Callback<DataEngword>() {
+            @Override
+            public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
+
+                if (response.isSuccessful()) {
+                    DataEngword listdata = response.body();
+                    if (listdata == null) {
+
+                        totaleng[0] = 0;
+                    } else {
+
+                        for (int i = 0; i < listdata.getDataword().size(); i++) {
+                            totaleng[0] += Integer.parseInt(listdata.getDataword().get(i));
+                            arraytesteng2[Integer.parseInt(listdata.getDatadate().get(i))]+=Integer.parseInt(listdata.getDataword().get(i));
+                        }
+
+                        arraytesteng1=arraytesteng2;
+                        indextotalengword = totaleng[0];
+                    }
+
+
+                    indextotalall = indextotalanyword + indextotalengword;
+                    String TTWD1 = indextotalengword + " / " + indextotalall;
+
+
+                    //getdataViewwordminday(indextotalengword);
+
+                } else {
+                    Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataEngword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA", t + "");
+            }
+        });
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                indextotalall = indextotalanyword + indextotalengword;
+                String TTWD1 = indextotalengword + " / " + indextotalall;
+                getdatashowgraphMonth(arraytesteng1,arraytestnone1);
+                getdataViewwordminmonth(indextotalengword);
+
+                showtotalwordmonth =TTWD1;
+                Log.d("TEST_SHOW_MONTH_ENGWORD", "indextotalengwordMonth :" + indextotalengword);
+                Log.d("TEST_SHOW_MONTH_WNGWORD", "indextotalallMonth :" + TTWD1);
+            }
+        };handler.postDelayed(runnable,700);
+
+
+    }
+
+    public void getdataViewcontinuemaxMonthNew(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        Call<DataContinuemax>listcallgetdata = apiInterface.getDataContinuemaxMonthnew(USER_ID,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataContinuemax>() {
+            @Override
+            public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
+                if (response.isSuccessful()) {
+                    DataContinuemax listdata = response.body();
+                    int checking = 0;
+
+                    if (listdata !=null){
+
+                        indexcontinuemaxmonth1=listdata.getConMaxMonth();
+                        continuemaxmonth = indexcontinuemaxmonth1;
+                        Log.d("TEST_SHOW_MONTH_ConMax","continuemaxmonth: "+indexcontinuemaxmonth1);
+                    }
+                    else {
+                        continuemaxmonth = 0;
+                    }
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataContinuemax> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+    public void getdataViewWrongwordMonthNew(){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        Call<DataWrongword>listcallgetdata = apiInterface.getDataWrongwordMonthnew(USER_ID,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataWrongword>() {
+            @Override
+            public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
+                if (response.isSuccessful()) {
+                    DataWrongword listdata = response.body();
+                    ArrayList<String> wordfromdb = new ArrayList<>();
+                    String[] wordtop1 = new String[3];
+                    String[] wordtrans1 = new String[3];
+                    wordtop[0]= "";
+                    wordtop[1]= "";
+                    wordtop[2]= "";
+                    if (listdata == null){
+                        wordtop[0]= "";
+                        wordtop[1]= "";
+                        wordtop[2]= "";
+                        wordfromdb.clear();
+                        return;
+                    }
+                    else {
+                        for(int i= 0;i<listdata.getDatawordMonth().size();i++){
+                            wordfromdb.add(listdata.getDatawordMonth().get(i));
+                        }
+
+                        //wordcount
+                        int N = wordfromdb.size();
+                        String word[] = new String[N];
+                        int count[] = new int[N];
+
+                        for (int i = 0; i < word.length; i++) {
+                            word[i] = "";
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            String text = wordfromdb.get(i);
+                            for (int j = 0; j < word.length; j++) {
+                                if (word[j].equals("")) {
+                                    word[j] = text;
+                                    count[j] = 1;
+                                    break;
+                                } else if (word[j].equals(text)) {
+                                    count[j]++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            for (int j = i + 1; j < N - 1; j++) {
+                                if (count[i] < count[j] && !word[i].equals("") && !word[j].equals("")) {
+                                    int temp = count[i];
+                                    count[i] = count[j];
+                                    count[j] = temp;
+
+                                    String tempText = word[i];
+                                    word[i] = word[j];
+                                    word[j] = tempText;
+                                }
+                            }
+                        }
+
+
+                        for (int i = 0; i < word.length; i++) {
+                            if (!word[i].equals("")) {
+                                //System.out.println(word[i] + " " + count[i]);
+                            }
+                        }
+
+                        System.out.println("Top3");
+
+                        if (word.length < 3) {
+                            for (int i = 0; i < word.length; ++i) {
+                                if (!word[i].equals("")) {
+                                    wordtop[i] = word[i];
+                                    //wordtop1[i] = word[i];
+                                    System.out.println(word[i] + "   " + count[i]);
+
+                                    final Translator t = new Translator(wordtop[i], getContext());
+                                    // final Translator t = new Translator(wordtop1[i], getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            wordtrans[finalI] = t.trans();
+                                            // wordtrans1[finalI] = t.trans();
+
+                                        }
+                                    };
+                                    handler.postDelayed(runnable, 4000);
+                                }
+                            }
+                        } else {
+                            for (int i = 0; i < 3; i++) {
+                                if (!word[i].equals("")) {
+                                    wordtop[i] = word[i];
+                                    // wordtop1[i] = word[i];
+                                    System.out.println(word[i] + "   " + count[i]);
+                                    final Translator t = new Translator(wordtop[i], getContext());
+                                    // final Translator t = new Translator(wordtop1[i], getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            wordtrans[finalI] = t.trans();
+                                            //  wordtrans1[finalI] = t.trans();
+                                        }
+                                    };
+                                    handler.postDelayed(runnable, 4000);
+                                }
+                            }
+                        }
+
+                        Log.e("TEST_SHOW_MONTH_WW", "WTop1 MySQL:" +wordtop1[0]+" WTop2 :" +wordtop1[1]+" WTop3 :" +wordtop1[2]);
+                        Log.d("TEST_SHOW_MONTH_WW", "WTop1 SQLite:" +wordtop[0]+" WTop2 :" +wordtop[1]+" WTop3 :" +wordtop[2]);
+
+                    }
+
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataWrongword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
 
 
 

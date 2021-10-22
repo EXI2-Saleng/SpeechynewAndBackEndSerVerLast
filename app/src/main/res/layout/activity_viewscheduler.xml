@@ -108,6 +108,17 @@
                 android:text="view report"
                 android:textColor="#FFFFFF"
                 android:textSize="11dp" />
+            <Button
+                android:id="@+id/testViewAll"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="33dp"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/buttonshape6"
+                android:fontFamily="@font/kanitlight"
+                android:text="ViewAll"
+                android:textColor="#FFFFFF"
+                android:textSize="11dp" />
 
 
         </LinearLayout>

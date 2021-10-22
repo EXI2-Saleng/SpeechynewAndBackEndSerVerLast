@@ -3,14 +3,16 @@ package com.example.speechynew.connectDB;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class DataEngword {
     @Expose
     @SerializedName("ENGWORD_ID")
     private int ENGWORD_ID;
 
     @Expose
-    @SerializedName("email")
-    private String email;
+    @SerializedName("USER_ID")
+    private String USER_ID;
 
     @Expose
     @SerializedName("engword")
@@ -58,6 +60,22 @@ public class DataEngword {
     @SerializedName("messages")
     private String messages;
 
+    @Expose
+    @SerializedName("dataword")
+    private List<String> dataword;
+
+    @Expose
+    @SerializedName("datahour")
+    private List<String>datahour;
+
+    @Expose
+    @SerializedName("datadate")
+    private List<String>datadate;
+
+    @Expose
+    @SerializedName("device")
+    private String device;
+
     public DataEngword(){}
 
     public int getENGWORD_ID() {
@@ -68,12 +86,12 @@ public class DataEngword {
         this.ENGWORD_ID = ENGWORD_ID;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUSER_ID() {
+        return USER_ID;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUSER_ID(String USER_ID) {
+        this.USER_ID = USER_ID;
     }
 
     public String getEngword() {
@@ -162,5 +180,37 @@ public class DataEngword {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public List<String> getDataword() {
+        return dataword;
+    }
+
+    public void setDataword(List<String> dataword) {
+        this.dataword = dataword;
+    }
+
+    public List<String> getDatahour() {
+        return datahour;
+    }
+
+    public void setDatahour(List<String> datahour) {
+        this.datahour = datahour;
+    }
+
+    public List<String> getDatadate() {
+        return datadate;
+    }
+
+    public void setDatadate(List<String> datadate) {
+        this.datadate = datadate;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
     }
 }

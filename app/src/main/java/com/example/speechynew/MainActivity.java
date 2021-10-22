@@ -8,9 +8,13 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
@@ -23,23 +27,51 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.speechynew.Rertofit.ApiClient;
 import com.example.speechynew.Rertofit.ApiInterface;
 import com.example.speechynew.agent.Myservice;
+import com.example.speechynew.connectDB.Continuemax;
+import com.example.speechynew.connectDB.DataAnyword;
+import com.example.speechynew.connectDB.DataAnyword2;
+import com.example.speechynew.connectDB.DataContinuemax;
+import com.example.speechynew.connectDB.DataContinuemax2;
+import com.example.speechynew.connectDB.DataEngword;
+import com.example.speechynew.connectDB.DataEngword2;
+import com.example.speechynew.connectDB.DataRawdata;
+import com.example.speechynew.connectDB.DataTime;
+import com.example.speechynew.connectDB.DataTime2;
+import com.example.speechynew.connectDB.DataUsernew;
+import com.example.speechynew.connectDB.DataWrongword;
+import com.example.speechynew.connectDB.DataWrongword2;
 import com.example.speechynew.connectDB.Engword;
+import com.example.speechynew.connectDB.Rawdata;
 import com.example.speechynew.connectDB.Setting;
 import com.example.speechynew.connectDB.Status;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.example.speechynew.connectDB.Engwordinterface.TABLE_NAME2;
 import static com.example.speechynew.connectDB.Settinginterface.TABLE_NAME0;
 import static com.example.speechynew.connectDB.Statusinterface.TABLE_NAME7;
 
 import com.bumptech.glide.Glide;
+import com.example.speechynew.connectDB.Timeprocess;
 import com.example.speechynew.connectDB.UserData;
+import com.example.speechynew.connectDB.Word;
+import com.example.speechynew.connectDB.Wrongword;
+import com.example.speechynew.ui.ViewReportAllActivity;
+import com.example.speechynew.ui.home.HomeFragment;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +80,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.example.speechynew.databinding.ActivityMainBinding;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
     Button settime;
     Button checkactivity;
     Button addschedule;
+    Button checkativityAll;
+    Button BTSAVE;
+
 
     Switch switchactive;
 
@@ -78,10 +114,21 @@ public class MainActivity extends AppCompatActivity {
     Setting setting;
     Status statusdb;
     Engword eng;
+    Word anothereng;
+    Timeprocess time;
+    Continuemax continuemax;
+    Wrongword wrongword;
+    Rawdata rawdata;
 
     AnimationDrawable speak;
     ApiInterface apiInterface;
-    GoogleSignInClient googleSignInClient;
+
+    GoogleSignInClient mGoogleSignInClient;
+    String message;
+    String device = Build.BOOTLOADER;
+
+    int indextotalanyword = 0;
+    int indextotalmeeng =0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,18 +142,26 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        firebaseAuth = FirebaseAuth.getInstance();
+        mGoogleSignInClient = GoogleSignIn.getClient(this,GoogleSignInOptions.DEFAULT_SIGN_IN);
+
         checkUser();
-        googleSignInClient = GoogleSignIn.getClient(MainActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
+
         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                googleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            firebaseAuth.signOut();
-                            checkUser();
+                            switch (view.getId()) {
+                                // ...
+                                case R.id.logoutBtn:
+                                    signOut();
+                                    cdt.cancel();
+                                    break;
+                                // ...
+                            }
+
                         }
                     }
                 });
@@ -116,51 +171,112 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkUser() {
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        //startThread();
+        message="";
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
         apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-        if(firebaseUser == null){
+        if(acct == null){
             startActivity(new Intent(this,GoogleLogin.class));
             finish();
         }else{
 
+            String name = acct.getDisplayName();
+            String personGivenName = acct.getGivenName();
+            String personFamilyName = acct.getFamilyName();
+            String email = acct.getEmail();
+            String personId = acct.getId();
+            Uri personPhoto = acct.getPhotoUrl();
 
-            String email = firebaseUser.getEmail();
-            String name = firebaseUser.getDisplayName();
-            String devicename = android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL;
-            Call<UserData> calldatauser =apiInterface.DataUser(email,name,devicename);
-            calldatauser.enqueue(new Callback<UserData>() {
+
+            //String devicename = android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL;
+            String device = Build.BOOTLOADER;
+
+            /*
+            Call<UserData> callcheckuser =apiInterface.checkusernew(personId,device);
+            callcheckuser.enqueue(new Callback<UserData>() {
                 @Override
                 public void onResponse(Call<UserData> call, Response<UserData> response) {
-                UserData datauser = response.body();
-                    if (datauser!=null){
-                        Log.d("API_DATA_DataUser","SaveSuccessful");
-                        Log.d("API_DATA_DataUser","MS:"+datauser.getMessages());
-                    }
-                    else {
+                    UserData checkuser =response.body();
+                    if (checkuser!=null){
+                        Log.d("API_DATA_DataUser","Check MS:"+checkuser.getMessages());
+                        if (checkuser.getMessages().equals("NEW_User")){
 
-                        Log.d("API_DATA_DataUser","MS:"+datauser.getMessages());
+                            startActivity(new Intent(MainActivity.this,PopActivity.class));
+                        }
+                        if (checkuser.getMessages().equals("NEW_device")){
+                            //startActivity(new Intent(MainActivity.this,SettinglangActivity.class));
+                            Intent intent = new Intent(MainActivity.this, SettinglangActivity.class);
+                            intent.putExtra("CH",99);
+                            startActivity(intent);
+                        }
                     }
+
                 }
 
                 @Override
                 public void onFailure(Call<UserData> call, Throwable t) {
-                    Log.d("API_DATA_DataUser","Savefail T "+t);
+
                 }
             });
 
-            Log.e("Show_Data_User","DisplayName: "+firebaseUser.getDisplayName());
-            Log.e("Show_Data_User","Email: "+firebaseUser.getEmail());
-            Log.e("Show_Data_User","PhoneNumber: "+firebaseUser.getPhoneNumber());
-            Log.e("Show_Data_User","ProviderId: "+firebaseUser.getProviderId());
-            Log.e("Show_Data_User","TenantId: "+firebaseUser.getTenantId());
-            Log.e("Show_Data_User","Uid: "+firebaseUser.getUid());
-            Log.e("Show_Data_User","NAMEPHONE3: "+devicename);
+             */
+            DataUsernew CheckUsernew = new DataUsernew(personId,device);
+            Call<DataUsernew>calldata =apiInterface.checkuser_new(CheckUsernew);
+            calldata.enqueue(new Callback<DataUsernew>() {
+                @Override
+                public void onResponse(Call<DataUsernew> call, Response<DataUsernew> response) {
+                    DataUsernew checkuser =response.body();
+                    if (checkuser!=null){
+                        Log.d("API_DATA_DataUser","Check User MS:"+checkuser.getUser());
+                        Log.d("API_DATA_DataUser","Check Device MS:"+checkuser.getDevice());
+                        if (checkuser.getUser().equals("New") && checkuser.getDevice().equals("New")){
+
+                            startActivity(new Intent(MainActivity.this,PopActivity.class));
+                        }
+                        if (checkuser.getUser().equals("Active") && checkuser.getDevice().equals("New")){
+
+                            Intent intent = new Intent(MainActivity.this, SettinglangActivity.class);
+                            intent.putExtra("CH",99);
+                            startActivity(intent);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataUsernew> call, Throwable t) {
+
+                }
+            });
 
 
-            //binding.PF.setImageURI(firebaseUser.getPhotoUrl());
-            Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(binding.PF);
+
+            Log.d("Show_Data_User","NAMEPHONE3: "+device);
+            Log.d("Show_Data_User","IDPhone: "+ Build.ID);
+            Log.d("Show_Data_User","BOOTLOADERPhone: "+ Build.BOOTLOADER);
+            Log.d("Show_Data_User","email: "+email);
+            Log.d("Show_Data_User","name: "+name);
+            Log.d("Show_Data_User","ID: "+personId);
+            Log.d("Show_Data_User","FamilyName: "+personFamilyName);
+            Log.d("Show_Data_User","GivenName: "+personGivenName);
+            Log.d("Show_Data_User","IdToken: "+acct.getIdToken());
+            Log.d("Show_Data_User","ServerAuthCode: "+acct.getServerAuthCode());
+
+
+
+
+
             binding.emailTv.setText("User: "+email);
         }
+    }
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        checkUser();
+
+                    }
+                });
     }
 
 
@@ -178,6 +294,10 @@ public class MainActivity extends AppCompatActivity {
         addschedule = findViewById(R.id.addschedule);
         notichallenge = findViewById(R.id.notichallenge);
         slideonoff = findViewById(R.id.slideonoff);
+        BTSAVE = findViewById(R.id.SaveBtn);
+
+
+
 
 
         voice = findViewById(R.id.voice);
@@ -187,6 +307,12 @@ public class MainActivity extends AppCompatActivity {
         setting = new Setting(this);
         statusdb = new Status(this);
         eng = new Engword(this);
+
+        anothereng = new Word(this);
+        time = new Timeprocess(this);
+        continuemax = new Continuemax(this);
+        wrongword = new Wrongword(this);
+        rawdata = new Rawdata(this);
 
         //get nativelang and challenge
         totaleng = 0;
@@ -356,7 +482,50 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         System.out.println("onResumeMain");
+
+        BTSAVE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                B_Anyword();
+                B_Engword();
+                B_Continuemax();
+                B_Time();
+                B_Wrongword();
+
+                 */
+
+
+                B_Anyword_New();
+                B_Engword_New();
+                B_Continuemax_New();
+                B_Time_New();
+                B_Wrongword_New();
+
+              //  B_Rawdata();
+                
+
+
+
+
+
+
+                //getdataAnyword_New();
+                /*
+                getdataContinuemax_New();
+                getdataViewtotaltimeday_New();
+                getdataViewtotalday_New();
+
+                 */
+
+
+
+
+            }
+        });
 
 
 
@@ -444,5 +613,418 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void B_Anyword(){
+        Cursor reDef1 = anothereng.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
 
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupAnyword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+
+                Call<DataAnyword>calldataAnyword =apiInterface.DataAnywordnew(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataAnyword.enqueue(new Callback<DataAnyword>() {
+                    @Override
+                    public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
+                        DataAnyword dataAnyword = response.body();
+                        if (dataAnyword!=null){
+                            Log.d("API_DATA_BackupAnyword","SaveSuccessful");
+                            Log.d("API_DATA_BackupAnyword","MS:"+dataAnyword.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupAnyword","MS:"+dataAnyword.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataAnyword> call, Throwable t) {
+                        Log.d("API_DATA_BackupAnyword","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+    }
+    public void B_Continuemax(){
+        Cursor reDef1 = continuemax.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_Continuemax","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                Call<DataContinuemax>calldataContinuemax =apiInterface.DataContinuemaxnew(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataContinuemax.enqueue(new Callback<DataContinuemax>() {
+                    @Override
+                    public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
+                        DataContinuemax dataContinuemax = response.body();
+                        if (dataContinuemax!=null){
+                            Log.d("API_DATA_Continuemax","SaveSuccessful");
+                            Log.d("API_DATA_Continuemax","MS:"+dataContinuemax.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_Continuemax","MS:"+dataContinuemax.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataContinuemax> call, Throwable t) {
+                        Log.d("API_DATA_Continuemax","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+
+    }
+    public void B_Engword(){
+        Cursor reDef1 = eng.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupEngword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+                Call<DataEngword>calldataEngword =apiInterface.DataEngwordnew(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataEngword.enqueue(new Callback<DataEngword>() {
+                    @Override
+                    public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
+                        DataEngword dataEngword = response.body();
+                        if (dataEngword!=null){
+                            Log.d("API_DATA_BackupEngword","SaveSuccessful");
+                            Log.d("API_DATA_BackupEngword","MS:"+dataEngword.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupEngword","MS:"+dataEngword.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataEngword> call, Throwable t) {
+                        Log.d("API_DATA_BackupEngword","Savefail T "+t);
+
+                    }
+                });
+
+
+            }
+
+        }
+    }
+
+    public void B_Rawdata(){
+
+        Cursor reDef1 = rawdata.getAlldata();
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+
+
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupEngword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                Call<DataRawdata>calldatarawdata =apiInterface.DataRawdata(USER_ID,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldatarawdata.enqueue(new Callback<DataRawdata>() {
+                    @Override
+                    public void onResponse(Call<DataRawdata> call, Response<DataRawdata> response) {
+                        DataRawdata dataRawdata = response.body();
+                        if (dataRawdata!=null){
+                            Log.d("API_DATA_BackupRawdata","SaveSuccessful");
+                            Log.d("API_DATA_BackupRawdata","MS:"+dataRawdata.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupRawdata","MS:"+dataRawdata.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataRawdata> call, Throwable t) {
+                        Log.d("API_DATA_BackupRawdata","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+    }
+
+    public void B_Time(){
+        Cursor reDef1 = time.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupTime","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                Call<DataTime>calldataTime =apiInterface.DataTimenew(USER_ID,device,reDef1.getString(2),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataTime.enqueue(new Callback<DataTime>() {
+                    @Override
+                    public void onResponse(Call<DataTime> call, Response<DataTime> response) {
+                        DataTime dataTime = response.body();
+                        if (dataTime!=null){
+                            Log.d("API_DATA_BackupTime","SaveSuccessful");
+                            Log.d("API_DATA_BackupTime","MS:"+dataTime.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupTime","MS:"+dataTime.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataTime> call, Throwable t) {
+                        Log.d("API_DATA_BackupTime","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+    }
+    public void B_Wrongword(){
+        Cursor reDef1 = wrongword.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_Wrongword","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+
+                Call<DataWrongword>calldataWrongword =apiInterface.DataWrongwordnew(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                        reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+                calldataWrongword.enqueue(new Callback<DataWrongword>() {
+                    @Override
+                    public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
+                        DataWrongword dataWrongword = response.body();
+                        if (dataWrongword!=null){
+                            Log.d("API_DATA_Wrongword","SaveSuccessful");
+                            Log.d("API_DATA_Wrongword","MS:"+dataWrongword.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_Wrongwordd","MS:"+dataWrongword.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataWrongword> call, Throwable t) {
+                        Log.d("API_DATA_Wrongword","Savefail T "+t);
+
+                    }
+                });
+            }
+
+        }
+
+
+    }
+
+    public static void startThread ()
+    {
+        Runnable runner = new Runnable ()
+        {
+            @Override
+            public void run() {
+                try
+                {
+                    Thread.sleep(900);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                Log.d("TEST_AUTORUN","TEST ");
+
+            }
+        };
+        new Thread (runner).start();
+
+    }
+    CountDownTimer cdt = new CountDownTimer(300000, 1000) {
+        int value = 0;
+        public void onTick(long millisUntilFinished) {
+            // Tick
+        }
+
+        public void onFinish() {
+              B_Anyword_New();
+                B_Engword_New();
+                B_Continuemax_New();
+                B_Time_New();
+                B_Wrongword_New();
+
+
+            Log.d("TEST_AUTORUN","TEST VALUE :"+value);
+            value++;
+            cdt.start();
+        }
+    }.start();
+
+    public void B_Anyword_New() {
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        Cursor reDef1 = anothereng.getAlldata();
+        String USER_ID = acct.getId();
+        while (reDef1.moveToNext()) {
+            DataAnyword2 DataAnyword2 = new DataAnyword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
+                    reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
+
+            Call<DataAnyword2> calldata = apiInterface.DataAnywordnew(DataAnyword2);
+
+            calldata.enqueue(new Callback<com.example.speechynew.connectDB.DataAnyword2>() {
+                @Override
+                public void onResponse(Call<com.example.speechynew.connectDB.DataAnyword2> call, Response<com.example.speechynew.connectDB.DataAnyword2> response) {
+                    Log.d("TEST_POST_JSON", "JSON POST Anyword: " + response.body());
+                }
+
+                @Override
+                public void onFailure(Call<com.example.speechynew.connectDB.DataAnyword2> call, Throwable t) {
+                    Log.d("TEST_POST_JSON", "JSON POST USER_ID: " + "Fail");
+                }
+            });
+        }
+    }
+
+    public void B_Engword_New() {
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        Cursor reDef1 = eng.getAlldata();
+        String USER_ID = acct.getId();
+        while (reDef1.moveToNext()) {
+            DataEngword2 DataEngword = new DataEngword2(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+            Call<DataEngword2> calldata = apiInterface.DataEngwordnew(DataEngword);
+
+            calldata.enqueue(new Callback<DataEngword2>() {
+                @Override
+                public void onResponse(Call<DataEngword2> call, Response<DataEngword2> response) {
+                    Log.d("TEST_POST_JSON", "JSON POST Engword: " + response.body());
+                }
+
+                @Override
+                public void onFailure(Call<DataEngword2> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void B_Continuemax_New() {
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        Cursor reDef1 = continuemax.getAlldata();
+        String USER_ID = acct.getId();
+        while (reDef1.moveToNext()) {
+            DataContinuemax2 DataContinuemax = new DataContinuemax2(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+            Call<DataContinuemax2> calldata = apiInterface.DataContinuemaxnew(DataContinuemax);
+
+            calldata.enqueue(new Callback<DataContinuemax2>() {
+                @Override
+                public void onResponse(Call<DataContinuemax2> call, Response<DataContinuemax2> response) {
+                    Log.d("TEST_POST_JSON", "JSON POST Continuemax: " + response.body());
+                }
+
+                @Override
+                public void onFailure(Call<DataContinuemax2> call, Throwable t) {
+
+                }
+            });
+        }
+
+
+    }
+
+    public void B_Time_New() {
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        Cursor reDef1 = time.getAlldata();
+        String USER_ID = acct.getId();
+        while (reDef1.moveToNext()) {
+            DataTime2 DataTime = new DataTime2(USER_ID,device,reDef1.getString(2),reDef1.getString(3),
+                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+            Call<DataTime2> calldata = apiInterface.DataTimenew(DataTime);
+
+            calldata.enqueue(new Callback<DataTime2>() {
+                @Override
+                public void onResponse(Call<DataTime2> call, Response<DataTime2> response) {
+                    Log.d("TEST_POST_JSON", "JSON POST TIME: " + response.body());
+                }
+
+                @Override
+                public void onFailure(Call<DataTime2> call, Throwable t) {
+
+                }
+            });
+        }
+
+
+    }
+
+    public void B_Wrongword_New() {
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        Cursor reDef1 = wrongword.getAlldata();
+        String USER_ID = acct.getId();
+        while (reDef1.moveToNext()) {
+            DataWrongword2 DataWrongword = new DataWrongword2(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
+                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+
+            Call<DataWrongword2> calldata = apiInterface.DataWrongwordnew(DataWrongword);
+            calldata.enqueue(new Callback<DataWrongword2>() {
+                @Override
+                public void onResponse(Call<DataWrongword2> call, Response<DataWrongword2> response) {
+                    Log.d("TEST_POST_JSON", "JSON POST Wrongword: " + response.body());
+                }
+
+                @Override
+                public void onFailure(Call<DataWrongword2> call, Throwable t) {
+
+                }
+            });
+
+
+        }
+
+
+    }
 }

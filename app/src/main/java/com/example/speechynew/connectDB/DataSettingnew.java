@@ -3,31 +3,12 @@ package com.example.speechynew.connectDB;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class DataSetting {
-    @Expose
-    @SerializedName("SETTING_ID")
-    private int SETTING_ID;
+public class DataSettingnew {
 
-    @Expose
-    @SerializedName("USER_ID")
-    private String USER_ID;
-
-    @Expose
-    @SerializedName("setting")
-    private String setting;
-
-
-    @Expose
-    @SerializedName("nativelang")
-    private String nativelang;
-
-    @Expose
-    @SerializedName("percentagenone")
-    private String percentagenone;
-
-    @Expose
-    @SerializedName("chaday")
-    private String chaday;
+     String USER_ID;
+     String nativelang;
+     String percentagenone;
+     String chaday;
 
     @Expose
     @SerializedName("success")
@@ -37,14 +18,13 @@ public class DataSetting {
     @SerializedName("messages")
     private String messages;
 
-    public DataSetting(){}
+    public DataSettingnew(){}
 
-    public int getSETTING_ID() {
-        return SETTING_ID;
-    }
-
-    public void setSETTING_ID(int SETTING_ID) {
-        this.SETTING_ID = SETTING_ID;
+    public DataSettingnew(String USER_ID, String nativelang, String percentagenone, String chaday) {
+        this.USER_ID = USER_ID;
+        this.nativelang = nativelang;
+        this.percentagenone = percentagenone;
+        this.chaday = chaday;
     }
 
     public String getUSER_ID() {
@@ -53,14 +33,6 @@ public class DataSetting {
 
     public void setUSER_ID(String USER_ID) {
         this.USER_ID = USER_ID;
-    }
-
-    public String getSetting() {
-        return setting;
-    }
-
-    public void setSetting(String setting) {
-        this.setting = setting;
     }
 
     public String getNativelang() {

@@ -14,19 +14,34 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.speechynew.Rertofit.ApiClient;
+import com.example.speechynew.Rertofit.ApiInterface;
+import com.example.speechynew.connectDB.DataSetting;
+import com.example.speechynew.connectDB.DataSettingnew;
 import com.example.speechynew.connectDB.Setting;
 import com.example.speechynew.suggestion.Suggestionchallenge;
 import com.example.speechynew.suggestion.Suggestionpercent;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.webianks.library.scroll_choice.ScrollChoice;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.example.speechynew.connectDB.Settinginterface.CHADAY;
 import static com.example.speechynew.connectDB.Settinginterface.NATIVELANG;
@@ -53,7 +68,11 @@ public class SettinglangActivity extends AppCompatActivity {
     Setting setting;
     String chaday;
     double perc;
-
+    ApiInterface apiInterface;
+    Double Per;
+    int cha;
+    String Lang;
+    int CH;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +91,13 @@ public class SettinglangActivity extends AppCompatActivity {
         suggestpercent = findViewById(R.id.suggestpercent);
         suggestchallenge = findViewById(R.id.suggestchallenge);
 
-
+        Intent i = getIntent();
+        CH = i.getIntExtra("CH",1);
+        Log.d("API_DATA_BackupSetting","CH :"+CH);
+        if (CH==99){
+            getSetting();
+            startActivity(new Intent(SettinglangActivity.this,MainActivity.class));
+        }
         //set text from database
         SQLiteDatabase db = setting.getWritableDatabase();
         Cursor res = db.rawQuery("select * from " + TABLE_NAME0, null);
@@ -88,8 +113,18 @@ public class SettinglangActivity extends AppCompatActivity {
                 perc = res.getDouble(2);
                 chaday = res.getString(3);
             }
-            edchaday.setText(chaday);
-            percent.setText(String.valueOf(perc));
+
+
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    edchaday.setText(chaday);
+                    percent.setText(String.valueOf(perc));
+
+                }
+            };handler.postDelayed(runnable,100);
+
         }
 
         secondLang = "th-TH"; //start not set
@@ -117,6 +152,7 @@ public class SettinglangActivity extends AppCompatActivity {
                 startActivity(in);
             }
         });
+
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +197,7 @@ public class SettinglangActivity extends AppCompatActivity {
                         openActivity2();
                     }
                 }
+                saveSetting();
 
             }
         });
@@ -252,4 +289,119 @@ public class SettinglangActivity extends AppCompatActivity {
             if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){ }else{ }
         }
     }
+    public  void saveSetting(){
+        Cursor reDef1 = setting.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+
+
+        if (reDef1.getCount()==0){
+            Log.d("API_DATA_BackupSetting","No data");
+        }
+        else {
+            while (reDef1.moveToNext()){
+                /*
+                Call<DataSetting> calldataSetting =apiInterface.DataSettingnew(USER_ID,reDef1.getString(1),reDef1.getString(2),reDef1.getString(3));
+
+                calldataSetting.enqueue(new Callback<DataSetting>() {
+                    @Override
+                    public void onResponse(Call<DataSetting> call, Response<DataSetting> response) {
+                        DataSetting dataSetting = response.body();
+                        if (dataSetting!=null){
+                            Log.d("API_DATA_BackupSetting","SaveSuccessful");
+                            Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getMessages());
+                        }
+                        else {
+
+                            Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<DataSetting> call, Throwable t) {
+                        Log.d("API_DATA_BackupSetting","Savefail T "+t);
+
+                    }
+                });
+
+                 */
+                DataSettingnew DataSettingnew = new DataSettingnew(USER_ID,reDef1.getString(1),reDef1.getString(2),reDef1.getString(3));
+                Call<DataSettingnew>calldata =apiInterface.DataSettingnew(DataSettingnew);
+                calldata.enqueue(new Callback<com.example.speechynew.connectDB.DataSettingnew>() {
+                    @Override
+                    public void onResponse(Call<com.example.speechynew.connectDB.DataSettingnew> call, Response<com.example.speechynew.connectDB.DataSettingnew> response) {
+                        DataSettingnew dataSetting = response.body();
+                        if (dataSetting!=null){
+                            Log.d("API_DATA_BackupSetting","SaveSuccessful");
+                            Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getMessages());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<com.example.speechynew.connectDB.DataSettingnew> call, Throwable t) {
+
+                    }
+                });
+            }
+
+        }
+    }
+
+    public void getSetting(){
+        Cursor reDef1 = setting.getAlldata();
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        Call<DataSetting>calldataSetting = apiInterface.getSetting(USER_ID);
+        calldataSetting.enqueue(new Callback<DataSetting>() {
+            @Override
+            public void onResponse(Call<DataSetting> call, Response<DataSetting> response) {
+                if (response.isSuccessful()){
+                    DataSetting dataSetting=response.body();
+                    if (dataSetting!=null){
+                        Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getMessages());
+                        Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getUSER_ID());
+                        Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getNativelang());
+                        Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getPercentagenone());
+                        Log.d("API_DATA_BackupSetting","MS:"+dataSetting.getChaday());
+
+                       Per= Double.parseDouble(dataSetting.getPercentagenone());
+                       cha =Integer.parseInt(dataSetting.getChaday());
+                       Lang =dataSetting.getNativelang();
+                        secondLang =Lang;
+                        perc = Per;
+                        chaday =String.valueOf(cha);
+                        setting.update(secondLang,perc,chaday);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataSetting> call, Throwable t) {
+
+            }
+        });
+
+    }
+  /*  CountDownTimer cdt = new CountDownTimer(100, 1000) {
+        int value = 0;
+        public void onTick(long millisUntilFinished) {
+            // Tick
+        }
+
+        public void onFinish() {
+            Log.d("TEST_AUTORUN","TEST VALUE :"+value);
+            value++;
+            getSetting();
+
+        }
+    }.start();
+
+   */
+
+
+
+
 }

@@ -8,6 +8,9 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public class UserData {
+    @Expose
+    @SerializedName("ID")
+    private String ID;
 
     @Expose
     @SerializedName("USER_ID")
@@ -22,8 +25,8 @@ public class UserData {
     private String name;
 
     @Expose
-    @SerializedName("devicename")
-    private String devicename;
+    @SerializedName("device")
+    private String device;
 
 
     @Expose
@@ -34,8 +37,22 @@ public class UserData {
     @SerializedName("messages")
     private String messages;
 
+    @Expose
+    @SerializedName("ID_USER")
+    private String ID_USER;
+
+
+
 
     public UserData(){}
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
 
     public String getUSER_ID() {
         return USER_ID;
@@ -61,12 +78,12 @@ public class UserData {
         this.name = name;
     }
 
-    public String getDevicename() {
-        return devicename;
+    public String getDevice() {
+        return device;
     }
 
-    public void setDevicename(String devicename) {
-        this.devicename = devicename;
+    public void setDevice(String device) {
+        this.device = device;
     }
 
     public boolean isSuccess() {
@@ -83,5 +100,13 @@ public class UserData {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public String getID_USER() {
+        return ID_USER;
+    }
+
+    public void setID_USER(String ID_USER) {
+        this.ID_USER = ID_USER;
     }
 }
