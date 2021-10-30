@@ -2,6 +2,7 @@ package com.example.speechynew.ui.home;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -16,6 +17,8 @@ public class HomeReport extends AppCompatActivity {
     TextView showwordminday;
     TextView showcontinuemaxday;
     TextView showwordtopday;
+    TextView showdevice;
+
 
 
     String formatedate = "";
@@ -23,6 +26,7 @@ public class HomeReport extends AppCompatActivity {
     String totaltimeday = "";
     double wordminday;
     int continuemaxday;
+    String device ="";
 
     String[] wordtop = new String[3];
     String[] wordtrans = new String[3];
@@ -40,6 +44,9 @@ public class HomeReport extends AppCompatActivity {
         showwordminday = findViewById(R.id.totalwordminday);
         showcontinuemaxday = findViewById(R.id.totalcontinueday);
         showwordtopday = findViewById(R.id.wordtopday);
+        showdevice = findViewById(R.id.Device);
+
+
 
         formatedate = getIntent().getStringExtra("test");
         totalwordday = getIntent().getStringExtra("totalwordday");
@@ -48,8 +55,9 @@ public class HomeReport extends AppCompatActivity {
         continuemaxday = getIntent().getIntExtra("continuemaxday",continuemaxday);
         wordtop = getIntent().getStringArrayExtra("wordtop");
         wordtrans = getIntent().getStringArrayExtra("wordtrans");
+         device = getIntent().getStringExtra("TV");
 
-
+        showdevice.setText(device);
         showday.setText(formatedate);
         showtotalwordday.setText(totalwordday);
         showtotaltimeday.setText(totaltimeday);

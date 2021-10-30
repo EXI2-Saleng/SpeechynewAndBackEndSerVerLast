@@ -8,6 +8,7 @@ import com.example.speechynew.connectDB.DataEngword;
 import com.example.speechynew.connectDB.DataEngword2;
 import com.example.speechynew.connectDB.DataRawdata;
 import com.example.speechynew.connectDB.DataScheduler;
+import com.example.speechynew.connectDB.DataScheduler2;
 import com.example.speechynew.connectDB.DataSetting;
 import com.example.speechynew.connectDB.DataSettingnew;
 import com.example.speechynew.connectDB.DataTime;
@@ -410,6 +411,10 @@ Call<DataAnyword> getDataAnywordnew(@Query("USER_ID") String USER_ID,
                                                     @Query("month") String month,
                                                     @Query("year") String year);
 
+    @GET("datausernew/getdevice.php/{USER_ID}")
+    Call<DataUsernew> getDataDevice(@Query("USER_ID") String USER_ID,
+                                    @Query("device") String device);
+
     ////////////////////////POST_RAW///////////////////////////////////////////
     @POST("backupnew/backupSettingnew.php")
     Call<DataSettingnew>DataSettingnew(@Body DataSettingnew DataSettingnew);
@@ -428,6 +433,12 @@ Call<DataAnyword> getDataAnywordnew(@Query("USER_ID") String USER_ID,
 
     @POST("backupnew/backupTime.php")
     Call<DataTime2>DataTimenew(@Body DataTime2 DataTime2);
+
+    @POST("datausernew/updatedevice.php")
+    Call<DataUsernew>updateDevicename(@Body DataUsernew DataUsernew);
+
+    @POST("backupnew/backupScheduler.php")
+    Call<DataScheduler2>DataChedulernew(@Body DataScheduler2 DataScheduler2);
 
 
 

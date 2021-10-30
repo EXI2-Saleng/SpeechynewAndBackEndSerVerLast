@@ -15,6 +15,7 @@ public class NotificationsReport extends AppCompatActivity {
     TextView showtotalwordminmonth;
     TextView showcontinuemaxmonth;
     TextView showwordtop;
+    TextView showdevice;
 
     String formatedate = "";
     String totalwordmonth = "";
@@ -25,6 +26,7 @@ public class NotificationsReport extends AppCompatActivity {
     String[] wordtop = new String[3];
     String[] wordtrans = new String[3];
     String totalwordtop="";
+    String device ="";
 
 
     @Override
@@ -39,6 +41,7 @@ public class NotificationsReport extends AppCompatActivity {
         showtotalwordminmonth = findViewById(R.id.totalwordminmonth);
         showcontinuemaxmonth = findViewById(R.id.totalcontinuemonth);
         showwordtop = findViewById(R.id.wordtopmonth);
+        showdevice = findViewById(R.id.device2);
 
         formatedate = getIntent().getStringExtra("datemonth");
         totalwordmonth = getIntent().getStringExtra("showtotalwordmonth");
@@ -47,7 +50,10 @@ public class NotificationsReport extends AppCompatActivity {
         continuemaxmonth = getIntent().getIntExtra("continuemaxmonth",continuemaxmonth);
         wordtop = getIntent().getStringArrayExtra("wordtopmonth");
         wordtrans = getIntent().getStringArrayExtra("wordtrans");
+        device = getIntent().getStringExtra("TV");
 
+
+        showdevice.setText(device);
         date.setText(formatedate);
         showtotalwordmonth.setText(totalwordmonth);
         showtotaltimemonth.setText(totaltimemonth);

@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -20,11 +22,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.example.speechynew.Rertofit.ApiClient;
+import com.example.speechynew.Rertofit.ApiInterface;
+import com.example.speechynew.connectDB.DataScheduler2;
 import com.example.speechynew.connectDB.Scheduler;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.example.speechynew.connectDB.Schedulerinterface.DATESTART;
 import static com.example.speechynew.connectDB.Schedulerinterface.DAYSTART;
@@ -43,7 +54,7 @@ public class Listscheduler extends AppCompatActivity {
 
     ListView listview;
     ImageButton addalarm;
-
+    ApiInterface apiInterface;
 
     ArrayList<String> listid; ArrayList<String> listday;
     ArrayList<String> listdate; ArrayList<String> listmonth;
@@ -254,6 +265,13 @@ public class Listscheduler extends AppCompatActivity {
                             }else{
 
                                 addDB();
+                                Handler handler = new Handler();
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        saveCheduler();
+                                    }
+                                };handler.postDelayed(runnable,100);
 
                                 Intent in = new Intent(dialog.getContext(),Listscheduler.class);
                                 in.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -265,6 +283,8 @@ public class Listscheduler extends AppCompatActivity {
                     }
                 });
                 dialog.show();
+
+
             }
         });
 
@@ -430,6 +450,30 @@ public class Listscheduler extends AppCompatActivity {
 
         }
 
+    }
+    public void saveCheduler(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        Cursor reDef1 = scheduler.getAlldata();
+        String USER_ID = acct.getId();
+        while(reDef1.moveToNext()){
+            DataScheduler2 DataScheduler = new DataScheduler2(USER_ID,reDef1.getString(1),reDef1.getString(2),
+                    reDef1.getString(3),reDef1.getString(4),reDef1.getString(5),
+                    reDef1.getString(6),reDef1.getString(7),reDef1.getString(8),reDef1.getString(9));
+            Call<DataScheduler2>callscheduler2 =apiInterface.DataChedulernew(DataScheduler);
+            callscheduler2.enqueue(new Callback<DataScheduler2>() {
+                @Override
+                public void onResponse(Call<DataScheduler2> call, Response<DataScheduler2> response) {
+                    Log.d("TEST_POST_JSON", "JSON POST Cheduler: " + response.body().getMessages());
+                }
+
+                @Override
+                public void onFailure(Call<DataScheduler2> call, Throwable t) {
+
+                }
+            });
+
+        }
     }
 
 }

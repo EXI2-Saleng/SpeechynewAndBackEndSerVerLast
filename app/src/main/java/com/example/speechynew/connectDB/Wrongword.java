@@ -1,5 +1,6 @@
 package com.example.speechynew.connectDB;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import static com.example.speechynew.connectDB.Timeprocessinterface.TABLE_NAME5;
+import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 import static com.example.speechynew.connectDB.Wrongwordinterface.DATE;
 import static com.example.speechynew.connectDB.Wrongwordinterface.DAY;
 import static com.example.speechynew.connectDB.Wrongwordinterface.HOUR;
@@ -37,6 +39,14 @@ public class Wrongword extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public boolean updatestatus(int id,String stus){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(DAY,stus);
+        db.update(TABLE_NAME11,content,"_id=?",new String[]{String.valueOf(id)});
+        return true;
     }
 
     public Cursor getAlldata(){

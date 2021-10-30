@@ -34,8 +34,6 @@ import com.example.speechynew.connectDB.Engword;
 import com.example.speechynew.connectDB.Timeprocess;
 import com.example.speechynew.connectDB.Word;
 import com.example.speechynew.connectDB.Wrongword;
-import com.example.speechynew.ui.home.HomeFragment;
-import com.example.speechynew.ui.home.HomeReport;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -49,8 +47,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -76,6 +72,11 @@ public class NotificationsFragment extends Fragment {
     ImageButton graphminus;
     ImageButton graphplus;
 
+    Button view_Only_Device;
+    Button view_All_Device;
+    TextView ModeG;
+    TextView ModeD;
+    String TV;
     Engword eng;
     Word anothereng;
     Timeprocess time;
@@ -83,9 +84,10 @@ public class NotificationsFragment extends Fragment {
     Wrongword wrongword;
 
     Button changetype;
+    Button changetype2;
     boolean resulttype;
 
-    Button viewAll;
+
     boolean resultview;
 
     TextView wait5month;
@@ -139,10 +141,16 @@ public class NotificationsFragment extends Fragment {
         graphplus = root.findViewById(R.id.graphplus);
         changetype = root.findViewById(R.id.changetype);
         wait5month = root.findViewById(R.id.wait5month);
-        viewAll = root.findViewById(R.id.testViewAll);
+
+        view_Only_Device = root.findViewById(R.id.View_Only_Device);
+        view_All_Device = root.findViewById(R.id.View_All_Device);
+        ModeG = root.findViewById(R.id.ModeG);
+        ModeD = root.findViewById(R.id.ModeD);
+        changetype2 = root.findViewById(R.id.changetype2);
 
         resulttype = false;
         resultview = false;
+        TV="Mode:Only Device";
 
         eng = new Engword(root.getContext());
         anothereng = new Word(root.getContext());
@@ -285,22 +293,69 @@ public class NotificationsFragment extends Fragment {
             public void onClick(View v) {
                 //change from word count to Percentage
                 if (resultview == false) {
-                    if (resulttype == false) {
-                        resulttype = true;
-                        viewdatamonth();
-
-                        changetype.setText("Word count");
-
-                        //change from Percentage to word count
-                    } else if (resulttype == true) {
+                    if (resulttype == true) {
+                        changetype.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype.setTextColor(Color.WHITE);
+                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype2.setTextColor(Color.parseColor("#024C6A"));
                         resulttype = false;
                         viewdatamonth();
 
-                        changetype.setText("Percentage");
+
+                        ModeG.setText("GraphMode : Word count");
+
+                        //change from Percentage to word count
+                    }
+                }
+                else {
+                    if (resulttype == true) {
+                        changetype.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype.setTextColor(Color.WHITE);
+                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype2.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = false;
+                        /*
+                        getdataViewAnywordMonth();
+                        getdataViewtotalMonth();
+
+                         */
+                        /////////////////////
+                        getdataViewAnywordMonthNew();
+                        getdataViewtotalMonthNew();
+
+                        ModeG.setText("GraphMode : Word count");
+                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+                        //change from Percentage to word count
+                    }
+                }
+            }
+        });
+
+        changetype2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (resultview == false) {
+                    if (resulttype == false) {
+                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype2.setTextColor(Color.WHITE);
+                        changetype.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = true;
+                        viewdatamonth();
+                        ModeG.setText("GraphMode : Percentage");
+
+                        //change from Percentage to word count
                     }
                 }
                 else {
                     if (resulttype == false) {
+                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype2.setTextColor(Color.WHITE);
+                        changetype.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype.setTextColor(Color.parseColor("#024C6A"));
                         resulttype = true;
                         /*
                         getdataViewAnywordMonth();
@@ -310,40 +365,60 @@ public class NotificationsFragment extends Fragment {
                         /////////////////////
                         getdataViewAnywordMonthNew();
                         getdataViewtotalMonthNew();
-                        changetype.setText("Word count");
+                        ModeG.setText("GraphMode : Percentage");
                         Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
                         //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
-                        /*
-                        getdataViewAnywordMonth();
-                        getdataViewtotalMonth();
-
-                         */
-                        ////////////////////
-                        getdataViewAnywordMonthNew();
-                        getdataViewtotalMonthNew();
-                        changetype.setText("Percentage");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Percentage");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
                     }
                 }
             }
         });
 
-        viewAll.setOnClickListener(new View.OnClickListener() {
+        view_Only_Device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(resultview==false){
+                if(resultview==true){
+                    ModeD.setText("Only Device");
+                    view_Only_Device.setBackgroundResource(R.drawable.buttonreport02);
+                    view_Only_Device.setTextColor(Color.WHITE);
+                    view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
+                    view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
+                    resultview=false;
+                    wait5month.setText(" Please wait 5 second");
+                    nextpageonclick();
+                    checkmonth();
+                    viewdatamonth();
+                    viewtotalmonth();
+                    viewtotaltimemonth();
+                    wordminmonth();
+                    continuemaxmonth();
+                    wrongwordtop3();
+
+
+
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                    TV="Mode:Only Device";
+                    //change from Percentage to word count
+                }
+            }
+        });
+
+        view_All_Device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (resultview == false){
+                    ModeD.setText("All Device");
+                    view_All_Device.setBackgroundResource(R.drawable.buttonreport02);
+                    view_All_Device.setTextColor(Color.WHITE);
+                    view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
+                    view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     resultview=true;
                     wait5month.setText(" Please wait 5 second");
                     nextpageonclick();
-
-                    /*
+                                        /*
                     getdataViewAnywordMonth();
                     getdataViewtotaltimemonth();
                     getdataViewcontinuemaxMonth();
@@ -357,31 +432,11 @@ public class NotificationsFragment extends Fragment {
                     getdataViewcontinuemaxMonthNew();
                     getdataViewWrongwordMonthNew();
                     getdataViewtotalMonthNew();
-
-                    viewAll.setText("device only");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
-                    //change from Percentage to word count
-                }else if(resultview==true){
-                    resultview=false;
-                    wait5month.setText(" Please wait 5 second");
-                    nextpageonclick();
-                    checkmonth();
-                    viewdatamonth();
-                    viewtotalmonth();
-                    viewtotaltimemonth();
-                    wordminmonth();
-                    continuemaxmonth();
-                    wrongwordtop3();
-                    viewAll.setText("VIEW ALL");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                    TV="Mode:All Deivce";
 
                 }
             }
         });
-
 
         notificationsViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -422,6 +477,7 @@ public class NotificationsFragment extends Fragment {
                         report.putExtra("continuemaxmonth", continuemaxmonth);
                         report.putExtra("wordtopmonth", wordtop);
                         report.putExtra("wordtrans", wordtrans);
+                        report.putExtra("TV",TV);
                         startActivity(report);
 
                     }

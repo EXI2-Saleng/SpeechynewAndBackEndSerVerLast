@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import com.example.speechynew.Rertofit.ApiClient;
 import com.example.speechynew.Rertofit.ApiInterface;
 import com.example.speechynew.connectDB.DataSetting;
 import com.example.speechynew.connectDB.DataSettingnew;
+import com.example.speechynew.connectDB.DataUsernew;
 import com.example.speechynew.connectDB.Setting;
 import com.example.speechynew.suggestion.Suggestionchallenge;
 import com.example.speechynew.suggestion.Suggestionpercent;
@@ -63,6 +65,7 @@ public class SettinglangActivity extends AppCompatActivity {
     EditText percent;
     ImageButton suggestpercent;
     ImageButton suggestchallenge;
+    EditText Edevicename;
 
     String secondLang;
     Setting setting;
@@ -73,6 +76,8 @@ public class SettinglangActivity extends AppCompatActivity {
     int cha;
     String Lang;
     int CH;
+    int ID;
+    String devicename;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +95,10 @@ public class SettinglangActivity extends AppCompatActivity {
         errorchallenge = findViewById(R.id.errorchallenge);
         suggestpercent = findViewById(R.id.suggestpercent);
         suggestchallenge = findViewById(R.id.suggestchallenge);
+        Edevicename = findViewById(R.id.editDevicename);
+
+        getdatadevice();
+
 
         Intent i = getIntent();
         CH = i.getIntExtra("CH",1);
@@ -198,6 +207,7 @@ public class SettinglangActivity extends AppCompatActivity {
                     }
                 }
                 saveSetting();
+                updatenamedevice();
 
             }
         });
@@ -380,6 +390,58 @@ public class SettinglangActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DataSetting> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public void getdatadevice(){
+        String device = Build.BOOTLOADER;
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        Call<DataUsernew>calldatadevice = apiInterface.getDataDevice(USER_ID,device);
+        calldatadevice.enqueue(new Callback<DataUsernew>() {
+            @Override
+            public void onResponse(Call<DataUsernew> call, Response<DataUsernew> response) {
+                if (response.isSuccessful()){
+                    DataUsernew datadevice=response.body();
+                    ID = datadevice.getID();
+                    devicename = datadevice.getDevicename();
+                    Edevicename.setText(devicename);
+                    Log.d("API_DATA_Device","MS:"+datadevice.getID());
+                    Log.d("API_DATA_Device","MS:"+datadevice.getDevicename());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<DataUsernew> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void updatenamedevice(){
+        String device = Build.BOOTLOADER;
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        DataUsernew updatedevicename = new DataUsernew(ID,USER_ID,Edevicename.getText().toString());
+        Log.d("UPDATE_DEVICENAME", "UPDATE_DEVICENAME ID: " + ID);
+        Log.d("UPDATE_DEVICENAME", "UPDATE_DEVICENAME Devicename: " + Edevicename.getText().toString());
+        Call<DataUsernew>callupdatedevicename = apiInterface.updateDevicename(updatedevicename);
+        callupdatedevicename.enqueue(new Callback<DataUsernew>() {
+            @Override
+            public void onResponse(Call<DataUsernew> call, Response<DataUsernew> response) {
+                Log.d("UPDATE_DEVICENAME", "UPDATE_DEVICENAME: " + response.body().getMessages());
+
+            }
+
+            @Override
+            public void onFailure(Call<DataUsernew> call, Throwable t) {
+                Log.d("UPDATE_DEVICENAME",t.toString());
 
             }
         });

@@ -498,14 +498,24 @@ public class MainActivity extends AppCompatActivity {
 
                  */
 
-
+                /*
                 B_Anyword_New();
                 B_Engword_New();
                 B_Continuemax_New();
                 B_Time_New();
                 B_Wrongword_New();
 
+                 */
+
+
+
+
+
+
+
               //  B_Rawdata();
+                //View_Test();
+
                 
 
 
@@ -883,11 +893,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onFinish() {
-              B_Anyword_New();
+                B_Anyword_New();
                 B_Engword_New();
                 B_Continuemax_New();
                 B_Time_New();
                 B_Wrongword_New();
+
+
 
 
             Log.d("TEST_AUTORUN","TEST VALUE :"+value);
@@ -902,22 +914,27 @@ public class MainActivity extends AppCompatActivity {
         Cursor reDef1 = anothereng.getAlldata();
         String USER_ID = acct.getId();
         while (reDef1.moveToNext()) {
-            DataAnyword2 DataAnyword2 = new DataAnyword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
-                    reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
+            if (!reDef1.getString(2).equals("99")) {
+                DataAnyword2 DataAnyword2 = new DataAnyword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
+                        reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
 
-            Call<DataAnyword2> calldata = apiInterface.DataAnywordnew(DataAnyword2);
 
-            calldata.enqueue(new Callback<com.example.speechynew.connectDB.DataAnyword2>() {
-                @Override
-                public void onResponse(Call<com.example.speechynew.connectDB.DataAnyword2> call, Response<com.example.speechynew.connectDB.DataAnyword2> response) {
-                    Log.d("TEST_POST_JSON", "JSON POST Anyword: " + response.body());
-                }
 
-                @Override
-                public void onFailure(Call<com.example.speechynew.connectDB.DataAnyword2> call, Throwable t) {
-                    Log.d("TEST_POST_JSON", "JSON POST USER_ID: " + "Fail");
-                }
-            });
+                Call<DataAnyword2> calldata = apiInterface.DataAnywordnew(DataAnyword2);
+
+                calldata.enqueue(new Callback<com.example.speechynew.connectDB.DataAnyword2>() {
+                    @Override
+                    public void onResponse(Call<com.example.speechynew.connectDB.DataAnyword2> call, Response<com.example.speechynew.connectDB.DataAnyword2> response) {
+                        Log.d("TEST_POST_JSON", "JSON POST Anyword: " + response.body().getMessages());
+                    }
+
+                    @Override
+                    public void onFailure(Call<com.example.speechynew.connectDB.DataAnyword2> call, Throwable t) {
+                        Log.d("TEST_POST_JSON", "JSON POST USER_ID: " + "Fail");
+                    }
+                });
+                anothereng.updatestatus(Integer.parseInt(reDef1.getString(0)),"99");
+            }
         }
     }
 
@@ -927,22 +944,25 @@ public class MainActivity extends AppCompatActivity {
         Cursor reDef1 = eng.getAlldata();
         String USER_ID = acct.getId();
         while (reDef1.moveToNext()) {
-            DataEngword2 DataEngword = new DataEngword2(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
-                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+            if (!reDef1.getString(2).equals("99")) {
+                DataEngword2 DataEngword = new DataEngword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
+                        reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
 
-            Call<DataEngword2> calldata = apiInterface.DataEngwordnew(DataEngword);
+                Call<DataEngword2> calldata = apiInterface.DataEngwordnew(DataEngword);
 
-            calldata.enqueue(new Callback<DataEngword2>() {
-                @Override
-                public void onResponse(Call<DataEngword2> call, Response<DataEngword2> response) {
-                    Log.d("TEST_POST_JSON", "JSON POST Engword: " + response.body());
-                }
+                calldata.enqueue(new Callback<DataEngword2>() {
+                    @Override
+                    public void onResponse(Call<DataEngword2> call, Response<DataEngword2> response) {
+                        Log.d("TEST_POST_JSON", "JSON POST Engword: " + response.body().getMessages());
+                    }
 
-                @Override
-                public void onFailure(Call<DataEngword2> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<DataEngword2> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
+                eng.updatestatus(Integer.parseInt(reDef1.getString(0)),"99");
+            }
         }
     }
 
@@ -952,22 +972,25 @@ public class MainActivity extends AppCompatActivity {
         Cursor reDef1 = continuemax.getAlldata();
         String USER_ID = acct.getId();
         while (reDef1.moveToNext()) {
-            DataContinuemax2 DataContinuemax = new DataContinuemax2(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
-                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+            if (!reDef1.getString(2).equals("99")) {
+                DataContinuemax2 DataContinuemax = new DataContinuemax2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
+                        reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
 
-            Call<DataContinuemax2> calldata = apiInterface.DataContinuemaxnew(DataContinuemax);
+                Call<DataContinuemax2> calldata = apiInterface.DataContinuemaxnew(DataContinuemax);
 
-            calldata.enqueue(new Callback<DataContinuemax2>() {
-                @Override
-                public void onResponse(Call<DataContinuemax2> call, Response<DataContinuemax2> response) {
-                    Log.d("TEST_POST_JSON", "JSON POST Continuemax: " + response.body());
-                }
+                calldata.enqueue(new Callback<DataContinuemax2>() {
+                    @Override
+                    public void onResponse(Call<DataContinuemax2> call, Response<DataContinuemax2> response) {
+                        Log.d("TEST_POST_JSON", "JSON POST Continuemax: " + response.body().getMessages());
+                    }
 
-                @Override
-                public void onFailure(Call<DataContinuemax2> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<DataContinuemax2> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
+                continuemax.updatestatus(Integer.parseInt(reDef1.getString(0)),"99");
+            }
         }
 
 
@@ -979,22 +1002,25 @@ public class MainActivity extends AppCompatActivity {
         Cursor reDef1 = time.getAlldata();
         String USER_ID = acct.getId();
         while (reDef1.moveToNext()) {
-            DataTime2 DataTime = new DataTime2(USER_ID,device,reDef1.getString(2),reDef1.getString(3),
-                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+            if (!reDef1.getString(1).equals("99")) {
+                DataTime2 DataTime = new DataTime2(USER_ID, device, reDef1.getString(2), reDef1.getString(3),
+                        reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
 
-            Call<DataTime2> calldata = apiInterface.DataTimenew(DataTime);
+                Call<DataTime2> calldata = apiInterface.DataTimenew(DataTime);
 
-            calldata.enqueue(new Callback<DataTime2>() {
-                @Override
-                public void onResponse(Call<DataTime2> call, Response<DataTime2> response) {
-                    Log.d("TEST_POST_JSON", "JSON POST TIME: " + response.body());
-                }
+                calldata.enqueue(new Callback<DataTime2>() {
+                    @Override
+                    public void onResponse(Call<DataTime2> call, Response<DataTime2> response) {
+                        Log.d("TEST_POST_JSON", "JSON POST TIME: " + response.body().getMessages());
+                    }
 
-                @Override
-                public void onFailure(Call<DataTime2> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<DataTime2> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
+                time.updatestatus(Integer.parseInt(reDef1.getString(0)),"99");
+            }
         }
 
 
@@ -1006,25 +1032,78 @@ public class MainActivity extends AppCompatActivity {
         Cursor reDef1 = wrongword.getAlldata();
         String USER_ID = acct.getId();
         while (reDef1.moveToNext()) {
-            DataWrongword2 DataWrongword = new DataWrongword2(USER_ID,device,reDef1.getString(1),reDef1.getString(3),
-                    reDef1.getString(4),reDef1.getString(5),reDef1.getString(6),reDef1.getString(7),reDef1.getString(8));
+            if (!reDef1.getString(2).equals("99")) {
+                DataWrongword2 DataWrongword = new DataWrongword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
+                        reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
 
-            Call<DataWrongword2> calldata = apiInterface.DataWrongwordnew(DataWrongword);
-            calldata.enqueue(new Callback<DataWrongword2>() {
-                @Override
-                public void onResponse(Call<DataWrongword2> call, Response<DataWrongword2> response) {
-                    Log.d("TEST_POST_JSON", "JSON POST Wrongword: " + response.body());
-                }
+                Call<DataWrongword2> calldata = apiInterface.DataWrongwordnew(DataWrongword);
+                calldata.enqueue(new Callback<DataWrongword2>() {
+                    @Override
+                    public void onResponse(Call<DataWrongword2> call, Response<DataWrongword2> response) {
+                        Log.d("TEST_POST_JSON", "JSON POST Wrongword: " + response.body().getMessages());
+                    }
 
-                @Override
-                public void onFailure(Call<DataWrongword2> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<DataWrongword2> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
+
+                wrongword.updatestatus(Integer.parseInt(reDef1.getString(0)),"99");
+            }
 
 
         }
 
 
     }
+
+    public void View_Test() {
+
+        Cursor reDef1 = anothereng.getAlldata();
+        Cursor reDef2 = eng.getAlldata();
+        Cursor reDef3 = continuemax.getAlldata();
+        Cursor reDef4 = time.getAlldata();
+        Cursor reDef5 = wrongword.getAlldata();
+
+        Log.d("VIEW_TEST", "Anyword");
+
+        while (reDef1.moveToNext()) {
+            //DataAnyword2 DataAnyword2 = new DataAnyword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
+              //      reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
+
+            if (!reDef1.getString(2).equals("99")){
+            Log.d("VIEW_TEST", "ID: " + reDef1.getString(0)+" Day :"+ reDef1.getString(2));
+             }
+            //anothereng.updatestatus(Integer.parseInt(reDef1.getString(0)),"1");
+
+        }
+        Log.d("VIEW_TEST", "Engword");
+        while (reDef2.moveToNext()) {
+            if (!reDef2.getString(2).equals("99")){
+                Log.d("VIEW_TEST", "ID: " + reDef2.getString(0)+" Day :"+ reDef2.getString(2));
+            }
+        }
+        Log.d("VIEW_TEST", "ConMaxword");
+        while (reDef3.moveToNext()) {
+            if (!reDef3.getString(2).equals("99")){
+                Log.d("VIEW_TEST", "ID: " + reDef3.getString(0)+" Day :"+ reDef3.getString(2));
+            }
+        }
+        Log.d("VIEW_TEST", "Timeword");
+        while (reDef4.moveToNext()) {
+            if (!reDef4.getString(1).equals("99")){
+                Log.d("VIEW_TEST", "ID: " + reDef4.getString(0)+" Day :"+ reDef4.getString(1));
+            }
+        }
+        Log.d("VIEW_TEST", "Wrongword");
+        while (reDef5.moveToNext()) {
+            if (!reDef5.getString(2).equals("99")){
+                Log.d("VIEW_TEST", "ID: " + reDef5.getString(0)+" Day :"+ reDef5.getString(2));
+            }
+        }
+
+
+    }
+
 }

@@ -21,7 +21,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="102dp"
+                android:layout_height="97dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -41,6 +41,39 @@
                     android:layout_marginLeft="68dp"
                     android:layout_marginTop="20dp"
                     android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="140dp"
+                        android:layout_height="25dp"
+                        android:layout_marginLeft="90dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/View_Only_Device"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="70dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="3dp"
+                            android:background="@drawable/buttonreport02"
+                            android:fontFamily="@font/kanitlight"
+                            android:text="Only Device"
+                            android:textColor="#FFFFFF"
+                            android:textSize="10dp" />
+
+                        <Button
+                            android:id="@+id/View_All_Device"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="70dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/buttonreport01"
+                            android:fontFamily="@font/kanitlight"
+                            android:text="All Device"
+                            android:textColor="#3C8ED3"
+                            android:textSize="10dp" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:layout_width="70dp"
@@ -102,6 +135,32 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/ModeG"
+                    android:layout_width="150dp"
+                    android:layout_height="15dp"
+                    android:layout_marginLeft="70dp"
+                    android:gravity="center"
+                    android:text="GraphMode : Word count"
+                    android:textColor="#000000"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/ModeD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="15dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:text="Only Device"
+                    android:textColor="#000000"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/mp_barchart1"
@@ -123,13 +182,26 @@
             <Button
                 android:id="@+id/changetype"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="130dp"
+                android:layout_width="110dp"
                 android:layout_height="33dp"
-                android:layout_marginLeft="3dp"
-                android:background="@drawable/buttonshape6"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/buttonreport04"
+                android:fontFamily="@font/kanitlight"
+                android:text="Word count"
+                android:textColor="#FFFFFF"
+                android:textSize="11dp" />
+
+
+            <Button
+                android:id="@+id/changetype2"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="33dp"
+                android:layout_weight="1"
+                android:background="@drawable/buttonreport03"
                 android:fontFamily="@font/kanitlight"
                 android:text="Percentage"
-                android:textColor="#FFFFFF"
+                android:textColor="#024C6A"
                 android:textSize="11dp" />
 
 
@@ -147,17 +219,6 @@
                 android:text="view report"
                 android:textColor="#FFFFFF"
                 android:textSize="11dp" />
-            <Button
-                android:id="@+id/testViewAll"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="90dp"
-                android:layout_height="33dp"
-                android:layout_marginLeft="3dp"
-                android:background="@drawable/buttonshape6"
-                android:fontFamily="@font/kanitlight"
-                android:text="View All"
-                android:textColor="#FFFFFF"
-                android:textSize="11dp" />
 
 
         </LinearLayout>
@@ -171,9 +232,9 @@
                 android:id="@+id/wait5month"
                 android:layout_width="115dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="155dp"
-                android:text=" Please wait 5 second"
+                android:layout_marginLeft="240dp"
                 android:fontFamily="@font/kanitlight"
+                android:text=" Please wait 5 second"
                 android:textColor="#071231"
                 android:textSize="10dp" />
 

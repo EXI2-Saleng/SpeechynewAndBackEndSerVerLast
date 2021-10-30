@@ -1,5 +1,6 @@
 package com.example.speechynew.connectDB;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,6 +17,8 @@ import static com.example.speechynew.connectDB.Engwordinterface.YEARENG;
 import static com.example.speechynew.connectDB.Engwordinterface.HOURENG;
 import static com.example.speechynew.connectDB.Engwordinterface.MINUTEENG;
 import static com.example.speechynew.connectDB.Engwordinterface.SECONDENG;
+import static com.example.speechynew.connectDB.Wordinterface.DAY;
+import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 
 
 public class Engword extends SQLiteOpenHelper {
@@ -37,6 +40,14 @@ public class Engword extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public boolean updatestatus(int id,String stus){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(DAYENG,stus);
+        db.update(TABLE_NAME2,content,"_id=?",new String[]{String.valueOf(id)});
+        return true;
     }
 
     public Cursor getAlldata(){

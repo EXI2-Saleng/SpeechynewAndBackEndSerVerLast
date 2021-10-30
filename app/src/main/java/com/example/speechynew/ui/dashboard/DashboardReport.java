@@ -15,6 +15,7 @@ public class DashboardReport extends AppCompatActivity {
     TextView showtotalwordminweek;
     TextView showcontinuemaxweek;
     TextView showwordtop;
+    TextView showdevice;
 
 
     String formatedate = "";
@@ -25,6 +26,7 @@ public class DashboardReport extends AppCompatActivity {
     String[] wordtop = new String[3];
     String[] wordtrans = new String[3];
     String totalwordtop = "";
+    String device ="";
 
 
     @Override
@@ -39,6 +41,7 @@ public class DashboardReport extends AppCompatActivity {
         showtotalwordminweek = findViewById(R.id.totalwordminweek);
         showcontinuemaxweek = findViewById(R.id.totalcontinueweek);
         showwordtop = findViewById(R.id.wordtopweek);
+        showdevice = findViewById(R.id.device1);
 
         formatedate = getIntent().getStringExtra("test");
         totalwordweek = getIntent().getStringExtra("totalwordweek");
@@ -47,8 +50,9 @@ public class DashboardReport extends AppCompatActivity {
         continuemaxweek = getIntent().getIntExtra("continuemaxweek",continuemaxweek);
         wordtop = getIntent().getStringArrayExtra("wordtop");
         wordtrans = getIntent().getStringArrayExtra("wordtrans");
+        device = getIntent().getStringExtra("TV");
 
-
+        showdevice.setText(device);
         date.setText(formatedate);
         showtotalwordweek.setText(totalwordweek);
         showtotaltimeweek.setText(totaltimeweek);

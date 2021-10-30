@@ -1,5 +1,6 @@
 package com.example.speechynew.connectDB;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +16,7 @@ import static com.example.speechynew.connectDB.Continuemaxinterface.MONTH;
 import static com.example.speechynew.connectDB.Continuemaxinterface.SECOND;
 import static com.example.speechynew.connectDB.Continuemaxinterface.TABLE_NAME10;
 import static com.example.speechynew.connectDB.Continuemaxinterface.YEAR;
+import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 
 
 public class Continuemax extends SQLiteOpenHelper {
@@ -37,6 +39,15 @@ public class Continuemax extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
+    public boolean updatestatus(int id,String stus){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(DAY,stus);
+        db.update(TABLE_NAME10,content,"_id=?",new String[]{String.valueOf(id)});
+        return true;
+    }
+
     public Cursor getAlldata(){
         SQLiteDatabase db =this.getWritableDatabase();
         Cursor resDat = db.rawQuery("SELECT * FROM "+TABLE_NAME10,null);

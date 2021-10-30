@@ -18,6 +18,7 @@ import static com.example.speechynew.connectDB.Timeprocessinterface.SECOND;
 import static com.example.speechynew.connectDB.Timeprocessinterface.TABLE_NAME5;
 import static com.example.speechynew.connectDB.Timeprocessinterface.TOTAL;
 import static com.example.speechynew.connectDB.Timeprocessinterface.YEAR;
+import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 
 public class Timeprocess extends SQLiteOpenHelper {
 
@@ -51,6 +52,14 @@ public class Timeprocess extends SQLiteOpenHelper {
         db.update(TABLE_NAME5,content,DATE + " = ? AND " + MONTH + " = ? AND " + YEAR + " = ?",new String[]{String.valueOf(date),String.valueOf(month),String.valueOf(year)});
         return true;
     } */
+
+    public boolean updatestatus(int id,String stus){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(DAY,stus);
+        db.update(TABLE_NAME5,content,"_id=?",new String[]{String.valueOf(id)});
+        return true;
+    }
 
     public Cursor getAlldata(){
         SQLiteDatabase db =this.getWritableDatabase();

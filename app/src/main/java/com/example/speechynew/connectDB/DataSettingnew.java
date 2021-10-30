@@ -10,6 +10,7 @@ public class DataSettingnew {
      String percentagenone;
      String chaday;
 
+
     @Expose
     @SerializedName("success")
     private boolean success;
@@ -17,6 +18,7 @@ public class DataSettingnew {
     @Expose
     @SerializedName("messages")
     private String messages;
+
 
     public DataSettingnew(){}
 
@@ -26,6 +28,8 @@ public class DataSettingnew {
         this.percentagenone = percentagenone;
         this.chaday = chaday;
     }
+
+
 
     public String getUSER_ID() {
         return USER_ID;
@@ -74,4 +78,6 @@ public class DataSettingnew {
     public void setMessages(String messages) {
         this.messages = messages;
     }
+
+
 }

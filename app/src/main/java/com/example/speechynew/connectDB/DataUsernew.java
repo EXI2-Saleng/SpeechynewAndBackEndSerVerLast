@@ -4,11 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class DataUsernew {
-
+    int Device_ID;
     String USER_ID;
     String device;
     String email;
     String name;
+
+
+    String Edevicename;
 
     @Expose
     @SerializedName("success")
@@ -26,6 +29,14 @@ public class DataUsernew {
     @SerializedName("Device")
     private String Device;
 
+    @Expose
+    @SerializedName("devicename")
+    private String devicename;
+
+    @Expose
+    @SerializedName("ID")
+    private int ID;
+
     public  DataUsernew(){}
 
     public DataUsernew(String USER_ID, String device) {
@@ -38,6 +49,12 @@ public class DataUsernew {
         this.device = device;
         this.email = email;
         this.name = name;
+    }
+
+    public DataUsernew(int device_ID, String USER_ID, String edevicename) {
+        this.Device_ID = device_ID;
+        this.USER_ID = USER_ID;
+        this.Edevicename = edevicename;
     }
 
     public String getUSER_ID() {
@@ -102,5 +119,37 @@ public class DataUsernew {
 
     public void setDevice1(String Device) {
         this.Device = Device;
+    }
+
+    public String getDevicename() {
+        return devicename;
+    }
+
+    public void setDevicename(String devicename) {
+        this.devicename = devicename;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public int getDevice_ID() {
+        return Device_ID;
+    }
+
+    public void setDevice_ID(int device_ID) {
+        Device_ID = device_ID;
+    }
+
+    public String getEdevicename() {
+        return Edevicename;
+    }
+
+    public void setEdevicename(String Edevicename) {
+        Edevicename = Edevicename;
     }
 }

@@ -34,8 +34,6 @@ import com.example.speechynew.connectDB.Engword;
 import com.example.speechynew.connectDB.Timeprocess;
 import com.example.speechynew.connectDB.Word;
 import com.example.speechynew.connectDB.Wrongword;
-import com.example.speechynew.ui.notifications.NotificationsFragment;
-import com.example.speechynew.ui.notifications.NotificationsReport;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -50,16 +48,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.sql.Array;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -82,10 +74,16 @@ public class DashboardFragment extends Fragment {
     ImageButton graphplus;
     TextView wait5week;
 
+    Button view_Only_Device;
+    Button view_All_Device;
+    TextView ModeG;
+    TextView ModeD;
+
     Button changetype;
+    Button changetype2;
     boolean resulttype;
 
-    Button viewAll;
+    String TV;
     boolean resultview;
 
     Engword eng;
@@ -150,7 +148,12 @@ public class DashboardFragment extends Fragment {
         changetype = root.findViewById(R.id.changetype);
         nextpage = root.findViewById(R.id.nextpage);
         wait5week = root.findViewById(R.id.wait5week);
-        viewAll = root.findViewById(R.id.testViewAll);
+
+        view_Only_Device = root.findViewById(R.id.View_Only_Device);
+        view_All_Device = root.findViewById(R.id.View_All_Device);
+        ModeG = root.findViewById(R.id.ModeG);
+        ModeD = root.findViewById(R.id.ModeD);
+        changetype2 = root.findViewById(R.id.changetype2);
 
         eng = new Engword(root.getContext());
         anothereng = new Word(root.getContext());
@@ -160,6 +163,7 @@ public class DashboardFragment extends Fragment {
 
         resulttype = false;
         resultview = false;
+        TV="Mode:Only Device";
 
         c = Calendar.getInstance();
         df = new SimpleDateFormat("d-MM-yyyy");
@@ -322,25 +326,27 @@ public class DashboardFragment extends Fragment {
 
                 //change from word count to Percentage
                 if(resultview == false) {
-                    if (resulttype == false) {
-                        resulttype = true;
-
+                    if (resulttype == true) {
+                        changetype.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype.setTextColor(Color.WHITE);
+                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype2.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = false;
                         viewallweek();
 
-                        changetype.setText("Word count");
+
+                        ModeG.setText("GraphMode : Word count");
 
                         //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
-
-                        viewallweek();
-
-                        changetype.setText("Percentage");
                     }
                 }
                 else {
-                    if (resulttype == false) {
-                        resulttype = true;
+                    if (resulttype == true) {
+                        changetype.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype.setTextColor(Color.WHITE);
+                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype2.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = false;
                         /*
                         getdataViewtotalAnyword();
                         getdataViewtotalEngword();
@@ -349,40 +355,104 @@ public class DashboardFragment extends Fragment {
                         ////////////////////////
                         getdataViewtotalAnyword_New();
                         getdataViewtotalEngword_New();
-                        changetype.setText("Word count");
+
+                        ModeG.setText("GraphMode : Word count");
                         Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
                         //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
-                        /*
-                        getdataViewtotalAnyword();
-                        getdataViewtotalEngword();
-
-                         */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotalEngword_New();
-                        changetype.setText("Percentage");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Percentage");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
                     }
                 }
 
             }
         });
 
-        viewAll.setOnClickListener(new View.OnClickListener() {
+        changetype2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(resultview==false){
+                if(resultview == false) {
+                    if (resulttype == false) {
+                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype2.setTextColor(Color.WHITE);
+                        changetype.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = true;
+                        viewallweek();
+
+
+                        ModeG.setText("GraphMode : Percentage");
+
+                        //change from Percentage to word count
+                    }
+                }
+                else {
+                    if (resulttype == false) {
+                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype2.setTextColor(Color.WHITE);
+                        changetype.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = true;
+                        /*
+                        getdataViewtotalAnyword();
+                        getdataViewtotalEngword();
+
+                         */
+                        ////////////////////////
+                        getdataViewtotalAnyword_New();
+                        getdataViewtotalEngword_New();
+
+                        ModeG.setText("GraphMode : Percentage");
+                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+                        //change from Percentage to word count
+                    }
+                }
+            }
+        });
+
+
+        view_Only_Device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(resultview==true){
+                    ModeD.setText("Only Device");
+                    view_Only_Device.setBackgroundResource(R.drawable.buttonreport02);
+                    view_Only_Device.setTextColor(Color.WHITE);
+                    view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
+                    view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
+                    resultview=false;
+                    wait5week.setText(" Please wait 5 second");
+                    nextpageonclick();
+                    viewallweek();
+                    wordmin();
+                    TV="Mode:Only Device";
+
+
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+
+                }
+
+            }
+        });
+
+        view_All_Device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (resultview==false){
+                    ModeD.setText("All Device");
+                    view_All_Device.setBackgroundResource(R.drawable.buttonreport02);
+                    view_All_Device.setTextColor(Color.WHITE);
+                    view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
+                    view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     resultview=true;
                     wait5week.setText(" Please wait 5 second");
                     nextpageonclick();
-                    /*
+                                        /*
                     getdataViewtotalAnyword();
                     getdataViewtotaltimeweek();
                     getdataViewcontinuemax();
@@ -397,22 +467,7 @@ public class DashboardFragment extends Fragment {
                     getdataViewcontinuemax_New();
                     getdataViewwrongword_New();
                     getdataViewtotalEngword_New();
-
-                    viewAll.setText("device only");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
-                    //change from Percentage to word count
-                }else if(resultview==true){
-                    resultview=false;
-                    wait5week.setText(" Please wait 5 second");
-                    nextpageonclick();
-                    viewallweek();
-                    wordmin();
-                    viewAll.setText("VIEW ALL");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
+                    TV="Mode:All Deivce";
                 }
 
             }
@@ -456,6 +511,7 @@ public class DashboardFragment extends Fragment {
                         report.putExtra("continuemaxweek",continuemaxweek);
                         report.putExtra("wordtop",wordtop);
                         report.putExtra("wordtrans",wordtrans);
+                        report.putExtra("TV",TV);
                         startActivity(report);
 
                     }

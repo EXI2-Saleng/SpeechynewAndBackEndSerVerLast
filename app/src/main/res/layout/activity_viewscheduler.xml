@@ -18,6 +18,39 @@
             android:layout_height="37dp"
             android:layout_marginBottom="14dp" />
 
+        <LinearLayout
+            android:layout_width="140dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="200dp"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <Button
+                android:id="@+id/View_Only_Device"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="70dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="3dp"
+                android:background="@color/colorPrimary"
+                android:fontFamily="@font/kanitlight"
+                android:text="Only Device"
+                android:textColor="#FFFFFF"
+                android:textSize="11dp" />
+
+            <Button
+                android:id="@+id/View_All_Device"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="70dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="0dp"
+                android:layout_weight="1"
+                android:background="@color/colorAccent"
+                android:fontFamily="@font/kanitlight"
+                android:text="All Device"
+                android:textColor="#FFFFFF"
+                android:textSize="11dp" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/timeshow"
             android:layout_width="202dp"
@@ -30,6 +63,7 @@
             android:textColor="#024C6A"
             android:textSize="18dp"
             android:textStyle="bold" />
+
 
 
         <LinearLayout
@@ -106,17 +140,6 @@
                 android:background="@drawable/buttonshape6"
                 android:fontFamily="@font/kanitlight"
                 android:text="view report"
-                android:textColor="#FFFFFF"
-                android:textSize="11dp" />
-            <Button
-                android:id="@+id/testViewAll"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="100dp"
-                android:layout_height="33dp"
-                android:layout_marginLeft="5dp"
-                android:background="@drawable/buttonshape6"
-                android:fontFamily="@font/kanitlight"
-                android:text="ViewAll"
                 android:textColor="#FFFFFF"
                 android:textSize="11dp" />
 

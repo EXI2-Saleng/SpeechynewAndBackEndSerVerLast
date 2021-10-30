@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,16 +13,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.LongDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.speechynew.MainActivity;
 import com.example.speechynew.R;
 import com.example.speechynew.analysis.Translator;
 import com.example.speechynew.connectDB.Continuemax;
@@ -41,10 +37,8 @@ import com.example.speechynew.connectDB.Rawdata;
 import com.example.speechynew.connectDB.Scheduler;
 import com.example.speechynew.connectDB.Setting;
 import com.example.speechynew.connectDB.Timeprocess;
-import com.example.speechynew.connectDB.User;
 import com.example.speechynew.connectDB.Word;
 import com.example.speechynew.connectDB.Wrongword;
-import com.example.speechynew.connectDB.backup;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -59,15 +53,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.Buffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,10 +71,6 @@ import static com.example.speechynew.connectDB.Wrongwordinterface.TABLE_NAME11;
 
 import  com.example.speechynew.Rertofit.ApiClient;
 import  com.example.speechynew.Rertofit.ApiInterface;
-import  com.example.speechynew.connectDB.UserData;
-import  com.example.speechynew.MainActivity;
-
-
 
 
 import retrofit2.Call;
@@ -110,7 +94,13 @@ public class HomeFragment extends Fragment {
     ImageButton graphplus;
     Button nextpage;
     TextView wait5;
-    Button viewAll;
+    Button view_Only_Device;
+    Button view_All_Device;
+    TextView ModeG;
+    TextView ModeD;
+    Button changetype2;
+
+    String TV;
 
     //database
     Engword eng;
@@ -135,6 +125,7 @@ public class HomeFragment extends Fragment {
     String monthname;
     boolean resulttype;
     boolean resultview;
+    boolean CC;
 
     String totalwordday;
     String totaltimeday;
@@ -172,7 +163,11 @@ public class HomeFragment extends Fragment {
         changetype = root.findViewById(R.id.changetype);
         nextpage = root.findViewById(R.id.nextpage);
         wait5 = root.findViewById(R.id.wait5);
-        viewAll = root.findViewById(R.id.testViewAll);
+        view_Only_Device = root.findViewById(R.id.View_Only_Device);
+        view_All_Device = root.findViewById(R.id.View_All_Device);
+        ModeG = root.findViewById(R.id.ModeG);
+        ModeD = root.findViewById(R.id.ModeD);
+        changetype2 = root.findViewById(R.id.changetype2);
 
         //create object database
         eng = new Engword(root.getContext());
@@ -187,6 +182,8 @@ public class HomeFragment extends Fragment {
 
         resulttype = false;
         resultview = false;
+        CC = false;
+        TV="Mode:Only Device";
 
         c = Calendar.getInstance();
         df = new SimpleDateFormat("d-MM-yyyy");
@@ -231,7 +228,7 @@ public class HomeFragment extends Fragment {
                 getFormattedYear = c.getTime().getYear();
 
                 wait5.setText(" Please wait 5 second");
-                if (resultview==true){
+                if (CC==true){
                     Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "-----");
                     nextpageonclick();
                     /*
@@ -308,7 +305,7 @@ public class HomeFragment extends Fragment {
                 }else{
                     wait5.setText(" Please wait 5 second");
 
-                    if (resultview==true){
+                    if (CC==true){
                         Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "+++++");
                         nextpageonclick();
                         /*
@@ -365,24 +362,27 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
 
                 //change from word count to Percentage
-                if (resultview == false) {
-                    if (resulttype == false) {
-                        resulttype = true;
+                if (CC == false) {
+                    if (resulttype == true) {
+                        changetype.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype.setTextColor(Color.WHITE);
+                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype2.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = false;
                          newviewAllday();
-
-                        changetype.setText("Word count");
+                       // changetype.setText("Word count");
+                        ModeG.setText("GraphMode : Word count");
 
                         //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
-                        newviewAllday();
-
-                        changetype.setText("Percentage");
                     }
                 }
                 else {
-                    if (resulttype == false) {
-                        resulttype = true;
+                    if (resulttype == true) {
+                        changetype.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype.setTextColor(Color.WHITE);
+                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype2.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = false;
                         //getdataAnyword();
                         getdataAnyword_New();
                         Handler handler = new Handler();
@@ -393,14 +393,43 @@ public class HomeFragment extends Fragment {
                                 getdataViewtotalday_New();
                             }
                         };handler.postDelayed(runnable,100);
-                        changetype.setText("Word count");
+                        //changetype.setText("Word count");
+                        ModeG.setText("GraphMode : Word count");
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK :" + "OKAY");
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
                         //change from Percentage to word count
-                    } else if (resulttype == true) {
-                        resulttype = false;
+                    }
+                }
+            }
+        });
+
+        changetype2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (CC == false) {
+                    if (resulttype == false) {
+                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype2.setTextColor(Color.WHITE);
+                        changetype.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = true;
+                        newviewAllday();
+
+                        //changetype.setText("Word count");
+                        ModeG.setText("GraphMode : Percentage");
+
+                        //change from Percentage to word count
+                    }
+                }
+                else {
+                    if (resulttype == false) {
+                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                        changetype2.setTextColor(Color.WHITE);
+                        changetype.setBackgroundResource(R.drawable.buttonreport03);
+                        changetype.setTextColor(Color.parseColor("#024C6A"));
+                        resulttype = true;
                         //getdataAnyword();
                         getdataAnyword_New();
                         Handler handler = new Handler();
@@ -411,21 +440,55 @@ public class HomeFragment extends Fragment {
                                 getdataViewtotalday_New();
                             }
                         };handler.postDelayed(runnable,100);
-                        changetype.setText("Percentage");
+                        //changetype.setText("Word count");
+                        ModeG.setText("GraphMode : Percentage");
+                        Log.d("TEST_SHOW_DAY", "TEST CHAEK :" + "OKAY");
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
                         Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+                        //change from Percentage to word count
                     }
                 }
 
-
             }
         });
-        viewAll.setOnClickListener(new View.OnClickListener() {
+
+        view_Only_Device.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (CC == true) {
+                    ModeD.setText("Only Device");
+                    view_Only_Device.setBackgroundResource(R.drawable.buttonreport02);
+                    view_Only_Device.setTextColor(Color.WHITE);
+                    view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
+                    view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
+                    CC=false;
+                    resultview=false;
+                    wait5.setText(" Please wait 5 second");
+                    nextpageonclick();
+                    newviewAllday();
+                    viewtotalday();
+                    viewtotaltimeday();
+                    wordmin();
+                    continuemaxday();
+                    wrongwordday();
 
-                if(resultview==false){
-                    resultview=true;
+                    TV="Mode:Only Device";
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK CC :" + "Only");
+                }
+            }
+        });
+
+        view_All_Device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (CC == false) {
+                    ModeD.setText("All Device");
+                    view_All_Device.setBackgroundResource(R.drawable.buttonreport02);
+                    view_All_Device.setTextColor(Color.WHITE);
+                    view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
+                    view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
+                    CC=true;
                     wait5.setText(" Please wait 5 second");
                     nextpageonclick();
                     /*
@@ -442,10 +505,6 @@ public class HomeFragment extends Fragment {
                     getdataContinuemax_New();
                     getdataViewtotaltimeday_New();
                     getdataViewWrongword_New();
-
-
-
-
                     Handler handler = new Handler();
                     Runnable runnable = new Runnable() {
                         @Override
@@ -454,28 +513,9 @@ public class HomeFragment extends Fragment {
                             getdataViewtotalday_New();
                         }
                     };handler.postDelayed(runnable,100);
-
-                    viewAll.setText("device only");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
-                    //change from Percentage to word count
-                }else if(resultview==true){
-                    resultview=false;
-                    wait5.setText(" Please wait 5 second");
-                    nextpageonclick();
-                    newviewAllday();
-                    viewtotalday();
-                    viewtotaltimeday();
-                    wordmin();
-                    continuemaxday();
-                    wrongwordday();
-                    viewAll.setText("VIEW ALL");
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                    Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
-
+                    TV="Mode:All Deivce";
+                    Log.d("TEST_SHOW_DAY", "TEST CHAEK CC :" + "ALL");
                 }
-
             }
         });
 
@@ -518,6 +558,7 @@ public class HomeFragment extends Fragment {
                         in.putExtra("continuemaxday",continuemaxday);
                         in.putExtra("wordtop",wordtop);
                         in.putExtra("wordtrans",wordtrans);
+                        in.putExtra("TV",TV);
                         startActivity(in);
 
                     }

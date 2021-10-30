@@ -5,7 +5,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +18,22 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.speechynew.Rertofit.ApiClient;
+import com.example.speechynew.Rertofit.ApiInterface;
 import com.example.speechynew.agent.MyReceiver;
+import com.example.speechynew.connectDB.DataScheduler2;
 import com.example.speechynew.connectDB.Scheduler;
 import com.example.speechynew.connectDB.Status;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.content.Context.ALARM_SERVICE;
 
@@ -508,6 +519,8 @@ public class SchedulerAdapter extends BaseAdapter {
         getmonthcalendar = calendar.getTime().getMonth();
         getyearcalendar = calendar.getTime().getYear();
     }
+
+
 
 }
 
