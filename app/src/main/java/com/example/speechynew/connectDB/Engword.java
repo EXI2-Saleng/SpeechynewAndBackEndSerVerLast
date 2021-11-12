@@ -17,7 +17,7 @@ import static com.example.speechynew.connectDB.Engwordinterface.YEARENG;
 import static com.example.speechynew.connectDB.Engwordinterface.HOURENG;
 import static com.example.speechynew.connectDB.Engwordinterface.MINUTEENG;
 import static com.example.speechynew.connectDB.Engwordinterface.SECONDENG;
-import static com.example.speechynew.connectDB.Wordinterface.DAY;
+
 import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 
 

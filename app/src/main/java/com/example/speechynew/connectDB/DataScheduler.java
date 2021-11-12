@@ -13,6 +13,10 @@ public class DataScheduler {
     private String USER_ID;
 
     @Expose
+    @SerializedName("ID")
+    private String ID;
+
+    @Expose
     @SerializedName("scheduler")
     private String scheduler;
 
@@ -174,5 +178,13 @@ public class DataScheduler {
 
     public void setMessages(String messages) {
         this.messages = messages;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
     }
 }

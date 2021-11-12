@@ -148,7 +148,9 @@ public class PopActivity extends Activity {
 
 
                 Toast.makeText(PopActivity.this, "SaveData Successfully\n"+email+"\n"+ET_NICKNAME.getText().toString(), Toast.LENGTH_LONG).show();
+
                 startActivity(new Intent(PopActivity.this,SettinglangActivity.class));
+
                 finish();
             }
         });

@@ -10,6 +10,7 @@ import android.provider.BaseColumns;
 import static com.example.speechynew.connectDB.Continuemaxinterface.TABLE_NAME10;
 import static com.example.speechynew.connectDB.Schedulerinterface.STATUS;
 import static com.example.speechynew.connectDB.Schedulerinterface.TABLE_NAME9;
+import static com.example.speechynew.connectDB.Wordinterface.DAY;
 import static com.example.speechynew.connectDB.Wordinterface.SECOND;
 import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 import static com.example.speechynew.connectDB.Wordinterface.WORDD;

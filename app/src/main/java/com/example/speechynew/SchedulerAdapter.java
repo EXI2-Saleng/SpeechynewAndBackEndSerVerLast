@@ -26,6 +26,7 @@ import com.example.speechynew.connectDB.Scheduler;
 import com.example.speechynew.connectDB.Status;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -68,6 +69,7 @@ public class SchedulerAdapter extends BaseAdapter {
     Calendar calcurrent;
     Calendar calstart;
     Calendar calstop;
+    ApiInterface apiInterface;
 
     SchedulerAdapter(Context applicationContext,ArrayList<String> listid, ArrayList<String> listday, ArrayList<String> listdate,
                      ArrayList<String> listmonth, ArrayList<String> listyear, ArrayList<String> liststarthour, ArrayList<String> liststartminute,
@@ -191,6 +193,9 @@ public class SchedulerAdapter extends BaseAdapter {
                 //delete data in database
                 scheduler.delete(Integer.parseInt(listid.get(position)));
 
+                DeleteScheduler(listid.get(position));
+
+
                 //cancel scheduler start time created
                 Intent intent = new Intent(mContext, MyReceiver.class);
                 intent.putExtra("id",listid.get(position));
@@ -268,6 +273,7 @@ public class SchedulerAdapter extends BaseAdapter {
                                              getmonthcalendar+1,getyearcalendar+1900,"Active");*/
 
                             scheduler.updatestatus(Integer.parseInt(listid.get(position)),"Active");
+                            UpdateStatus(listid.get(position),"Active");
 
                             checkday(getdaycalendar);
                             checkmonth(getmonthcalendar+1);
@@ -284,6 +290,7 @@ public class SchedulerAdapter extends BaseAdapter {
                                              getmonthcalendar+1,getyearcalendar+1900,"Active");*/
 
                             scheduler.updatestatus(Integer.parseInt(listid.get(position)),"Active");
+                            UpdateStatus(listid.get(position),"Active");
 
                         }
 
@@ -331,6 +338,7 @@ public class SchedulerAdapter extends BaseAdapter {
                                              getmonthcalendar+1,getyearcalendar+1900,"Inactive");*/
 
                             scheduler.updatestatus(Integer.parseInt(listid.get(position)),"Inactive");
+                            UpdateStatus(listid.get(position),"Inactive");
 
                             checkday(getdaycalendar);
                             checkmonth(getmonthcalendar+1);
@@ -343,6 +351,7 @@ public class SchedulerAdapter extends BaseAdapter {
                                              getmonthcalendar+1,getyearcalendar+1900,"Inactive");*/
 
                             scheduler.updatestatus(Integer.parseInt(listid.get(position)),"Inactive");
+                            UpdateStatus(listid.get(position),"Inactive");
 
                         }
 
@@ -518,6 +527,52 @@ public class SchedulerAdapter extends BaseAdapter {
         getdatecalendar = calendar.getTime().getDate();
         getmonthcalendar = calendar.getTime().getMonth();
         getyearcalendar = calendar.getTime().getYear();
+    }
+    public void DeleteScheduler(String ID){
+        String ID1=ID;
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+        String USER_ID = acct.getId();
+        //Log.d("TEST_DELETE_scheduler", "USER_ID:" +USER_ID);
+        //Log.d("TEST_DELETE_scheduler", "GET ID:" + ID1);
+        DataScheduler2 deletedata = new DataScheduler2(USER_ID,ID1);
+        Call<DataScheduler2>Calldeletedata =apiInterface.DeleteCheduler(deletedata);
+        Calldeletedata.enqueue(new Callback<DataScheduler2>() {
+            @Override
+            public void onResponse(Call<DataScheduler2> call, Response<DataScheduler2> response) {
+                Log.e("TEST_DELETE_scheduler", "Messages:" + response.body().getMessages());
+            }
+
+            @Override
+            public void onFailure(Call<DataScheduler2> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void UpdateStatus(String ID,String STU){
+        String ID1 = ID;
+        String STU1 = STU;
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(mContext);
+        String USER_ID = acct.getId();
+        Log.d("TEST_UpdateStatus", "USER_ID:" +USER_ID);
+        Log.d("TEST_UpdateStatus", "GET ID:" + ID1);
+        Log.d("TEST_UpdateStatus", "GET STU:" + STU1);
+        DataScheduler2 UpdateSTU = new DataScheduler2(USER_ID,ID1,STU1);
+        Call<DataScheduler2>CallUpdate = apiInterface.UpdateCheduler(UpdateSTU);
+        CallUpdate.enqueue(new Callback<DataScheduler2>() {
+            @Override
+            public void onResponse(Call<DataScheduler2> call, Response<DataScheduler2> response) {
+                Log.e("TEST_UpdateStatus", "Messages:" + response.body().getMessages());
+            }
+
+            @Override
+            public void onFailure(Call<DataScheduler2> call, Throwable t) {
+
+            }
+        });
+
     }
 
 

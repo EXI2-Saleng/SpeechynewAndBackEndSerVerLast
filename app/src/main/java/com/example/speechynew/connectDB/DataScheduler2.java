@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class DataScheduler2 {
     String USER_ID;
+    String ID;
     String day;
     String date;
     String month;
@@ -19,10 +20,13 @@ public class DataScheduler2 {
     @SerializedName("messages")
     private String messages;
 
+
+
     public DataScheduler2(){}
 
-    public DataScheduler2(String USER_ID, String day, String date, String month, String year, String starthour, String startminute, String stophour, String stopminute, String status) {
+    public DataScheduler2(String USER_ID, String ID, String day, String date, String month, String year, String starthour, String startminute, String stophour, String stopminute, String status) {
         this.USER_ID = USER_ID;
+        this.ID = ID;
         this.day = day;
         this.date = date;
         this.month = month;
@@ -33,6 +37,18 @@ public class DataScheduler2 {
         this.stopminute = stopminute;
         this.status = status;
     }
+
+    public DataScheduler2(String USER_ID, String ID) {
+        this.USER_ID = USER_ID;
+        this.ID = ID;
+    }
+
+    public DataScheduler2(String USER_ID, String ID, String status) {
+        this.USER_ID = USER_ID;
+        this.ID = ID;
+        this.status = status;
+    }
+
 
     public String getUSER_ID() {
         return USER_ID;
@@ -121,4 +137,15 @@ public class DataScheduler2 {
     public void setMessages(String messages) {
         this.messages = messages;
     }
+
+
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
 }

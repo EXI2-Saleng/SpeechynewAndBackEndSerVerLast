@@ -40,6 +40,8 @@ import com.example.speechynew.connectDB.DataContinuemax2;
 import com.example.speechynew.connectDB.DataEngword;
 import com.example.speechynew.connectDB.DataEngword2;
 import com.example.speechynew.connectDB.DataRawdata;
+import com.example.speechynew.connectDB.DataScheduler;
+import com.example.speechynew.connectDB.DataScheduler2;
 import com.example.speechynew.connectDB.DataTime;
 import com.example.speechynew.connectDB.DataTime2;
 import com.example.speechynew.connectDB.DataUsernew;
@@ -514,7 +516,9 @@ public class MainActivity extends AppCompatActivity {
 
 
               //  B_Rawdata();
-                //View_Test();
+                View_Test();
+                getCheduler();
+                //up_TEST();
 
                 
 
@@ -1071,39 +1075,151 @@ public class MainActivity extends AppCompatActivity {
         while (reDef1.moveToNext()) {
             //DataAnyword2 DataAnyword2 = new DataAnyword2(USER_ID, device, reDef1.getString(1), reDef1.getString(3),
               //      reDef1.getString(4), reDef1.getString(5), reDef1.getString(6), reDef1.getString(7), reDef1.getString(8));
-
             if (!reDef1.getString(2).equals("99")){
-            Log.d("VIEW_TEST", "ID: " + reDef1.getString(0)+" Day :"+ reDef1.getString(2));
-             }
+                Log.d("VIEW_TEST", "ID: " + reDef1.getString(0)+" STATUS :"+ reDef1.getString(2));
+
+            }
             //anothereng.updatestatus(Integer.parseInt(reDef1.getString(0)),"1");
 
         }
+
         Log.d("VIEW_TEST", "Engword");
         while (reDef2.moveToNext()) {
             if (!reDef2.getString(2).equals("99")){
-                Log.d("VIEW_TEST", "ID: " + reDef2.getString(0)+" Day :"+ reDef2.getString(2));
+                Log.d("VIEW_TEST", "ID: " + reDef2.getString(0)+" STATUS :"+ reDef2.getString(2));
             }
         }
         Log.d("VIEW_TEST", "ConMaxword");
         while (reDef3.moveToNext()) {
             if (!reDef3.getString(2).equals("99")){
-                Log.d("VIEW_TEST", "ID: " + reDef3.getString(0)+" Day :"+ reDef3.getString(2));
+                Log.d("VIEW_TEST", "ID: " + reDef3.getString(0)+" STATUS :"+ reDef3.getString(2));
             }
         }
         Log.d("VIEW_TEST", "Timeword");
         while (reDef4.moveToNext()) {
             if (!reDef4.getString(1).equals("99")){
-                Log.d("VIEW_TEST", "ID: " + reDef4.getString(0)+" Day :"+ reDef4.getString(1));
+                Log.d("VIEW_TEST", "ID: " + reDef4.getString(0)+" STATUS :"+ reDef4.getString(1));
             }
         }
         Log.d("VIEW_TEST", "Wrongword");
         while (reDef5.moveToNext()) {
             if (!reDef5.getString(2).equals("99")){
-                Log.d("VIEW_TEST", "ID: " + reDef5.getString(0)+" Day :"+ reDef5.getString(2));
+                Log.d("VIEW_TEST", "ID: " + reDef5.getString(0)+" STATUS :"+ reDef5.getString(2));
             }
+
+
         }
 
 
     }
+    public void up_TEST() {
 
+        Cursor reDef1 = anothereng.getAlldata();
+        Cursor reDef2 = eng.getAlldata();
+        Cursor reDef3 = continuemax.getAlldata();
+        Cursor reDef4 = time.getAlldata();
+        Cursor reDef5 = wrongword.getAlldata();
+
+        Log.d("VIEW_TEST", "Anyword");
+
+        while (reDef1.moveToNext()) {
+            if (reDef1.getString(3).equals("30") && reDef1.getString(4).equals("10")){
+                Log.d("VIEW_TEST", "ID: " + reDef1.getString(0)+" STATUS :"+ reDef1.getString(2)
+                        +"DATE: "+reDef1.getString(3)+"MONTH: "+reDef1.getString(4));
+                //anothereng.updatestatus(Integer.parseInt(reDef1.getString(0)),"0");
+            }
+            //anothereng.updatestatus(Integer.parseInt(reDef1.getString(0)),"1");
+
+        }
+
+        Log.d("VIEW_TEST", "Engword");
+        while (reDef2.moveToNext()) {
+            if (reDef2.getString(3).equals("30") && reDef2.getString(4).equals("10")){
+                Log.d("VIEW_TEST", "ID: " + reDef2.getString(0)+" STATUS :"+ reDef2.getString(2)
+                +"DATE: "+reDef2.getString(3)+"MONTH: "+reDef2.getString(4));
+               // eng.updatestatus(Integer.parseInt(reDef2.getString(0)),"0");
+
+            }
+        }
+        Log.d("VIEW_TEST", "ConMaxword");
+        while (reDef3.moveToNext()) {
+            if (reDef3.getString(3).equals("30") && reDef3.getString(4).equals("10")){
+                Log.d("VIEW_TEST", "ID: " + reDef3.getString(0)+" STATUS :"+ reDef3.getString(2)
+                        +"DATE: "+reDef3.getString(3)+"MONTH: "+reDef3.getString(4));
+                //continuemax.updatestatus(Integer.parseInt(reDef3.getString(0)),"0");
+
+            }
+        }
+        Log.d("VIEW_TEST", "Timeword");
+        while (reDef4.moveToNext()) {
+            if (reDef4.getString(2).equals("30") && reDef4.getString(3).equals("10")){
+                Log.d("VIEW_TEST", "ID: " + reDef4.getString(0)+" STATUS :"+ reDef4.getString(1)
+                        +"DATE: "+reDef4.getString(2)+"MONTH: "+reDef4.getString(3));
+                //time.updatestatus(Integer.parseInt(reDef4.getString(0)),"0");
+
+            }
+        }
+        Log.d("VIEW_TEST", "Wrongword");
+        while (reDef5.moveToNext()) {
+            if (reDef5.getString(3).equals("30") && reDef5.getString(4).equals("10")){
+                Log.d("VIEW_TEST", "ID: " + reDef5.getString(0)+" STATUS :"+ reDef5.getString(2)
+                        +"DATE: "+reDef5.getString(3)+"MONTH: "+reDef5.getString(4));
+               // wrongword.updatestatus(Integer.parseInt(reDef5.getString(0)),"0");
+
+            }
+
+
+        }
+
+
+    }
+    public void getCheduler(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        Call<List<DataScheduler>>Calldata = apiInterface.getCheduler(USER_ID);
+        Calldata.enqueue(new Callback<List<DataScheduler>>() {
+            @Override
+            public void onResponse(Call<List<DataScheduler>> call, Response<List<DataScheduler>> response) {
+                List<DataScheduler>Listdata = response.body();
+                if (Listdata.size()!=0){
+                    for (int i=0;i<Listdata.size();i++){
+                        Log.d("TEST_GET_Cheduler", "Day : " +Listdata.get(i).getDay());
+                        Log.d("TEST_GET_Cheduler", "Date: " +Listdata.get(i).getDate());
+                        Log.d("TEST_GET_Cheduler", "Month : " +Listdata.get(i).getMonth());
+                        Log.d("TEST_GET_Cheduler", "Year : " +Listdata.get(i).getYear());
+                        Log.d("TEST_GET_Cheduler", "StartH : " +Listdata.get(i).getStarthour());
+                        Log.d("TEST_GET_Cheduler", "StartM: " +Listdata.get(i).getStartminute());
+                        Log.d("TEST_GET_Cheduler", "StopH: " +Listdata.get(i).getStophour());
+                        Log.d("TEST_GET_Cheduler", "StipM: " +Listdata.get(i).getStopminute());
+                        Log.d("TEST_GET_Cheduler", "Status: " +Listdata.get(i).getStatus());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataScheduler>> call, Throwable t) {
+
+            }
+        });
+
+          /*
+        SQLiteDatabase dbscheduler = scheduler.getWritableDatabase();
+        ContentValues valuescheduler = new ContentValues();
+        valuescheduler.put(DAYSTART,getdaycalendar);
+        valuescheduler.put(DATESTART,getdatecalendar);
+        valuescheduler.put(MONTHSTART,getmonthcalendar+1);
+        valuescheduler.put(YEARSTART,getyearcalendar+1900);
+        valuescheduler.put(TIMESTARTHOUR,starthourset);
+        valuescheduler.put(TIMESTARTMINUTE,startminuteset);
+        valuescheduler.put(TIMESTOPHOUR,stophourset);
+        valuescheduler.put(TIMESTOPMINUTE,stopminuteset);
+        valuescheduler.put(STATUS,"Active");
+        dbscheduler.insertOrThrow(TABLE_NAME9, null, valuescheduler);
+
+           */
+
+
+
+    }
 }

@@ -26,9 +26,12 @@ import android.widget.TextView;
 
 import com.example.speechynew.Rertofit.ApiClient;
 import com.example.speechynew.Rertofit.ApiInterface;
+import com.example.speechynew.connectDB.DataScheduler;
+import com.example.speechynew.connectDB.DataScheduler2;
 import com.example.speechynew.connectDB.DataSetting;
 import com.example.speechynew.connectDB.DataSettingnew;
 import com.example.speechynew.connectDB.DataUsernew;
+import com.example.speechynew.connectDB.Scheduler;
 import com.example.speechynew.connectDB.Setting;
 import com.example.speechynew.suggestion.Suggestionchallenge;
 import com.example.speechynew.suggestion.Suggestionpercent;
@@ -49,6 +52,17 @@ import static com.example.speechynew.connectDB.Settinginterface.CHADAY;
 import static com.example.speechynew.connectDB.Settinginterface.NATIVELANG;
 import static com.example.speechynew.connectDB.Settinginterface.PERCENTAGENONE;
 import static com.example.speechynew.connectDB.Settinginterface.TABLE_NAME0;
+
+import static com.example.speechynew.connectDB.Schedulerinterface.DATESTART;
+import static com.example.speechynew.connectDB.Schedulerinterface.DAYSTART;
+import static com.example.speechynew.connectDB.Schedulerinterface.MONTHSTART;
+import static com.example.speechynew.connectDB.Schedulerinterface.STATUS;
+import static com.example.speechynew.connectDB.Schedulerinterface.TABLE_NAME9;
+import static com.example.speechynew.connectDB.Schedulerinterface.TIMESTARTHOUR;
+import static com.example.speechynew.connectDB.Schedulerinterface.TIMESTARTMINUTE;
+import static com.example.speechynew.connectDB.Schedulerinterface.TIMESTOPHOUR;
+import static com.example.speechynew.connectDB.Schedulerinterface.TIMESTOPMINUTE;
+import static com.example.speechynew.connectDB.Schedulerinterface.YEARSTART;
 
 public class SettinglangActivity extends AppCompatActivity {
 
@@ -72,6 +86,7 @@ public class SettinglangActivity extends AppCompatActivity {
     String chaday;
     double perc;
     ApiInterface apiInterface;
+    Scheduler scheduler;
     Double Per;
     int cha;
     String Lang;
@@ -102,11 +117,16 @@ public class SettinglangActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         CH = i.getIntExtra("CH",1);
+        int CHNEW = i.getIntExtra("CHNEW",1);
         Log.d("API_DATA_BackupSetting","CH :"+CH);
         if (CH==99){
             getSetting();
-            startActivity(new Intent(SettinglangActivity.this,MainActivity.class));
+            Intent intent = new Intent(SettinglangActivity.this, Listscheduler.class);
+            intent.putExtra("CH",99);
+            startActivity(intent);
+           // startActivity(new Intent(SettinglangActivity.this,MainActivity.class));
         }
+
         //set text from database
         SQLiteDatabase db = setting.getWritableDatabase();
         Cursor res = db.rawQuery("select * from " + TABLE_NAME0, null);
@@ -447,6 +467,12 @@ public class SettinglangActivity extends AppCompatActivity {
         });
 
     }
+
+
+
+
+
+
   /*  CountDownTimer cdt = new CountDownTimer(100, 1000) {
         int value = 0;
         public void onTick(long millisUntilFinished) {

@@ -415,6 +415,9 @@ Call<DataAnyword> getDataAnywordnew(@Query("USER_ID") String USER_ID,
     Call<DataUsernew> getDataDevice(@Query("USER_ID") String USER_ID,
                                     @Query("device") String device);
 
+    @GET("dataScheduler/getScheduler.php/{USER_ID}")
+    Call<List<DataScheduler>> getCheduler(@Query("USER_ID") String USER_ID);
+
     ////////////////////////POST_RAW///////////////////////////////////////////
     @POST("backupnew/backupSettingnew.php")
     Call<DataSettingnew>DataSettingnew(@Body DataSettingnew DataSettingnew);
@@ -439,6 +442,12 @@ Call<DataAnyword> getDataAnywordnew(@Query("USER_ID") String USER_ID,
 
     @POST("backupnew/backupScheduler.php")
     Call<DataScheduler2>DataChedulernew(@Body DataScheduler2 DataScheduler2);
+
+    @POST("dataScheduler/deleteScheduler.php")
+    Call<DataScheduler2>DeleteCheduler(@Body DataScheduler2 DataScheduler2);
+
+    @POST("dataScheduler/updateScheduler.php")
+    Call<DataScheduler2>UpdateCheduler(@Body DataScheduler2 DataScheduler2);
 
 
 

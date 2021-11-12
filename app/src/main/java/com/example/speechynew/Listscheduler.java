@@ -24,6 +24,7 @@ import android.widget.TimePicker;
 
 import com.example.speechynew.Rertofit.ApiClient;
 import com.example.speechynew.Rertofit.ApiInterface;
+import com.example.speechynew.connectDB.DataScheduler;
 import com.example.speechynew.connectDB.DataScheduler2;
 import com.example.speechynew.connectDB.Scheduler;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,6 +33,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,7 +85,7 @@ public class Listscheduler extends AppCompatActivity {
     int getdatecalendar;
     int getmonthcalendar;
     int getyearcalendar;
-
+    int CH;
 
 
     @Override
@@ -108,6 +110,21 @@ public class Listscheduler extends AppCompatActivity {
         getdatecalendar = calendar.getTime().getDate();
         getmonthcalendar = calendar.getTime().getMonth();
         getyearcalendar = calendar.getTime().getYear();
+
+        Intent i = getIntent();
+        CH = i.getIntExtra("CH",1);
+        if (CH==99){
+            getCheduler();
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    saveCheduler();
+                }
+            };handler.postDelayed(runnable,100);
+
+            startActivity(new Intent(Listscheduler.this,MainActivity.class));
+        }
 
         showlist();
 
@@ -457,7 +474,7 @@ public class Listscheduler extends AppCompatActivity {
         Cursor reDef1 = scheduler.getAlldata();
         String USER_ID = acct.getId();
         while(reDef1.moveToNext()){
-            DataScheduler2 DataScheduler = new DataScheduler2(USER_ID,reDef1.getString(1),reDef1.getString(2),
+            DataScheduler2 DataScheduler = new DataScheduler2(USER_ID,reDef1.getString(0),reDef1.getString(1),reDef1.getString(2),
                     reDef1.getString(3),reDef1.getString(4),reDef1.getString(5),
                     reDef1.getString(6),reDef1.getString(7),reDef1.getString(8),reDef1.getString(9));
             Call<DataScheduler2>callscheduler2 =apiInterface.DataChedulernew(DataScheduler);
@@ -474,6 +491,73 @@ public class Listscheduler extends AppCompatActivity {
             });
 
         }
+    }
+
+    public void getCheduler(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        Call<List<DataScheduler>>Calldata = apiInterface.getCheduler(USER_ID);
+        Calldata.enqueue(new Callback<List<DataScheduler>>() {
+            @Override
+            public void onResponse(Call<List<DataScheduler>> call, Response<List<DataScheduler>> response) {
+                List<DataScheduler>Listdata = response.body();
+                if (Listdata.size()!=0){
+                    for (int i=0;i<Listdata.size();i++){
+                        Log.d("TEST_GET_Cheduler", "Day : " +Listdata.get(i).getDay());
+                        Log.d("TEST_GET_Cheduler", "Date: " +Listdata.get(i).getDate());
+                        Log.d("TEST_GET_Cheduler", "Month : " +Listdata.get(i).getMonth());
+                        Log.d("TEST_GET_Cheduler", "Year : " +Listdata.get(i).getYear());
+                        Log.d("TEST_GET_Cheduler", "StartH : " +Listdata.get(i).getStarthour());
+                        Log.d("TEST_GET_Cheduler", "StartM: " +Listdata.get(i).getStartminute());
+                        Log.d("TEST_GET_Cheduler", "StopH: " +Listdata.get(i).getStophour());
+                        Log.d("TEST_GET_Cheduler", "StipM: " +Listdata.get(i).getStophour());
+                        Log.d("TEST_GET_Cheduler", "Status: " +Listdata.get(i).getStatus());
+                        SQLiteDatabase dbscheduler = scheduler.getWritableDatabase();
+                        ContentValues valuescheduler = new ContentValues();
+                        valuescheduler.put(DAYSTART,Listdata.get(i).getDay());
+                        valuescheduler.put(DATESTART,Listdata.get(i).getDate());
+                        valuescheduler.put(MONTHSTART,Listdata.get(i).getMonth());
+                        valuescheduler.put(YEARSTART,Listdata.get(i).getYear());
+                        valuescheduler.put(TIMESTARTHOUR,Listdata.get(i).getStarthour());
+                        valuescheduler.put(TIMESTARTMINUTE,Listdata.get(i).getStartminute());
+                        valuescheduler.put(TIMESTOPHOUR,Listdata.get(i).getStophour());
+                        valuescheduler.put(TIMESTOPMINUTE,Listdata.get(i).getStophour());
+                        valuescheduler.put(STATUS,Listdata.get(i).getStatus());
+                        dbscheduler.insertOrThrow(TABLE_NAME9, null, valuescheduler);
+                        DeleteScheduler(Listdata.get(i).getID());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DataScheduler>> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public void DeleteScheduler(String ID){
+        String ID1=ID;
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        String USER_ID = acct.getId();
+        //Log.d("TEST_DELETE_scheduler", "USER_ID:" +USER_ID);
+        //Log.d("TEST_DELETE_scheduler", "GET ID:" + ID1);
+        DataScheduler2 deletedata = new DataScheduler2(USER_ID,ID1);
+        Call<DataScheduler2>Calldeletedata =apiInterface.DeleteCheduler(deletedata);
+        Calldeletedata.enqueue(new Callback<DataScheduler2>() {
+            @Override
+            public void onResponse(Call<DataScheduler2> call, Response<DataScheduler2> response) {
+                Log.e("TEST_DELETE_scheduler", "Messages:" + response.body().getMessages());
+            }
+
+            @Override
+            public void onFailure(Call<DataScheduler2> call, Throwable t) {
+
+            }
+        });
     }
 
 }
