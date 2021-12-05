@@ -4,15 +4,20 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -29,6 +34,7 @@ import com.example.speechynew.connectDB.DataAnyword;
 import com.example.speechynew.connectDB.DataContinuemax;
 import com.example.speechynew.connectDB.DataEngword;
 import com.example.speechynew.connectDB.DataTime;
+import com.example.speechynew.connectDB.DataUsernew;
 import com.example.speechynew.connectDB.DataWrongword;
 import com.example.speechynew.connectDB.Engword;
 import com.example.speechynew.connectDB.Timeprocess;
@@ -64,7 +70,7 @@ import static com.example.speechynew.connectDB.Timeprocessinterface.TABLE_NAME5;
 import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 import static com.example.speechynew.connectDB.Wrongwordinterface.TABLE_NAME11;
 
-public class NotificationsFragment extends Fragment {
+public class NotificationsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private NotificationsViewModel notificationsViewModel;
     BarChart mChart;
@@ -89,6 +95,7 @@ public class NotificationsFragment extends Fragment {
 
 
     boolean resultview;
+    Spinner spinner;
 
     TextView wait5month;
 
@@ -127,6 +134,15 @@ public class NotificationsFragment extends Fragment {
     int[] arraytesteng1 = new int[32];
     int[] arraytestnone1 = new int[32];
 
+    boolean typeDevice;
+    String T_Device;
+    String N_Device;
+
+    ArrayList<String> NameDeives = new ArrayList<>();
+    ArrayList<String> Deives = new ArrayList<>();
+    ImageButton CH_device;
+    String device0 = Build.BOOTLOADER;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         notificationsViewModel = ViewModelProviders.of(this).get(NotificationsViewModel.class);
@@ -147,9 +163,12 @@ public class NotificationsFragment extends Fragment {
         ModeG = root.findViewById(R.id.ModeG);
         ModeD = root.findViewById(R.id.ModeD);
         changetype2 = root.findViewById(R.id.changetype2);
+        spinner = root.findViewById(R.id.spinner2);
+        CH_device = root.findViewById(R.id.CH_Device);
 
         resulttype = false;
         resultview = false;
+        typeDevice =false;
         TV="Mode:Only Device";
 
         eng = new Engword(root.getContext());
@@ -173,7 +192,7 @@ public class NotificationsFragment extends Fragment {
         mChart.setFitBars(true);
 
         wait5month.setText(" Please wait 5 second");
-
+        sping();
         nextpageonclick();
         viewdatamonth();
         viewtotalmonth();
@@ -182,6 +201,14 @@ public class NotificationsFragment extends Fragment {
         continuemaxmonth();
         wrongwordtop3();
 
+
+        CH_device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"Current Device" , Toast.LENGTH_LONG).show();
+
+            }
+        });
 
         //minus month -
         graphminus.setOnClickListener(new View.OnClickListener() {
@@ -196,9 +223,20 @@ public class NotificationsFragment extends Fragment {
 
                 wait5month.setText(" Please wait 5 second");
 
-                if (resultview == true){
-                    Log.e("TEST_SHOW_MONTH", "TEST CHAEK :" + "-----");
+                if (typeDevice == true){
                     nextpageonclick();
+                    getdataViewAnywordMonth_device(T_Device);
+                    getdataViewtotaltimemonth_device(T_Device);
+                    getdataViewcontinuemaxMonth_device(T_Device);
+                    getdataViewWrongwordMonth_device(T_Device);
+                    getdataViewtotalMonth_device(T_Device);
+                }
+
+                else {
+
+                    if (resultview == true) {
+                        Log.e("TEST_SHOW_MONTH", "TEST CHAEK :" + "-----");
+                        nextpageonclick();
                     /*
                     getdataViewAnywordMonth();
                     getdataViewtotaltimemonth();
@@ -207,23 +245,23 @@ public class NotificationsFragment extends Fragment {
                     getdataViewtotalMonth();
                      */
 
-                    ///////////
-                    getdataViewAnywordMonthNew();
-                    getdataViewtotaltimemonthNew();
-                    getdataViewcontinuemaxMonthNew();
-                    getdataViewWrongwordMonthNew();
-                    getdataViewtotalMonthNew();
+                        ///////////
+                        getdataViewAnywordMonthNew();
+                        getdataViewtotaltimemonthNew();
+                        getdataViewcontinuemaxMonthNew();
+                        getdataViewWrongwordMonthNew();
+                        getdataViewtotalMonthNew();
 
-                }
-                else {
-                    nextpageonclick();
-                    checkmonth();
-                    viewdatamonth();
-                    viewtotalmonth();
-                    viewtotaltimemonth();
-                    wordminmonth();
-                    continuemaxmonth();
-                    wrongwordtop3();
+                    } else {
+                        nextpageonclick();
+                        checkmonth();
+                        viewdatamonth();
+                        viewtotalmonth();
+                        viewtotaltimemonth();
+                        wordminmonth();
+                        continuemaxmonth();
+                        wrongwordtop3();
+                    }
                 }
 
 
@@ -255,9 +293,19 @@ public class NotificationsFragment extends Fragment {
 
                     wait5month.setText(" Please wait 5 second");
 
-                    if (resultview == true){
-                        Log.e("TEST_SHOW_MONTH", "TEST CHAEK :" + "+++++");
+                    if (typeDevice == true){
                         nextpageonclick();
+                        getdataViewAnywordMonth_device(T_Device);
+                        getdataViewtotaltimemonth_device(T_Device);
+                        getdataViewcontinuemaxMonth_device(T_Device);
+                        getdataViewWrongwordMonth_device(T_Device);
+                        getdataViewtotalMonth_device(T_Device);
+                    }
+                    else {
+
+                        if (resultview == true) {
+                            Log.e("TEST_SHOW_MONTH", "TEST CHAEK :" + "+++++");
+                            nextpageonclick();
                     /*
                     getdataViewAnywordMonth();
                     getdataViewtotaltimemonth();
@@ -265,22 +313,22 @@ public class NotificationsFragment extends Fragment {
                     getdataViewWrongwordMonth();
                     getdataViewtotalMonth();
                      */
-                        ///////////
-                        getdataViewAnywordMonthNew();
-                        getdataViewtotaltimemonthNew();
-                        getdataViewcontinuemaxMonthNew();
-                        getdataViewWrongwordMonthNew();
-                        getdataViewtotalMonthNew();
-                    }
-                    else {
-                        nextpageonclick();
-                        checkmonth();
-                        viewdatamonth();
-                        viewtotalmonth();
-                        viewtotaltimemonth();
-                        wordminmonth();
-                        continuemaxmonth();
-                        wrongwordtop3();
+                            ///////////
+                            getdataViewAnywordMonthNew();
+                            getdataViewtotaltimemonthNew();
+                            getdataViewcontinuemaxMonthNew();
+                            getdataViewWrongwordMonthNew();
+                            getdataViewtotalMonthNew();
+                        } else {
+                            nextpageonclick();
+                            checkmonth();
+                            viewdatamonth();
+                            viewtotalmonth();
+                            viewtotaltimemonth();
+                            wordminmonth();
+                            continuemaxmonth();
+                            wrongwordtop3();
+                        }
                     }
 
                 }
@@ -292,43 +340,57 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //change from word count to Percentage
-                if (resultview == false) {
-                    if (resulttype == true) {
-                        changetype.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype.setTextColor(Color.WHITE);
-                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype2.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = false;
-                        viewdatamonth();
+                if (typeDevice == true){
+                    changetype.setBackgroundResource(R.drawable.buttonreport04);
+                    changetype.setTextColor(Color.WHITE);
+                    changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                    changetype2.setTextColor(Color.parseColor("#024C6A"));
+                    resulttype = false;
+                    ModeG.setText("Word Count");
+                    getdataViewAnywordMonth_device(T_Device);
+                    getdataViewtotalMonth_device(T_Device);
 
-
-                        ModeG.setText("GraphMode : Word count");
-
-                        //change from Percentage to word count
-                    }
                 }
+
                 else {
-                    if (resulttype == true) {
-                        changetype.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype.setTextColor(Color.WHITE);
-                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype2.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = false;
+
+                    if (resultview == false) {
+                        if (resulttype == true) {
+                            changetype.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype.setTextColor(Color.WHITE);
+                            changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype2.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = false;
+                            viewdatamonth();
+
+
+                            ModeG.setText("Word Count");
+
+                            //change from Percentage to word count
+                        }
+                    } else {
+                        if (resulttype == true) {
+                            changetype.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype.setTextColor(Color.WHITE);
+                            changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype2.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = false;
                         /*
                         getdataViewAnywordMonth();
                         getdataViewtotalMonth();
 
                          */
-                        /////////////////////
-                        getdataViewAnywordMonthNew();
-                        getdataViewtotalMonthNew();
+                            /////////////////////
+                            getdataViewAnywordMonthNew();
+                            getdataViewtotalMonthNew();
 
-                        ModeG.setText("GraphMode : Word count");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                            ModeG.setText("Word Count");
+                            Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
-                        //change from Percentage to word count
+                            //change from Percentage to word count
+                        }
                     }
                 }
             }
@@ -337,40 +399,54 @@ public class NotificationsFragment extends Fragment {
         changetype2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (resultview == false) {
-                    if (resulttype == false) {
-                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype2.setTextColor(Color.WHITE);
-                        changetype.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = true;
-                        viewdatamonth();
-                        ModeG.setText("GraphMode : Percentage");
 
-                        //change from Percentage to word count
-                    }
+                if (typeDevice == true){
+                    changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                    changetype2.setTextColor(Color.WHITE);
+                    changetype.setBackgroundResource(R.drawable.buttonreport03);
+                    changetype.setTextColor(Color.parseColor("#024C6A"));
+                    resulttype = true;
+                    ModeG.setText("Percentage");
+                    getdataViewAnywordMonth_device(T_Device);
+                    getdataViewtotalMonth_device(T_Device);
+
                 }
                 else {
-                    if (resulttype == false) {
-                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype2.setTextColor(Color.WHITE);
-                        changetype.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = true;
+
+                    if (resultview == false) {
+                        if (resulttype == false) {
+                            changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype2.setTextColor(Color.WHITE);
+                            changetype.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = true;
+                            viewdatamonth();
+                            ModeG.setText("Percentage");
+
+                            //change from Percentage to word count
+                        }
+                    } else {
+                        if (resulttype == false) {
+                            changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype2.setTextColor(Color.WHITE);
+                            changetype.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = true;
                         /*
                         getdataViewAnywordMonth();
                         getdataViewtotalMonth();
 
                          */
-                        /////////////////////
-                        getdataViewAnywordMonthNew();
-                        getdataViewtotalMonthNew();
-                        ModeG.setText("GraphMode : Percentage");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                            /////////////////////
+                            getdataViewAnywordMonthNew();
+                            getdataViewtotalMonthNew();
+                            ModeG.setText("Percentage");
+                            Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
-                        //change from Percentage to word count
+                            //change from Percentage to word count
+                        }
                     }
                 }
             }
@@ -380,13 +456,16 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(resultview==true){
-                    ModeD.setText("Only Device");
+                    ModeD.setText("This Device ("+N_Device+")");
                     view_Only_Device.setBackgroundResource(R.drawable.buttonreport02);
                     view_Only_Device.setTextColor(Color.WHITE);
                     view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
                     view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     resultview=false;
+                    typeDevice =false;
+                    CH_device.setVisibility(View.INVISIBLE);
                     wait5month.setText(" Please wait 5 second");
+                    spinner.setSelection(0);
                     nextpageonclick();
                     checkmonth();
                     viewdatamonth();
@@ -416,7 +495,10 @@ public class NotificationsFragment extends Fragment {
                     view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
                     view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     resultview=true;
+                    typeDevice =false;
+                    CH_device.setVisibility(View.INVISIBLE);
                     wait5month.setText(" Please wait 5 second");
+                    spinner.setSelection(0);
                     nextpageonclick();
                                         /*
                     getdataViewAnywordMonth();
@@ -973,6 +1055,43 @@ public class NotificationsFragment extends Fragment {
             timegraph = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"
                     , "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"};
         }
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("TEST_SELECTED_DEVICE","NameDevice :"+parent.getItemAtPosition(position).toString());
+        Log.d("TEST_SELECTED_DEVICE","Device :"+Deives.get(position));
+        T_Device = Deives.get(position);
+        if (!T_Device.equals("Null")) {
+            view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
+            view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
+            view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
+            view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
+            ModeD.setText(parent.getItemAtPosition(position).toString());
+            TV="Mode:Device "+parent.getItemAtPosition(position).toString();
+            typeDevice = true;
+            wait5month.setText(" Please wait 5 second");
+            if (device0.equals(T_Device)){
+                CH_device.setVisibility(View.VISIBLE);
+            }
+            else {
+                CH_device.setVisibility(View.INVISIBLE);
+            }
+            nextpageonclick();
+            getdataViewAnywordMonth_device(T_Device);
+            getdataViewtotaltimemonth_device(T_Device);
+            getdataViewcontinuemaxMonth_device(T_Device);
+            getdataViewWrongwordMonth_device(T_Device);
+            getdataViewtotalMonth_device(T_Device);
+        }
+        else {
+            CH_device.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
     }
 
@@ -1967,9 +2086,455 @@ public class NotificationsFragment extends Fragment {
                 Log.d("TEST_GET_LISTDATA",t+"");
             }
         });
+    }
+    public void sping(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        NameDeives.add("SELECT DEVICE");
+        Deives.add("Null");
+        Call<DataUsernew>listcallgetdata = apiInterface.getdeviceall(USER_ID);
+        listcallgetdata.enqueue(new Callback<DataUsernew>() {
+            @Override
+            public void onResponse(Call<DataUsernew> call, Response<DataUsernew> response) {
+                if (response.isSuccessful()) {
+                    DataUsernew listdata = response.body();
+                    for (int i=0;i<listdata.getDatadevice().size();i++){
+
+                        NameDeives.add(listdata.getDatanamedevice().get(i));
+                        Deives.add(listdata.getDatadevice().get(i));
+                        if (listdata.getDatadevice().get(i).equals(device0)){
+                            N_Device=listdata.getDatanamedevice().get(i);
+                            ModeD.setText("This Device ("+N_Device+")");
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataUsernew> call, Throwable t) {
+
+            }
+        });
+
+        // ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_dropdown_item,NameDeives);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),R.layout.my_selecten_item,NameDeives);
+        adapter.setDropDownViewResource(R.layout.my_dropdown_item);
+
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+    }
+    public void getdataViewAnywordMonth_device(String device){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String email = firebaseUser.getEmail();
+        Log.d("TEST_SHOW_MONTH",datemonth);
+        Log.d("TEST_SHOW_MONTH","Email :"+email);
+
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytestnone2 = new int[32];
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
+        Call<DataAnyword>listcallgetdata = apiInterface.getDataAnywordMonth_device(USER_ID,device,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataAnyword>() {
+            @Override
+            public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
+                if (response.isSuccessful()) {
+                    DataAnyword listdata = response.body();
+                    if (listdata == null) {
+                        totalanother[0] = 0;
+                    } else {
+                        for (int i = 0; i < listdata.getDataword().size(); i++) {
+                            totalanother[0] += Integer.parseInt(listdata.getDataword().get(i));
+
+                            arraytestnone2[Integer.parseInt(listdata.getDatadate().get(i))]+=Integer.parseInt(listdata.getDataword().get(i));
+
+                        }
+                        StringBuffer buffer1 = new StringBuffer();
+                        for(int i = 0;i<32 ;i++){
+                            buffer1.append(":"+arraytestnone2[i]+" ");
+                        }
+
+                    }
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataAnyword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                indextotalanyword = totalanother[0];
+                arraytestnone1=arraytestnone2;
+                Log.d("TEST_SHOW_MONTH_ANYWORD", "ANYCOUNT :" + indextotalanyword);
+
+            }
+        };handler.postDelayed(runnable,100);
+
+    }
+    public void getdataViewtotaltimemonth_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        indextotalmeeng=0;
+        Call<DataTime>listcallgetdata = apiInterface.getDataTimeMonth_device(USER_ID,device,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataTime>() {
+            @Override
+            public void onResponse(Call<DataTime> call, Response<DataTime> response) {
+                if (response.isSuccessful()) {
+                    DataTime listdata = response.body();
+                    int totaltime1 = 0;
+
+                    if (listdata == null){
+                        totaltime1 = 0;
+                    }
+                    else {
+
+                        totaltime1 =listdata.getSumtimeMonth();
+                        indextotalmeeng =totaltime1;
+
+                        Log.d("TEST_SHOW_MONTH_TIME","(totaltime1) totaltimeeng: "+totaltime1);
+                    }
+
+                    int numberOfDays = totaltime1 / 86400;
+                    int numberOfHours = (totaltime1 % 86400) / 3600;
+                    int numberOfMinutes = ((totaltime1 % 86400) % 3600) / 60;
+                    int numberOfSeconds = ((totaltime1 % 86400) % 3600) % 60;
+
+
+                    if(numberOfHours<10) {
+                        if (numberOfMinutes < 10) {
+                            if (numberOfSeconds < 10) {
+                                String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : 0" + numberOfSeconds;
+                                showtotaltimemonth = text;
+                                Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+
+                            } else {
+                                String text = numberOfDays + " Day  \n0" + numberOfHours + " : 0" + numberOfMinutes + " : " + numberOfSeconds;
+                                showtotaltimemonth = text;
+                                Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+                            }
+                        }else{
+                            String text = numberOfDays + " Day  \n0" + numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
+                            showtotaltimemonth = text;
+                            Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+                        }
+                    }else{
+                        String text = numberOfDays+" Day  \n"+numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds ;
+                        showtotaltimemonth = text;
+                        Log.d("TEST_SHOW_MONTH_TIME","showtotaltimemonth: "+text);
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataTime> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
 
     }
 
+    public void getdataViewcontinuemaxMonth_device(String device){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        Call<DataContinuemax>listcallgetdata = apiInterface.getDataContinuemaxMonth_device(USER_ID,device,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataContinuemax>() {
+            @Override
+            public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
+                if (response.isSuccessful()) {
+                    DataContinuemax listdata = response.body();
+                    int checking = 0;
+
+                    if (listdata !=null){
+
+                        indexcontinuemaxmonth1=listdata.getConMaxMonth();
+                        continuemaxmonth = indexcontinuemaxmonth1;
+                        Log.d("TEST_SHOW_MONTH_ConMax","continuemaxmonth: "+indexcontinuemaxmonth1);
+                    }
+                    else {
+                        continuemaxmonth = 0;
+                    }
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataContinuemax> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+    public void getdataViewWrongwordMonth_device(String device){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_month =Integer.valueOf(getFormattedMonth).toString();
+        String S_year =Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        Call<DataWrongword>listcallgetdata = apiInterface.getDataWrongwordMonth_device(USER_ID,device,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataWrongword>() {
+            @Override
+            public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
+                if (response.isSuccessful()) {
+                    DataWrongword listdata = response.body();
+                    ArrayList<String> wordfromdb = new ArrayList<>();
+                    String[] wordtop1 = new String[3];
+                    String[] wordtrans1 = new String[3];
+                    wordtop[0]= "";
+                    wordtop[1]= "";
+                    wordtop[2]= "";
+                    if (listdata == null){
+                        wordtop[0]= "";
+                        wordtop[1]= "";
+                        wordtop[2]= "";
+                        wordfromdb.clear();
+                        return;
+                    }
+                    else {
+                        for(int i= 0;i<listdata.getDatawordMonth().size();i++){
+                            wordfromdb.add(listdata.getDatawordMonth().get(i));
+                        }
+
+                        //wordcount
+                        int N = wordfromdb.size();
+                        String word[] = new String[N];
+                        int count[] = new int[N];
+
+                        for (int i = 0; i < word.length; i++) {
+                            word[i] = "";
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            String text = wordfromdb.get(i);
+                            for (int j = 0; j < word.length; j++) {
+                                if (word[j].equals("")) {
+                                    word[j] = text;
+                                    count[j] = 1;
+                                    break;
+                                } else if (word[j].equals(text)) {
+                                    count[j]++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            for (int j = i + 1; j < N - 1; j++) {
+                                if (count[i] < count[j] && !word[i].equals("") && !word[j].equals("")) {
+                                    int temp = count[i];
+                                    count[i] = count[j];
+                                    count[j] = temp;
+
+                                    String tempText = word[i];
+                                    word[i] = word[j];
+                                    word[j] = tempText;
+                                }
+                            }
+                        }
+
+
+                        for (int i = 0; i < word.length; i++) {
+                            if (!word[i].equals("")) {
+                                //System.out.println(word[i] + " " + count[i]);
+                            }
+                        }
+
+                        System.out.println("Top3");
+
+                        if (word.length < 3) {
+                            for (int i = 0; i < word.length; ++i) {
+                                if (!word[i].equals("")) {
+                                    wordtop[i] = word[i];
+                                    //wordtop1[i] = word[i];
+                                    System.out.println(word[i] + "   " + count[i]);
+
+                                    final Translator t = new Translator(wordtop[i], getContext());
+                                    // final Translator t = new Translator(wordtop1[i], getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            wordtrans[finalI] = t.trans();
+                                            // wordtrans1[finalI] = t.trans();
+
+                                        }
+                                    };
+                                    handler.postDelayed(runnable, 4000);
+                                }
+                            }
+                        } else {
+                            for (int i = 0; i < 3; i++) {
+                                if (!word[i].equals("")) {
+                                    wordtop[i] = word[i];
+                                    // wordtop1[i] = word[i];
+                                    System.out.println(word[i] + "   " + count[i]);
+                                    final Translator t = new Translator(wordtop[i], getContext());
+                                    // final Translator t = new Translator(wordtop1[i], getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            wordtrans[finalI] = t.trans();
+                                            //  wordtrans1[finalI] = t.trans();
+                                        }
+                                    };
+                                    handler.postDelayed(runnable, 4000);
+                                }
+                            }
+                        }
+
+                        Log.e("TEST_SHOW_MONTH_WW", "WTop1 MySQL:" +wordtop1[0]+" WTop2 :" +wordtop1[1]+" WTop3 :" +wordtop1[2]);
+                        Log.d("TEST_SHOW_MONTH_WW", "WTop1 SQLite:" +wordtop[0]+" WTop2 :" +wordtop[1]+" WTop3 :" +wordtop[2]);
+
+                    }
+
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataWrongword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+    }
+    public void getdataViewtotalMonth_device(String device) {
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth).toString();
+        String S_year = Integer.valueOf(getFormattedYear).toString();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytesteng2 = new int[32];
+        double[] arrayall1 = new double[32];
+        indextotalengword=0;
+        for(int i = 0;i<32 ;i++){
+            arraytesteng1[i]=0;
+        }
+
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
+        Call<DataEngword> listcallgetdataEngword = apiInterface.getDataEngwordMonth_device(USER_ID,device, S_month, S_year);
+        listcallgetdataEngword.enqueue(new Callback<DataEngword>() {
+            @Override
+            public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
+
+                if (response.isSuccessful()) {
+                    DataEngword listdata = response.body();
+                    if (listdata == null) {
+
+                        totaleng[0] = 0;
+                    } else {
+
+                        for (int i = 0; i < listdata.getDataword().size(); i++) {
+                            totaleng[0] += Integer.parseInt(listdata.getDataword().get(i));
+                            arraytesteng2[Integer.parseInt(listdata.getDatadate().get(i))]+=Integer.parseInt(listdata.getDataword().get(i));
+                        }
+
+                        arraytesteng1=arraytesteng2;
+                        indextotalengword = totaleng[0];
+                    }
+
+
+                    indextotalall = indextotalanyword + indextotalengword;
+                    String TTWD1 = indextotalengword + " / " + indextotalall;
+
+
+                    //getdataViewwordminday(indextotalengword);
+
+                } else {
+                    Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataEngword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA", t + "");
+            }
+        });
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                indextotalall = indextotalanyword + indextotalengword;
+                String TTWD1 = indextotalengword + " / " + indextotalall;
+                getdatashowgraphMonth(arraytesteng1,arraytestnone1);
+                getdataViewwordminmonth(indextotalengword);
+
+                showtotalwordmonth =TTWD1;
+                Log.d("TEST_SHOW_MONTH_ENGWORD", "indextotalengwordMonth :" + indextotalengword);
+                Log.d("TEST_SHOW_MONTH_WNGWORD", "indextotalallMonth :" + TTWD1);
+            }
+        };handler.postDelayed(runnable,700);
+
+
+    }
 
 
 

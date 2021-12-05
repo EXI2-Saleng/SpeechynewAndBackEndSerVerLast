@@ -20,4 +20,8 @@
     <string name="editor_update_reminder_failed" />
     <string name="editor_update_reminder_successful" />
     <string name="repeat_off" />
+    <string-array name="Devices">
+        <item>SELECT DEVICE</item>
+        <item name="android:textSize">10sp</item>
+    </string-array>
 </resources>

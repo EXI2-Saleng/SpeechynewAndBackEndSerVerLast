@@ -4,15 +4,20 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -29,6 +34,7 @@ import com.example.speechynew.connectDB.DataAnyword;
 import com.example.speechynew.connectDB.DataContinuemax;
 import com.example.speechynew.connectDB.DataEngword;
 import com.example.speechynew.connectDB.DataTime;
+import com.example.speechynew.connectDB.DataUsernew;
 import com.example.speechynew.connectDB.DataWrongword;
 import com.example.speechynew.connectDB.Engword;
 import com.example.speechynew.connectDB.Timeprocess;
@@ -64,8 +70,9 @@ import static com.example.speechynew.connectDB.Timeprocessinterface.TABLE_NAME5;
 import static com.example.speechynew.connectDB.Wordinterface.TABLE_NAME3;
 import static com.example.speechynew.connectDB.Wrongwordinterface.TABLE_NAME11;
 import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.toIntExact;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private DashboardViewModel dashboardViewModel;
     BarChart mChart;
@@ -78,7 +85,7 @@ public class DashboardFragment extends Fragment {
     Button view_All_Device;
     TextView ModeG;
     TextView ModeD;
-
+    Spinner spinner;
     Button changetype;
     Button changetype2;
     boolean resulttype;
@@ -132,7 +139,13 @@ public class DashboardFragment extends Fragment {
     String indextimeingraph[] = new String[7];
     ArrayList<String> WordWrong = new ArrayList<>();
     int round =0;
-
+    boolean typeDevice;
+    String T_Device;
+    ArrayList<String> NameDeives = new ArrayList<>();
+    ArrayList<String> Deives = new ArrayList<>();
+    ImageButton CH_device;
+    String device0 = Build.BOOTLOADER;
+    String N_Device;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -154,6 +167,8 @@ public class DashboardFragment extends Fragment {
         ModeG = root.findViewById(R.id.ModeG);
         ModeD = root.findViewById(R.id.ModeD);
         changetype2 = root.findViewById(R.id.changetype2);
+        spinner = root.findViewById(R.id.spinner2);
+        CH_device = root.findViewById(R.id.CH_Device);
 
         eng = new Engword(root.getContext());
         anothereng = new Word(root.getContext());
@@ -163,6 +178,7 @@ public class DashboardFragment extends Fragment {
 
         resulttype = false;
         resultview = false;
+        typeDevice = false;
         TV="Mode:Only Device";
 
         c = Calendar.getInstance();
@@ -185,11 +201,20 @@ public class DashboardFragment extends Fragment {
         mChart.setFitBars(true);
 
         wait5week.setText(" Please wait 5 second");
-
+        sping();
         nextpageonclick();
         viewallweek();
         wordmin();
 
+
+
+        CH_device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"Current Device" , Toast.LENGTH_LONG).show();
+
+            }
+        });
 
         //minus week -
         graphminus.setOnClickListener(new View.OnClickListener() {
@@ -219,9 +244,21 @@ public class DashboardFragment extends Fragment {
                 for (int i = 0; i < 3; i++) {
                     wordtrans[i] = "";
                 }
-                if (resultview == true){
-                    Log.e("TEST_SHOW_WEEK", "TEST CHAEK :" + "-----");
+
+                if (typeDevice == true){
                     nextpageonclick();
+                    getdataViewtotalAnyword_device(T_Device);
+                    getdataViewtotaltimeweek_device(T_Device);
+                    getdataViewcontinuemax_device(T_Device);
+                    getdataViewwrongword_device(T_Device);
+                    getdataViewtotalEngword_device(T_Device);
+                }
+
+                else {
+
+                    if (resultview == true) {
+                        Log.e("TEST_SHOW_WEEK", "TEST CHAEK :" + "-----");
+                        nextpageonclick();
                     /*
                     getdataViewtotalAnyword();
                     getdataViewtotaltimeweek();
@@ -230,18 +267,18 @@ public class DashboardFragment extends Fragment {
                     getdataViewtotalEngword();
 
                      */
-                    ////////////////////////
-                    getdataViewtotalAnyword_New();
-                    getdataViewtotaltimeweek_New();
-                    getdataViewcontinuemax_New();
-                    getdataViewwrongword_New();
-                    getdataViewtotalEngword_New();
+                        ////////////////////////
+                        getdataViewtotalAnyword_New();
+                        getdataViewtotaltimeweek_New();
+                        getdataViewcontinuemax_New();
+                        getdataViewwrongword_New();
+                        getdataViewtotalEngword_New();
 
-                }
-                else {
-                    nextpageonclick();
-                    viewallweek();
-                    wordmin();
+                    } else {
+                        nextpageonclick();
+                        viewallweek();
+                        wordmin();
+                    }
                 }
 
 
@@ -290,9 +327,20 @@ public class DashboardFragment extends Fragment {
                     }
 
                     wait5week.setText(" Please wait 5 second");
-                    if (resultview == true){
-                        Log.e("TEST_SHOW_WEEK", "TEST CHAEK :" + "+++++");
+
+                    if (typeDevice == true){
                         nextpageonclick();
+                        getdataViewtotalAnyword_device(T_Device);
+                        getdataViewtotaltimeweek_device(T_Device);
+                        getdataViewcontinuemax_device(T_Device);
+                        getdataViewwrongword_device(T_Device);
+                        getdataViewtotalEngword_device(T_Device);
+                    }
+                    else {
+
+                        if (resultview == true) {
+                            Log.e("TEST_SHOW_WEEK", "TEST CHAEK :" + "+++++");
+                            nextpageonclick();
                     /*
                     getdataViewtotalAnyword();
                     getdataViewtotaltimeweek();
@@ -301,17 +349,17 @@ public class DashboardFragment extends Fragment {
                     getdataViewtotalEngword();
 
                      */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotaltimeweek_New();
-                        getdataViewcontinuemax_New();
-                        getdataViewwrongword_New();
-                        getdataViewtotalEngword_New();
-                    }
-                    else {
-                        nextpageonclick();
-                        viewallweek();
-                        wordmin();
+                            ////////////////////////
+                            getdataViewtotalAnyword_New();
+                            getdataViewtotaltimeweek_New();
+                            getdataViewcontinuemax_New();
+                            getdataViewwrongword_New();
+                            getdataViewtotalEngword_New();
+                        } else {
+                            nextpageonclick();
+                            viewallweek();
+                            wordmin();
+                        }
                     }
 
                 }
@@ -325,43 +373,57 @@ public class DashboardFragment extends Fragment {
             public void onClick(View v) {
 
                 //change from word count to Percentage
-                if(resultview == false) {
-                    if (resulttype == true) {
-                        changetype.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype.setTextColor(Color.WHITE);
-                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype2.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = false;
-                        viewallweek();
 
-
-                        ModeG.setText("GraphMode : Word count");
-
-                        //change from Percentage to word count
-                    }
+                if (typeDevice == true){
+                    changetype.setBackgroundResource(R.drawable.buttonreport04);
+                    changetype.setTextColor(Color.WHITE);
+                    changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                    changetype2.setTextColor(Color.parseColor("#024C6A"));
+                    resulttype = false;
+                    ModeG.setText("Word Count");
+                    getdataViewtotalAnyword_device(T_Device);
+                    getdataViewtotalEngword_device(T_Device);
                 }
+
                 else {
-                    if (resulttype == true) {
-                        changetype.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype.setTextColor(Color.WHITE);
-                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype2.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = false;
+
+                    if (resultview == false) {
+                        if (resulttype == true) {
+                            changetype.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype.setTextColor(Color.WHITE);
+                            changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype2.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = false;
+                            viewallweek();
+
+
+                            ModeG.setText("Word Count");
+
+                            //change from Percentage to word count
+                        }
+                    } else {
+                        if (resulttype == true) {
+                            changetype.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype.setTextColor(Color.WHITE);
+                            changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype2.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = false;
                         /*
                         getdataViewtotalAnyword();
                         getdataViewtotalEngword();
 
                          */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotalEngword_New();
+                            ////////////////////////
+                            getdataViewtotalAnyword_New();
+                            getdataViewtotalEngword_New();
 
-                        ModeG.setText("GraphMode : Word count");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                            ModeG.setText("Word Count");
+                            Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
-                        //change from Percentage to word count
+                            //change from Percentage to word count
+                        }
                     }
                 }
 
@@ -371,43 +433,55 @@ public class DashboardFragment extends Fragment {
         changetype2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(resultview == false) {
-                    if (resulttype == false) {
-                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype2.setTextColor(Color.WHITE);
-                        changetype.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = true;
-                        viewallweek();
-
-
-                        ModeG.setText("GraphMode : Percentage");
-
-                        //change from Percentage to word count
-                    }
+                if (typeDevice == true){
+                    changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                    changetype2.setTextColor(Color.WHITE);
+                    changetype.setBackgroundResource(R.drawable.buttonreport03);
+                    changetype.setTextColor(Color.parseColor("#024C6A"));
+                    resulttype = true;
+                    ModeG.setText("Percentage");
+                    getdataViewtotalAnyword_device(T_Device);
+                    getdataViewtotalEngword_device(T_Device);
                 }
                 else {
-                    if (resulttype == false) {
-                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype2.setTextColor(Color.WHITE);
-                        changetype.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = true;
+
+                    if (resultview == false) {
+                        if (resulttype == false) {
+                            changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype2.setTextColor(Color.WHITE);
+                            changetype.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = true;
+                            viewallweek();
+
+
+                            ModeG.setText("Percentage");
+
+                            //change from Percentage to word count
+                        }
+                    } else {
+                        if (resulttype == false) {
+                            changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype2.setTextColor(Color.WHITE);
+                            changetype.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = true;
                         /*
                         getdataViewtotalAnyword();
                         getdataViewtotalEngword();
 
                          */
-                        ////////////////////////
-                        getdataViewtotalAnyword_New();
-                        getdataViewtotalEngword_New();
+                            ////////////////////////
+                            getdataViewtotalAnyword_New();
+                            getdataViewtotalEngword_New();
 
-                        ModeG.setText("GraphMode : Percentage");
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+                            ModeG.setText("Percentage");
+                            Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "Word count");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
-                        //change from Percentage to word count
+                            //change from Percentage to word count
+                        }
                     }
                 }
             }
@@ -418,17 +492,20 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(resultview==true){
-                    ModeD.setText("Only Device");
+                    ModeD.setText("This Device ("+N_Device+")");
                     view_Only_Device.setBackgroundResource(R.drawable.buttonreport02);
                     view_Only_Device.setTextColor(Color.WHITE);
                     view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
                     view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     resultview=false;
+                    typeDevice =false;
+                    CH_device.setVisibility(View.INVISIBLE);
                     wait5week.setText(" Please wait 5 second");
                     nextpageonclick();
                     viewallweek();
                     wordmin();
                     TV="Mode:Only Device";
+                    spinner.setSelection(0);
 
 
                     Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
@@ -450,7 +527,10 @@ public class DashboardFragment extends Fragment {
                     view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
                     view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     resultview=true;
+                    typeDevice =false;
+                    CH_device.setVisibility(View.INVISIBLE);
                     wait5week.setText(" Please wait 5 second");
+                    spinner.setSelection(0);
                     nextpageonclick();
                                         /*
                     getdataViewtotalAnyword();
@@ -1002,6 +1082,42 @@ public class DashboardFragment extends Fragment {
                 }
             }
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("TEST_SELECTED_DEVICE","NameDevice :"+parent.getItemAtPosition(position).toString());
+        Log.d("TEST_SELECTED_DEVICE","Device :"+Deives.get(position));
+        T_Device = Deives.get(position);
+        if (!T_Device.equals("Null")) {
+            view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
+            view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
+            view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
+            view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
+            if (device0.equals(T_Device)){
+                CH_device.setVisibility(View.VISIBLE);
+            }
+            else {
+                CH_device.setVisibility(View.INVISIBLE);
+            }
+            nextpageonclick();
+            getdataViewtotalAnyword_device(T_Device);
+            getdataViewtotaltimeweek_device(T_Device);
+            getdataViewcontinuemax_device(T_Device);
+            getdataViewwrongword_device(T_Device);
+            getdataViewtotalEngword_device(T_Device);
+            ModeD.setText(parent.getItemAtPosition(position).toString());
+            TV="Mode:Device "+parent.getItemAtPosition(position).toString();
+            typeDevice = true;
+        }
+        else {
+            CH_device.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
 
@@ -2060,7 +2176,416 @@ public class DashboardFragment extends Fragment {
         };handler.postDelayed(runnable,150);
 
     }
+    public void sping(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
 
+        NameDeives.add("SELECT DEVICE");
+        Deives.add("Null");
+        Call<DataUsernew>listcallgetdata = apiInterface.getdeviceall(USER_ID);
+        listcallgetdata.enqueue(new Callback<DataUsernew>() {
+            @Override
+            public void onResponse(Call<DataUsernew> call, Response<DataUsernew> response) {
+                if (response.isSuccessful()) {
+                    DataUsernew listdata = response.body();
+                    for (int i=0;i<listdata.getDatadevice().size();i++){
+
+                        NameDeives.add(listdata.getDatanamedevice().get(i));
+                        Deives.add(listdata.getDatadevice().get(i));
+                        if (listdata.getDatadevice().get(i).equals(device0)){
+                            N_Device=listdata.getDatanamedevice().get(i);
+                            ModeD.setText("This Device ("+N_Device+")");
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataUsernew> call, Throwable t) {
+
+            }
+        });
+
+
+        // ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_dropdown_item,NameDeives);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),R.layout.my_selecten_item,NameDeives);
+        adapter.setDropDownViewResource(R.layout.my_dropdown_item);
+
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+    }
+
+    public void getdataViewtotalAnyword_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        indextotalanyword = 0 ;
+        int[] totalanother = {0};
+        int[] arraytestnone2 = new int[24];
+        Log.d("TEST_SHOW_WEEK",dateweek);
+        Log.d("TEST_SHOW_WEEK","Email :"+email);
+        for (int index = 0; index < 7; index++) {
+            String S_day = Integer.valueOf(getFormattedDay).toString();
+            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+            ArrayList<BarEntry> dataVals = new ArrayList<>();
+            Call<DataAnyword>listcallgetdata = apiInterface.getDataAnyword_device(USER_ID,device,S_day,S_month,S_year);
+            int finalIndex = index;
+            listcallgetdata.enqueue(new Callback<DataAnyword>() {
+                @Override
+                public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
+                    if (response.isSuccessful()) {
+                        DataAnyword listdata = response.body();
+                        if (listdata.getDataword().size()==0) {
+                            indextotalanyword += 0;
+                            arraytestnone2[finalIndex] = 0;
+                        } else {
+                            for (int i = 0; i < listdata.getDataword().size(); i++) {
+                                indextotalanyword += Integer.parseInt(listdata.getDataword().get(i));
+
+                                arraytestnone2[finalIndex]+=Integer.parseInt(listdata.getDataword().get(i));
+
+                            }
+
+                        }  StringBuffer buffer = new StringBuffer();
+                        arraytestnone1=arraytestnone2;
+                        for(int i = 0;i<7 ;i++){
+                            buffer.append(":"+arraytestnone2[i]+" ");
+                            //  Log.d("TEST_SHOW_WEEK_ARRAY_AW","ARRAY_ANYWORD :"+buffer.toString());
+
+                            // Log.d("TEST_SHOW_WEEK_TTW", "indextotalanyword :" + indextotalanyword);
+
+                        }
+
+
+                    }
+                    else{
+                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataAnyword> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA",t+"");
+                }
+            });
+            c.add(Calendar.DATE, -1);
+            formattedDate = df.format(c.getTime());
+            getFormattedDay = c.getTime().getDate();
+            getFormattedMonth = c.getTime().getMonth();
+            getFormattedYear = c.getTime().getYear();
+
+
+        }
+
+        c.add(Calendar.DATE, +7);
+        formattedDate = df.format(c.getTime());
+        getFormattedDay = c.getTime().getDate();
+        getFormattedMonth = c.getTime().getMonth();
+        getFormattedYear = c.getTime().getYear();
+    }
+    public void getdataViewtotaltimeweek_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        totaltime1=0;
+
+        for (int index = 0; index < 7; index++) {
+            String S_day = Integer.valueOf(getFormattedDay).toString();
+            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+            Call<DataTime> listcallgetdata = apiInterface.getDataTime_device(USER_ID,device, S_day, S_month, S_year);
+            int finalIndex = index;
+            listcallgetdata.enqueue(new Callback<DataTime>() {
+                @Override
+                public void onResponse(Call<DataTime> call, Response<DataTime> response) {
+                    if (response.isSuccessful()) {
+                        DataTime listdata = response.body();
+
+
+                        if (listdata.getSumtime() == 0) {
+                            totaltime1 += 0;
+                        } else {
+                            totaltime1+=listdata.getSumtime();
+                            //Log.e("TEST_SHOW_WEEK_TIME", "totaltime1 :" + totaltime1);
+                            indextotalmeeng = totaltime1;
+
+                        }
+
+                    } else {
+                        Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataTime> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA", t + "");
+                }
+            });
+            c.add(Calendar.DATE, -1);
+            formattedDate = df.format(c.getTime());
+            getFormattedDay = c.getTime().getDate();
+            getFormattedMonth = c.getTime().getMonth();
+            getFormattedYear = c.getTime().getYear();
+
+
+        }
+
+        c.add(Calendar.DATE, +7);
+        formattedDate = df.format(c.getTime());
+        getFormattedDay = c.getTime().getDate();
+        getFormattedMonth = c.getTime().getMonth();
+        getFormattedYear = c.getTime().getYear();
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Showtotaltime(totaltime1);
+                indextotalmeeng = totaltime1;
+            }
+        };handler.postDelayed(runnable,200);
+
+    }
+
+    public void getdataViewcontinuemax_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String email = firebaseUser.getEmail();
+
+        indexcontinuemaxweek1=0;
+
+
+        for (int index = 0; index < 7; index++) {
+            String S_day = Integer.valueOf(getFormattedDay).toString();
+            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+            Call<DataContinuemax>listcallgetdata = apiInterface.getDataContinuemax_device(USER_ID,device,S_day,S_month,S_year);
+            listcallgetdata.enqueue(new Callback<DataContinuemax>() {
+                @Override
+                public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
+                    if (response.isSuccessful()) {
+                        DataContinuemax listdata = response.body();
+                        int checking = 0;
+
+                        if (listdata !=null){
+
+                            if(indexcontinuemaxweek1 < listdata.getConMax()){
+                                indexcontinuemaxweek1 = listdata.getConMax();
+                            }
+                            continuemaxweek = indexcontinuemaxweek1;
+                            Log.d("TEST_SHOW_WEEK_ConMax","continuemaxweek: "+indexcontinuemaxweek1);
+                        }
+
+
+                    }
+                    else{
+                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataContinuemax> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA",t+"");
+                }
+            });
+            c.add(Calendar.DATE, -1);
+            formattedDate = df.format(c.getTime());
+            getFormattedDay = c.getTime().getDate();
+            getFormattedMonth = c.getTime().getMonth();
+            getFormattedYear = c.getTime().getYear();
+
+
+        }
+
+        c.add(Calendar.DATE, +7);
+        formattedDate = df.format(c.getTime());
+        getFormattedDay = c.getTime().getDate();
+        getFormattedMonth = c.getTime().getMonth();
+        getFormattedYear = c.getTime().getYear();
+
+    }
+
+    public void getdataViewtotalEngword_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String email = firebaseUser.getEmail();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        indextotalengword = 0;
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytesteng2 = new int[24];
+        double[] arrayall1 = new double[24];
+        String timeingraph[] = new String[7];
+        for (int index = 0; index < 7; index++) {
+            String S_day = Integer.valueOf(getFormattedDay).toString();
+            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+            ArrayList<BarEntry> dataVals = new ArrayList<>();
+            Call<DataEngword> listcallgetdataEngword = apiInterface.getDataEngword_device(USER_ID,device, S_day, S_month, S_year);
+            int finalIndex = index;
+            listcallgetdataEngword.enqueue(new Callback<DataEngword>() {
+                @Override
+                public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
+
+                    if (response.isSuccessful()) {
+                        DataEngword listdata = response.body();
+                        if (listdata.getDataword().size() == 0) {
+                            indextotalengword += 0;
+                            arraytesteng2[finalIndex]=0;
+                        }
+                        else {
+
+                            for (int i = 0; i < listdata.getDataword().size(); i++) {
+                                indextotalengword += Integer.parseInt(listdata.getDataword().get(i));
+                                arraytesteng2[finalIndex]+=Integer.parseInt(listdata.getDataword().get(i));
+                            }
+
+                        }
+
+                        arraytesteng1=arraytesteng2;
+                        totalall[0] = totaleng[0] + totalanother[0];
+                        int TTWE = totaleng[0];
+                        String TTWD = totaleng[0] + " / " + totalall[0];
+
+                        indextotalall = indextotalanyword + indextotalengword;
+                        String TTWD1 = indextotalengword + " / " + indextotalall;
+
+                        showtotalword =TTWD1;
+                        Log.d("TEST_SHOW_WEEK_TTW", "indextotalengword :" + indextotalengword);
+                        Log.d("TEST_SHOW_WEEK_TTW", "indextotaleAnyword :" + indextotalanyword);
+                        Log.d("TEST_SHOW_WEEK_TTW", "showtotalwordweek :" + TTWD1);
+
+
+                    } else {
+                        Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataEngword> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA", t + "");
+                }
+            });
+            indextimeingraph[abs(finalIndex-6)] = getFormattedDay+"/"+(getFormattedMonth+1);
+            c.add(Calendar.DATE, -1);
+            formattedDate = df.format(c.getTime());
+            getFormattedDay = c.getTime().getDate();
+            getFormattedMonth = c.getTime().getMonth();
+            getFormattedYear = c.getTime().getYear();
+
+
+        }
+
+        c.add(Calendar.DATE, +7);
+        formattedDate = df.format(c.getTime());
+        getFormattedDay = c.getTime().getDate();
+        getFormattedMonth = c.getTime().getMonth();
+        getFormattedYear = c.getTime().getYear();
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                getdatashowgraph(arraytesteng1,arraytestnone1);
+                getdataViewwordminweek(indextotalengword);
+            }
+        };handler.postDelayed(runnable,300);
+    }
+    public void getdataViewwrongword_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String email = firebaseUser.getEmail();
+        WordWrong =new ArrayList<>();
+
+
+
+        for (int index = 0; index < 7; index++) {
+            String S_day = Integer.valueOf(getFormattedDay).toString();
+            String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+            String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+            Call<DataWrongword>listcallgetdata = apiInterface.getDataWrongword_device(USER_ID,device,S_day,S_month,S_year);
+            listcallgetdata.enqueue(new Callback<DataWrongword>() {
+                @Override
+                public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
+                    if (response.isSuccessful()) {
+                        DataWrongword listdata = response.body();
+                        if (listdata.getDataword().size()==0){
+                            return;
+                        }
+                        else {
+                            for (int i = 0; i < listdata.getDataword().size(); i++) {
+                                WordWrong.add(listdata.getDataword().get(i));
+                            }
+                        }
+                    }
+                    else{
+                        Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DataWrongword> call, Throwable t) {
+                    Log.d("TEST_GET_LISTDATA",t+"");
+                }
+            });
+            c.add(Calendar.DATE, -1);
+            formattedDate = df.format(c.getTime());
+            getFormattedDay = c.getTime().getDate();
+            getFormattedMonth = c.getTime().getMonth();
+            getFormattedYear = c.getTime().getYear();
+
+
+        }
+
+        c.add(Calendar.DATE, +7);
+        formattedDate = df.format(c.getTime());
+        getFormattedDay = c.getTime().getDate();
+        getFormattedMonth = c.getTime().getMonth();
+        getFormattedYear = c.getTime().getYear();
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                //top3
+                if(WordWrong.size()==0){
+                    //nothing
+                }else{
+                    getWrongWordTop3(WordWrong);
+                }
+            }
+        };handler.postDelayed(runnable,150);
+
+    }
 
 
 }

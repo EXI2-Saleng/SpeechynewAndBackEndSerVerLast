@@ -3,6 +3,8 @@ package com.example.speechynew.connectDB;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class DataUsernew {
     int Device_ID;
     String USER_ID;
@@ -36,6 +38,14 @@ public class DataUsernew {
     @Expose
     @SerializedName("ID")
     private int ID;
+
+    @Expose
+    @SerializedName("datadevice")
+    private List<String> datadevice;
+
+    @Expose
+    @SerializedName("datanamedevice")
+    private List<String> datanamedevice;
 
     public  DataUsernew(){}
 
@@ -151,5 +161,21 @@ public class DataUsernew {
 
     public void setEdevicename(String Edevicename) {
         Edevicename = Edevicename;
+    }
+
+    public List<String> getDatadevice() {
+        return datadevice;
+    }
+
+    public void setDatadevice(List<String> datadevice) {
+        this.datadevice = datadevice;
+    }
+
+    public List<String> getDatanamedevice() {
+        return datanamedevice;
+    }
+
+    public void setDatanamedevice(List<String> datanamedevice) {
+        this.datanamedevice = datanamedevice;
     }
 }

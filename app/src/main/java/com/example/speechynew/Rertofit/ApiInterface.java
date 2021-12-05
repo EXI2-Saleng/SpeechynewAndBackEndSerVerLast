@@ -418,6 +418,8 @@ Call<DataAnyword> getDataAnywordnew(@Query("USER_ID") String USER_ID,
     @GET("dataScheduler/getScheduler.php/{USER_ID}")
     Call<List<DataScheduler>> getCheduler(@Query("USER_ID") String USER_ID);
 
+    @GET("datausernew/getdeviceall.php/{USER_ID}")
+    Call<DataUsernew> getdeviceall(@Query("USER_ID") String USER_ID);
     ////////////////////////POST_RAW///////////////////////////////////////////
     @POST("backupnew/backupSettingnew.php")
     Call<DataSettingnew>DataSettingnew(@Body DataSettingnew DataSettingnew);
@@ -449,6 +451,77 @@ Call<DataAnyword> getDataAnywordnew(@Query("USER_ID") String USER_ID,
     @POST("dataScheduler/updateScheduler.php")
     Call<DataScheduler2>UpdateCheduler(@Body DataScheduler2 DataScheduler2);
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    @GET("getStatdevice/getAnywordNew.php/{USER_ID}")
+    Call<DataAnyword> getDataAnyword_device(@Query("USER_ID") String USER_ID,
+                                            @Query("device") String device,
+                                        @Query("date") String date,
+                                        @Query("month") String month,
+                                        @Query("year") String year);
+
+    @GET("getStatdevice/getAnywordMonthNew.php/{USER_ID}")
+    Call<DataAnyword> getDataAnywordMonth_device(@Query("USER_ID") String USER_ID,
+                                                 @Query("device") String device,
+                                             @Query("month") String month,
+                                             @Query("year") String year);
+
+    @GET("getStatdevice/getContinuemaxNew.php/{USER_ID}")
+    Call<DataContinuemax> getDataContinuemax_device(@Query("USER_ID") String USER_ID,
+                                                    @Query("device") String device,
+                                                @Query("date") String date,
+                                                @Query("month") String month,
+                                                @Query("year") String year);
+
+    @GET("getStatdevice/getContinuemaxMonthNew.php/{USER_ID}")
+    Call<DataContinuemax> getDataContinuemaxMonth_device(@Query("USER_ID") String USER_ID,
+                                                         @Query("device") String device,
+                                                     @Query("month") String month,
+                                                     @Query("year") String year);
+
+    @GET("getStatdevice/getTimeNew.php/{USER_ID}")
+    Call<DataTime> getDataTime_device(@Query("USER_ID") String USER_ID,
+                                      @Query("device") String device,
+                                  @Query("date") String date,
+                                  @Query("month") String month,
+                                  @Query("year") String year);
+
+
+
+    @GET("getStatdevice/getTimeMonthNew.php/{USER_ID}")
+    Call<DataTime> getDataTimeMonth_device(@Query("USER_ID") String USER_ID,
+                                           @Query("device") String device,
+                                       @Query("month") String month,
+                                       @Query("year") String year);
+
+    @GET("getStatdevice/getEngwordNew.php/{USER_ID}")
+    Call<DataEngword> getDataEngword_device(@Query("USER_ID") String USER_ID,
+                                            @Query("device") String device,
+                                        @Query("date") String date,
+                                        @Query("month") String month,
+                                        @Query("year") String year);
+
+
+
+    @GET("getStatdevice/getEngwordMonthNew.php/{USER_ID}")
+    Call<DataEngword> getDataEngwordMonth_device(@Query("USER_ID") String USER_ID,
+                                                 @Query("device") String device,
+                                             @Query("month") String month,
+                                             @Query("year") String year);
+
+    @GET("getStatdevice/getWrongwordNew.php/{USER_ID}")
+    Call<DataWrongword> getDataWrongword_device(@Query("USER_ID") String USER_ID,
+                                                @Query("device") String device,
+                                            @Query("date") String date,
+                                            @Query("month") String month,
+                                            @Query("year") String year);
+
+
+    @GET("getStatdevice/getWrongwordMonthNew.php/{USER_ID}")
+    Call<DataWrongword> getDataWrongwordMonth_device(@Query("USER_ID") String USER_ID,
+                                                     @Query("device") String device,
+                                                 @Query("month") String month,
+                                                 @Query("year") String year);
 
 
 

@@ -4,15 +4,22 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -20,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.speechynew.PopActivity;
 import com.example.speechynew.R;
 import com.example.speechynew.analysis.Translator;
 import com.example.speechynew.connectDB.Continuemax;
@@ -30,6 +38,7 @@ import com.example.speechynew.connectDB.DataRawdata;
 import com.example.speechynew.connectDB.DataScheduler;
 import com.example.speechynew.connectDB.DataSetting;
 import com.example.speechynew.connectDB.DataTime;
+import com.example.speechynew.connectDB.DataUsernew;
 import com.example.speechynew.connectDB.DataWrongword;
 import com.example.speechynew.connectDB.Data_User;
 import com.example.speechynew.connectDB.Engword;
@@ -56,6 +65,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +89,7 @@ import retrofit2.Response;
 
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
     ApiInterface apiInterface;
 
@@ -99,8 +109,11 @@ public class HomeFragment extends Fragment {
     TextView ModeG;
     TextView ModeD;
     Button changetype2;
+    ImageButton CH_device;
+
 
     String TV;
+    Spinner spinner;
 
     //database
     Engword eng;
@@ -126,6 +139,11 @@ public class HomeFragment extends Fragment {
     boolean resulttype;
     boolean resultview;
     boolean CC;
+    boolean typeDevice;
+    String T_Device;
+    String N_Device;
+    ArrayList<String> NameDeives = new ArrayList<>();
+    ArrayList<String> Deives = new ArrayList<>();
 
     String totalwordday;
     String totaltimeday;
@@ -145,7 +163,7 @@ public class HomeFragment extends Fragment {
 
     int[] arraytesteng1 = new int[24];
     int[] arraytestnone1 = new int[24];
-
+    String device0 = Build.BOOTLOADER;
     GoogleSignInClient mGoogleSignInClient;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -169,6 +187,8 @@ public class HomeFragment extends Fragment {
         ModeD = root.findViewById(R.id.ModeD);
         changetype2 = root.findViewById(R.id.changetype2);
 
+        spinner =root.findViewById(R.id.spinner2);
+        CH_device = root.findViewById(R.id.CH_Device);
         //create object database
         eng = new Engword(root.getContext());
         anothereng = new Word(root.getContext());
@@ -183,7 +203,9 @@ public class HomeFragment extends Fragment {
         resulttype = false;
         resultview = false;
         CC = false;
+        typeDevice =false;
         TV="Mode:Only Device";
+
 
         c = Calendar.getInstance();
         df = new SimpleDateFormat("d-MM-yyyy");
@@ -196,6 +218,7 @@ public class HomeFragment extends Fragment {
         wait5.setText(" Please wait 5 second");
 
         //call method
+        sping();
         nextpageonclick();
         newviewAllday();
         viewtotalday();
@@ -204,6 +227,14 @@ public class HomeFragment extends Fragment {
         continuemaxday();
         wrongwordday();
 
+
+        CH_device.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"Current Device" , Toast.LENGTH_LONG).show();
+
+            }
+        });
 
 
         mChart.getDescription().setEnabled(false);
@@ -228,9 +259,27 @@ public class HomeFragment extends Fragment {
                 getFormattedYear = c.getTime().getYear();
 
                 wait5.setText(" Please wait 5 second");
-                if (CC==true){
-                    Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "-----");
-                    nextpageonclick();
+                if (typeDevice==true){
+                    getdataAnyword_device(T_Device);
+                    getdataContinuemax_device(T_Device);
+                    getdataViewtotaltimeday_device(T_Device);
+                    getdataViewWrongword_device(T_Device);
+
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            getdataViewtotalday_device(T_Device);
+                        }
+                    };
+                    handler.postDelayed(runnable, 100);
+                }
+
+                else {
+
+                    if (CC == true) {
+                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "-----");
+                        nextpageonclick();
                     /*
                     getdataAnyword();
                     getdataContinuemax();
@@ -238,36 +287,35 @@ public class HomeFragment extends Fragment {
                     getdataViewWrongword();
                     getdataViewWrongword();
                      */
-                    //////////////////////
+                        //////////////////////
 
-                    getdataAnyword_New();
-                    getdataContinuemax_New();
-                    getdataViewtotaltimeday_New();
-                    getdataViewWrongword_New();
-
-
+                        getdataAnyword_New();
+                        getdataContinuemax_New();
+                        getdataViewtotaltimeday_New();
+                        getdataViewWrongword_New();
 
 
-                    Handler handler = new Handler();
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            //getdataViewtotalday();
-                            getdataViewtotalday_New();
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                //getdataViewtotalday();
+                                getdataViewtotalday_New();
 
-                        }
-                    };handler.postDelayed(runnable,100);
+                            }
+                        };
+                        handler.postDelayed(runnable, 100);
 
 
-                }
-                else {
-                    nextpageonclick();
-                    newviewAllday();
-                    viewtotalday();
-                    viewtotaltimeday();
-                    wordmin();
-                    continuemaxday();
-                    wrongwordday();
+                    } else {
+                        nextpageonclick();
+                        newviewAllday();
+                        viewtotalday();
+                        viewtotaltimeday();
+                        wordmin();
+                        continuemaxday();
+                        wrongwordday();
+                    }
                 }
 
                 getnameday(getFormattednameday);
@@ -305,9 +353,27 @@ public class HomeFragment extends Fragment {
                 }else{
                     wait5.setText(" Please wait 5 second");
 
-                    if (CC==true){
-                        Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "+++++");
-                        nextpageonclick();
+                    if (typeDevice==true){
+                        getdataAnyword_device(T_Device);
+                        getdataContinuemax_device(T_Device);
+                        getdataViewtotaltimeday_device(T_Device);
+                        getdataViewWrongword_device(T_Device);
+
+                        Handler handler = new Handler();
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                getdataViewtotalday_device(T_Device);
+                            }
+                        };
+                        handler.postDelayed(runnable, 100);
+                    }
+
+                    else {
+
+                        if (CC == true) {
+                            Log.e("TEST_SHOW_DAY", "TEST CHAEK :" + "+++++");
+                            nextpageonclick();
                         /*
                         getdataAnyword();
                         getdataContinuemax();
@@ -315,35 +381,34 @@ public class HomeFragment extends Fragment {
                         getdataViewWrongword();
                         getdataViewWrongword();
                          */
-                        //////////////////////
+                            //////////////////////
 
-                    getdataAnyword_New();
-                    getdataContinuemax_New();
-                    getdataViewtotaltimeday_New();
-                    getdataViewWrongword_New();
-
-
+                            getdataAnyword_New();
+                            getdataContinuemax_New();
+                            getdataViewtotaltimeday_New();
+                            getdataViewWrongword_New();
 
 
-                        Handler handler = new Handler();
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                //getdataViewtotalday();
-                                getdataViewtotalday_New();
-                            }
-                        };handler.postDelayed(runnable,100);
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    //getdataViewtotalday();
+                                    getdataViewtotalday_New();
+                                }
+                            };
+                            handler.postDelayed(runnable, 100);
 
-                    }
-                    else {
+                        } else {
 
-                        nextpageonclick();
-                        newviewAllday();
-                        viewtotaltimeday();
-                        viewtotalday();
-                        wordmin();
-                        continuemaxday();
-                        wrongwordday();
+                            nextpageonclick();
+                            newviewAllday();
+                            viewtotaltimeday();
+                            viewtotalday();
+                            wordmin();
+                            continuemaxday();
+                            wrongwordday();
+                        }
                     }
 
                     getnameday(getFormattednameday);
@@ -362,44 +427,66 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
 
                 //change from word count to Percentage
-                if (CC == false) {
-                    if (resulttype == true) {
-                        changetype.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype.setTextColor(Color.WHITE);
-                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype2.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = false;
-                         newviewAllday();
-                       // changetype.setText("Word count");
-                        ModeG.setText("GraphMode : Word count");
-
-                        //change from Percentage to word count
-                    }
+                if(typeDevice == true){
+                    changetype.setBackgroundResource(R.drawable.buttonreport04);
+                    changetype.setTextColor(Color.WHITE);
+                    changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                    changetype2.setTextColor(Color.parseColor("#024C6A"));
+                    resulttype = false;
+                    getdataAnyword_device(T_Device);
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            getdataViewtotalday_device(T_Device);
+                        }
+                    };
+                    handler.postDelayed(runnable, 100);
+                    //ModeG.setText("GraphMode : Word Count");
+                    ModeG.setText("Word Count");
                 }
                 else {
-                    if (resulttype == true) {
-                        changetype.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype.setTextColor(Color.WHITE);
-                        changetype2.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype2.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = false;
-                        //getdataAnyword();
-                        getdataAnyword_New();
-                        Handler handler = new Handler();
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                //getdataViewtotalday();
-                                getdataViewtotalday_New();
-                            }
-                        };handler.postDelayed(runnable,100);
-                        //changetype.setText("Word count");
-                        ModeG.setText("GraphMode : Word count");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK :" + "OKAY");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
-                        //change from Percentage to word count
+                    if (CC == false) {
+                        if (resulttype == true) {
+                            changetype.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype.setTextColor(Color.WHITE);
+                            changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype2.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = false;
+                            newviewAllday();
+                            // changetype.setText("Word count");
+                           // ModeG.setText("GraphMode : Word Count");
+                            ModeG.setText("Word Count");
+
+                            //change from Percentage to word count
+                        }
+                    } else {
+                        if (resulttype == true) {
+                            changetype.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype.setTextColor(Color.WHITE);
+                            changetype2.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype2.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = false;
+                            //getdataAnyword();
+                            getdataAnyword_New();
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    //getdataViewtotalday();
+                                    getdataViewtotalday_New();
+                                }
+                            };
+                            handler.postDelayed(runnable, 100);
+                            //changetype.setText("Word count");
+                            ModeG.setText("Word count");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK :" + "OKAY");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+                            //change from Percentage to word count
+                        }
                     }
                 }
             }
@@ -408,48 +495,70 @@ public class HomeFragment extends Fragment {
         changetype2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (CC == false) {
-                    if (resulttype == false) {
-                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype2.setTextColor(Color.WHITE);
-                        changetype.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = true;
-                        newviewAllday();
-
-                        //changetype.setText("Word count");
-                        ModeG.setText("GraphMode : Percentage");
-
-                        //change from Percentage to word count
-                    }
+                if (typeDevice ==true){
+                    changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                    changetype2.setTextColor(Color.WHITE);
+                    changetype.setBackgroundResource(R.drawable.buttonreport03);
+                    changetype.setTextColor(Color.parseColor("#024C6A"));
+                    resulttype = true;
+                    ModeG.setText("Percentage");
+                    //ModeG.setText("GraphMode : Percentage");
+                    getdataAnyword_device(T_Device);
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            getdataViewtotalday_device(T_Device);
+                        }
+                    };
+                    handler.postDelayed(runnable, 100);
                 }
+
                 else {
-                    if (resulttype == false) {
-                        changetype2.setBackgroundResource(R.drawable.buttonreport04);
-                        changetype2.setTextColor(Color.WHITE);
-                        changetype.setBackgroundResource(R.drawable.buttonreport03);
-                        changetype.setTextColor(Color.parseColor("#024C6A"));
-                        resulttype = true;
-                        //getdataAnyword();
-                        getdataAnyword_New();
-                        Handler handler = new Handler();
-                        Runnable runnable = new Runnable() {
-                            @Override
-                            public void run() {
-                                //getdataViewtotalday();
-                                getdataViewtotalday_New();
-                            }
-                        };handler.postDelayed(runnable,100);
-                        //changetype.setText("Word count");
-                        ModeG.setText("GraphMode : Percentage");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK :" + "OKAY");
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
-                        Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
 
-                        //change from Percentage to word count
+                    if (CC == false) {
+                        if (resulttype == false) {
+                            changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype2.setTextColor(Color.WHITE);
+                            changetype.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = true;
+                            newviewAllday();
+
+                            //changetype.setText("Word count");
+                            ModeG.setText("Percentage");
+                           // ModeG.setText("GraphMode : Percentage");
+
+                            //change from Percentage to word count
+                        }
+                    } else {
+                        if (resulttype == false) {
+                            changetype2.setBackgroundResource(R.drawable.buttonreport04);
+                            changetype2.setTextColor(Color.WHITE);
+                            changetype.setBackgroundResource(R.drawable.buttonreport03);
+                            changetype.setTextColor(Color.parseColor("#024C6A"));
+                            resulttype = true;
+                            //getdataAnyword();
+                            getdataAnyword_New();
+                            Handler handler = new Handler();
+                            Runnable runnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    //getdataViewtotalday();
+                                    getdataViewtotalday_New();
+                                }
+                            };
+                            handler.postDelayed(runnable, 100);
+                            //changetype.setText("Word count");
+                            ModeG.setText("Percentage");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK :" + "OKAY");
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resultview :" + resultview);
+                            Log.d("TEST_SHOW_DAY", "TEST CHAEK resulttype :" + resulttype);
+
+                            //change from Percentage to word count
+                        }
                     }
                 }
-
             }
         });
 
@@ -457,13 +566,21 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (CC == true) {
-                    ModeD.setText("Only Device");
+                    ModeD.setText("This Device ("+N_Device+")");
                     view_Only_Device.setBackgroundResource(R.drawable.buttonreport02);
                     view_Only_Device.setTextColor(Color.WHITE);
                     view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
                     view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     CC=false;
                     resultview=false;
+                    typeDevice =false;
+                    spinner.setSelection(0);
+                    CH_device.setVisibility(View.INVISIBLE);
+                    Log.d("TEST_SHOW_DAY_NAME", "Name (device) :" + N_Device);
+                    Log.d("TEST_SHOW_DAY_NAME", "Name (device) :" + ModeD.getText().toString());
+
+
+
                     wait5.setText(" Please wait 5 second");
                     nextpageonclick();
                     newviewAllday();
@@ -489,6 +606,9 @@ public class HomeFragment extends Fragment {
                     view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
                     view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
                     CC=true;
+                    typeDevice =false;
+                    spinner.setSelection(0);
+                    CH_device.setVisibility(View.INVISIBLE);
                     wait5.setText(" Please wait 5 second");
                     nextpageonclick();
                     /*
@@ -1093,8 +1213,58 @@ public class HomeFragment extends Fragment {
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("TEST_SELECTED_DEVICE","NameDevice :"+parent.getItemAtPosition(position).toString());
+        Log.d("TEST_SELECTED_DEVICE","Device :"+Deives.get(position));
+        T_Device = Deives.get(position);
 
+        if (!T_Device.equals("Null")) {
+            view_Only_Device.setBackgroundResource(R.drawable.buttonreport01);
+            view_Only_Device.setTextColor(Color.parseColor("#3C8ED3"));
+            view_All_Device.setBackgroundResource(R.drawable.buttonreport01);
+            view_All_Device.setTextColor(Color.parseColor("#3C8ED3"));
+            if (device0.equals(T_Device)){
+                CH_device.setVisibility(View.VISIBLE);
+            }
+            else {
+                CH_device.setVisibility(View.INVISIBLE);
+            }
+            wait5.setText(" Please wait 5 second");
+            nextpageonclick();
+            getdataAnyword_device(Deives.get(position));
+            getdataContinuemax_device(Deives.get(position));
+            getdataViewtotaltimeday_device(Deives.get(position));
+            getdataViewWrongword_device(Deives.get(position));
+            ModeD.setText(parent.getItemAtPosition(position).toString());
 
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    //getdataViewtotalday();
+                    getdataViewtotalday_device(Deives.get(position));
+                }
+            };
+            handler.postDelayed(runnable, 100);
+            TV="Mode:Device "+parent.getItemAtPosition(position).toString();
+            typeDevice = true;
+        }
+        else {
+            CH_device.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
 
 
     private class MyValueFormatter implements IValueFormatter {
@@ -2801,6 +2971,589 @@ public class HomeFragment extends Fragment {
         });
 
     }
+
+    public void sping(){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+
+        NameDeives.add("SELECT DEVICE");
+        Deives.add("Null");
+        Call<DataUsernew>listcallgetdata = apiInterface.getdeviceall(USER_ID);
+        listcallgetdata.enqueue(new Callback<DataUsernew>() {
+            @Override
+            public void onResponse(Call<DataUsernew> call, Response<DataUsernew> response) {
+                if (response.isSuccessful()) {
+                    DataUsernew listdata = response.body();
+                    for (int i=0;i<listdata.getDatadevice().size();i++){
+
+                        NameDeives.add(listdata.getDatanamedevice().get(i));
+                        Deives.add(listdata.getDatadevice().get(i));
+                        Log.d("TEST_SHOW_DAY_NAME", "Name (device) :" + listdata.getDatadevice().get(i));
+                        if (listdata.getDatadevice().get(i).equals(device0)){
+                            N_Device=listdata.getDatanamedevice().get(i);
+                            ModeD.setText("This Device ("+N_Device+")");
+                        }
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataUsernew> call, Throwable t) {
+
+            }
+        });
+
+
+
+
+
+       // ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_dropdown_item,NameDeives);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),R.layout.my_selecten_item,NameDeives);
+        adapter.setDropDownViewResource(R.layout.my_dropdown_item);
+
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+    }
+    public void getdataAnyword_device(String deivce){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+        String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+
+        String showday1 = S_day+" : "+S_month+" : "+S_year;
+        Log.d("TEST_CAL_SERVER",showday1);
+        Log.d("TEST_CAL_SERVER","UID :"+USER_ID);
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytestnone2 = new int[24];
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
+        Call<DataAnyword>listcallgetdata = apiInterface.getDataAnyword_device(USER_ID,deivce,S_day,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataAnyword>() {
+            @Override
+            public void onResponse(Call<DataAnyword> call, Response<DataAnyword> response) {
+                if (response.isSuccessful()) {
+                    DataAnyword listdata = response.body();
+                    indextotalanyword=0;
+                    if (listdata==null) {
+                        totalanother[0] = 0;
+                        indextotalanyword=0;
+                        indextotalall=0;
+
+                        for (int i=0;i<24;i++){
+                            arraytestnone2[i]=0;
+                            arraytestnone1[i]=0;
+                        }
+
+                    } else {
+
+                        for (int i=0;i<listdata.getDataword().size();i++){
+                            totalanother[0]+=Integer.parseInt(listdata.getDataword().get(i));
+                            indextotalanyword = totalanother[0];
+                            arraytestnone2[Integer.parseInt(listdata.getDatahour().get(i))] += Integer.parseInt(listdata.getDataword().get(i));
+
+                        }
+                        Log.d("TEST_SHOW_DAY", "indextotalanyword(device) :" + totalanother[0]);
+                        arraytestnone1=arraytestnone2;
+                        StringBuffer buffer = new StringBuffer();
+                        for(int i = 0;i<24 ;i++){
+                            buffer.append(":"+arraytestnone2[i]+" ");
+                        }
+                        Log.d("TEST_SHOW_DAY","ARRAY_ANYWORD(device) :"+buffer.toString());
+
+
+
+
+                    }
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataAnyword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+    public void getdataContinuemax_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+        String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+
+        Call<DataContinuemax>listcallgetdata = apiInterface.getDataContinuemax_device(USER_ID,device,S_day,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataContinuemax>() {
+            @Override
+            public void onResponse(Call<DataContinuemax> call, Response<DataContinuemax> response) {
+                if (response.isSuccessful()) {
+                    DataContinuemax listdata = response.body();
+                    int checking = 0;
+                    int continuemaxday1 =0;
+                    if (listdata!=null){
+                        continuemaxday1=listdata.getConMax();
+                        continuemaxday =continuemaxday1;
+
+                        Log.d("TEST_SHOW_DAY","continuemaxday(device): "+continuemaxday1);
+                    }
+                    else {
+                        continuemaxday1 =0;
+                        continuemaxday =continuemaxday1;
+                    }
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataContinuemax> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+    }
+    public void getdataViewtotaltimeday_device(String device){
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+        String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+
+        Call<DataTime>listcallgetdata = apiInterface.getDataTime_device(USER_ID,device,S_day,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataTime>() {
+            @Override
+            public void onResponse(Call<DataTime> call, Response<DataTime> response) {
+                if (response.isSuccessful()) {
+                    DataTime listdata = response.body();
+                    int totaltime1 = 0;
+
+                    if (listdata == null){
+                        totaltime1 = 0;
+                    }
+                    else {
+                        totaltime1 = listdata.getSumtime();
+                        indextotalmeeng =totaltime1;
+                        Log.e("TEST_SHOW_DAY","(totaltime1) totaltimeeng(device): "+totaltime1);
+                    }
+
+                    int numberOfHours = (totaltime1 % 86400) / 3600;
+                    int numberOfMinutes = ((totaltime1 % 86400) % 3600) / 60;
+                    int numberOfSeconds = ((totaltime1 % 86400) % 3600) % 60;
+
+                    if(numberOfMinutes<10){
+                        if(numberOfSeconds<10){
+                            String text = numberOfHours+" : 0"+numberOfMinutes+" : 0"+numberOfSeconds;
+                            totaltimeday =text;
+                            Log.e("TEST_SHOW_DAY","totaltimeday(device): "+text);
+                        }else{
+                            String text = numberOfHours+" : 0"+numberOfMinutes+" : "+numberOfSeconds;
+                            totaltimeday =text;
+                            Log.e("TEST_SHOW_DAY","totaltimeday(device): "+text);
+                        }
+                    }else{
+                        String text = numberOfHours + " : " + numberOfMinutes + " : " + numberOfSeconds;
+                        totaltimeday =text;
+                        Log.e("TEST_SHOW_DAY","totaltimeday(device): "+text);
+                    }
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataTime> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+    }
+    public void getdataViewtotalday_device(String device) {
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String S_day = Integer.valueOf(getFormattedDay).toString();
+        String S_month = Integer.valueOf(getFormattedMonth + 1).toString();
+        String S_year = Integer.valueOf(getFormattedYear + 1900).toString();
+        indextotalall=0;
+        int[] totalall = {0};
+        int[] totaleng = {0};
+        int[] totalanother = {0};
+        int[] arraytesteng2 = new int[24];
+        double[] arrayall1 = new double[24];
+        ArrayList<BarEntry> dataVals = new ArrayList<>();
+        Call<DataEngword> listcallgetdataEngword = apiInterface.getDataEngword_device(USER_ID,device, S_day, S_month, S_year);
+        listcallgetdataEngword.enqueue(new Callback<DataEngword>() {
+            @Override
+            public void onResponse(Call<DataEngword> call, Response<DataEngword> response) {
+
+                if (response.isSuccessful()) {
+                    DataEngword listdata = response.body();
+
+                    if (listdata == null) {
+                        indextotalengword=0;
+                        totalall[0]=0;
+                        totaleng[0] = 0;
+                        indextotalall=0;
+                        indextotalanyword=0;
+
+                    } else {
+
+                        for (int i = 0; i < listdata.getDatahour().size(); i++) {
+                            totaleng[0] += Integer.parseInt(listdata.getDataword().get(i));
+                            arraytesteng2[Integer.parseInt(listdata.getDatahour().get(i))]+=Integer.parseInt(listdata.getDataword().get(i));
+                        }
+
+                        arraytesteng1=arraytesteng2;
+
+                        indextotalengword = totaleng[0];
+                    }
+
+
+                    totalall[0] = totaleng[0] + totalanother[0];
+                    int TTWE = totaleng[0];
+                    String TTWD = totaleng[0] + " / " + totalall[0];
+
+                    indextotalall = indextotalanyword + indextotalengword;
+
+                    String TTWD1 = indextotalengword + " / " + indextotalall;
+
+
+                    if(resulttype == false) {
+                        StringBuffer buffer1 = new StringBuffer();
+                        StringBuffer buffer2 = new StringBuffer();
+                        for (int i = 0; i < 24; ++i) {
+                            int valueseng = arraytesteng2[i];
+                            int valuesno = arraytestnone1[i];
+                            buffer1.append(":" + arraytestnone1[i] + " ");
+                            buffer2.append(":" + arraytesteng2[i] + " ");
+                            dataVals.add(new BarEntry(i, new float[]{valueseng, valuesno}));
+                        }
+                        Log.d("GET_View_G", "ARRAYENG_THAI :" + buffer1.toString());
+                        Log.d("GET_View_G", "ARRAYENG_WORD :" + buffer2.toString());
+
+                        //setting bar chart
+
+                        BarDataSet barDataSet = new BarDataSet(dataVals, " ");
+                        barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
+                        barDataSet.setStackLabels(new String[]{"Number of English words", "Number of non-English words"});
+
+                        BarData data = new BarData(barDataSet);
+                        mChart.setData(data);
+
+                        data.setValueFormatter(new HomeFragment.MyValueFormatter());
+
+                        mChart.getLegend().setXEntrySpace(12);//ระยะห่างระหว่างข้อมูล
+                        mChart.getLegend().setFormToTextSpace(3);//ระยะห่างระหว่างรูปกับคำอธิบาย
+
+                        String[] time = new String[]{"00","01","02","03","04","05","06","07","08","09","10","11",
+                                "12","13","14","15","16","17","18","19","20","21","22","23"};
+
+                        XAxis xAxis = mChart.getXAxis();
+                        xAxis.setValueFormatter(new IndexAxisValueFormatter(time));
+                        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                        xAxis.setGranularity(1);
+                        xAxis.setCenterAxisLabels(false);
+                        xAxis.setGranularityEnabled(true);
+                        xAxis.setAxisMaximum(24);
+                        xAxis.setDrawGridLines(false); //เส้นตาราง
+
+                        mChart.setDragEnabled(true);
+                        mChart.getAxisRight().setAxisMinimum(0);
+                        mChart.getAxisLeft().setAxisMinimum(0);
+                        mChart.setVisibleXRangeMaximum(24);
+                        mChart.invalidate();
+                        mChart.animateXY(2000, 4000);
+                        mChart.setDoubleTapToZoomEnabled(true);
+                        mChart.setPinchZoom(true);
+                        mChart.fitScreen();
+
+
+
+
+
+
+                    }
+                    else if(resulttype == true){
+                        //get all word
+                        for(int i = 0; i < 24; ++i){
+                            arrayall1[i] = arraytesteng2[i];
+                            arrayall1[i] += arraytestnone1[i];
+                        }
+                        StringBuffer buffer1 = new StringBuffer();
+                        StringBuffer buffer2 = new StringBuffer();
+                        //set data in bar chart
+                        for (int i = 0; i < 24; ++i) {
+                            float valueseng;
+                            double testvaleng = arraytesteng2[i] / arrayall1[i];
+
+                            if (Double.isNaN(testvaleng)) {
+                                valueseng = (float) 0;
+                            } else {
+                                valueseng = (float) testvaleng * 100;
+                            }
+
+                            float valuesno;
+                            double testvalno = arraytestnone1[i] / arrayall1[i];
+
+                            if (Double.isNaN(testvalno)) {
+                                valuesno = (float) 0;
+                            } else {
+                                valuesno = (float) testvalno * 100;
+                            }
+                            buffer1.append(":" + valuesno + " ");
+                            buffer2.append(":" + valueseng + " ");
+
+
+
+                            dataVals.add(new BarEntry(i, new float[]{valueseng,valuesno}));
+                        }
+                        Log.d("GET_View_G", "ARRAYENG_THAI :" + buffer1);
+                        Log.d("GET_View_G", "ARRAYENG_WORD :" + buffer2);
+
+                        //setting bar chart
+                        BarDataSet barDataSet = new BarDataSet(dataVals, " ");
+                        barDataSet.setColors(Color.parseColor("#FF9933"), Color.parseColor("#8CB9D1"));
+                        barDataSet.setStackLabels(new String[]{"Percentage of English words", "Percentage of non-English words"});
+                        BarData data = new BarData(barDataSet);
+                        data.setValueFormatter(new HomeFragment.MyValueFormatter());
+
+                        mChart.setData(data);//ระยะห่างระหว่างข้อมูล
+                        mChart.getLegend().setXEntrySpace(12);//ระยะห่างระหว่างรูปกับคำอธิบาย
+                        mChart.getLegend().setFormToTextSpace(3);
+
+                        String[] time = new String[]{"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"
+                                , "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+                        XAxis xAxis = mChart.getXAxis();
+                        xAxis.setValueFormatter(new IndexAxisValueFormatter(time));
+                        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                        xAxis.setGranularity(1);
+                        xAxis.setCenterAxisLabels(false);
+                        xAxis.setGranularityEnabled(true);
+                        xAxis.setAxisMaximum(24);
+                        xAxis.setDrawGridLines(false); //เส้นตาราง
+
+                        mChart.setDragEnabled(true);
+                        mChart.getAxisRight().setAxisMinimum(0);
+                        mChart.getAxisLeft().setAxisMinimum(0);
+                        mChart.setVisibleXRangeMaximum(24);
+                        mChart.invalidate();
+                        mChart.animateXY(2000, 4000);
+                        mChart.setDoubleTapToZoomEnabled(true);
+                        mChart.setPinchZoom(true);
+                        mChart.fitScreen();
+
+
+
+
+
+                    }
+
+
+
+                    totalwordday =TTWD1;
+
+
+                    Log.e("TEST_SHOW_DAY", "indextotalengword(New) :" + indextotalengword);
+                    Log.d("TEST_SHOW_DAY", "indextotalall(New) :" + TTWD1);
+
+                    getdataViewwordminday_New(indextotalengword);
+                    StringBuffer buffer = new StringBuffer();
+                    for(int i = 0;i<24 ;i++){
+                        buffer.append(":"+arraytesteng2[i]+" ");
+                    }
+                    Log.d("TEST_SHOW_DAY","ARRAY_ENGWORD(New) :"+buffer.toString());
+
+                } else {
+                    Log.d("TEST_GET_LISTDATA", "Fail:" + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataEngword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA", t + "");
+            }
+        });
+    }
+    public void getdataViewWrongword_device(String device){
+
+        apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getContext());
+        String USER_ID = acct.getId();
+        String S_day= Integer.valueOf(getFormattedDay).toString();
+        String S_month =Integer.valueOf(getFormattedMonth+1).toString();
+        String S_year =Integer.valueOf(getFormattedYear+1900).toString();
+        String email = firebaseUser.getEmail();
+
+        Call<DataWrongword>listcallgetdata = apiInterface.getDataWrongword_device(USER_ID,device,S_day,S_month,S_year);
+        listcallgetdata.enqueue(new Callback<DataWrongword>() {
+            @Override
+            public void onResponse(Call<DataWrongword> call, Response<DataWrongword> response) {
+                if (response.isSuccessful()) {
+                    DataWrongword listdata = response.body();
+
+                    ArrayList<String> wordfromdb = new ArrayList<>();
+                    String[] wordtop1 = new String[3];
+                    String[] wordtrans1 = new String[3];
+                    wordtop[0]= "";
+                    wordtop[1]= "";
+                    wordtop[2]= "";
+                    if (listdata == null){
+                        wordtop[0]= "";
+                        wordtop[1]= "";
+                        wordtop[2]= "";
+                        return;
+
+                    }
+                    else {
+                        for(int i= 0;i<listdata.getDataword().size();i++){
+                            wordfromdb.add(listdata.getDataword().get(i));
+                        }
+
+                        //wordcount
+                        int N = wordfromdb.size();
+                        String word[] = new String[N];
+                        int count[] = new int[N];
+
+                        for (int i = 0; i < word.length; i++) {
+                            word[i] = ""; //set default
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            String text = wordfromdb.get(i);
+                            for (int j = 0; j < word.length; j++) {
+                                if (word[j].equals("")) {
+                                    word[j] = text;
+                                    count[j] = 1;
+                                    break;
+                                } else if (word[j].equals(text)) {
+                                    count[j]++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < N; i++) {
+                            for (int j = i+1; j < N-1; j++) {
+                                if(count[i] < count[j] && !word[i].equals("") && !word[j].equals("")){
+                                    int temp = count[i];
+                                    count[i] = count[j];
+                                    count[j] = temp;
+
+                                    String tempText = word[i];
+                                    word[i] = word[j];
+                                    word[j] = tempText;
+                                }
+                            }
+                        }
+
+
+                        for (int i = 0; i < word.length; i++) {
+                            if (!word[i].equals("")) {
+                                //System.out.println(word[i] + " " + count[i]);
+                            }
+                        }
+
+
+
+                        if(word.length<3){
+                            for(int i=0;i<word.length;++i){
+                                if (!word[i].equals("")) {
+                                    wordtop[i] = word[i];
+                                    //wordtop1[i] = word[i];
+
+                                    final Translator t = new Translator(wordtop[i],getContext());
+                                    //final Translator t = new Translator(wordtop1[i],getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            wordtrans[finalI] = t.trans();
+                                            // wordtrans1[finalI] = t.trans();
+
+                                        }
+                                    };handler.postDelayed(runnable,4000);
+
+                                }
+                            }
+
+                        }else{
+                            for (int i = 0; i < 3; i++) {
+                                if (!word[i].equals("")) {
+                                    wordtop[i] = word[i];
+                                    //wordtop1[i] = word[i];
+
+                                    final Translator t = new Translator(wordtop[i],getContext());
+                                    // final Translator t = new Translator(wordtop1[i],getContext());
+                                    t.trans();
+
+                                    Handler handler = new Handler();
+                                    final int finalI = i;
+                                    Runnable runnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            wordtrans[finalI] = t.trans();
+                                            // wordtrans1[finalI] = t.trans();
+                                        }
+                                    };handler.postDelayed(runnable,4000);
+                                }
+                            }
+                        }
+                        Log.e("TEST_SHOW_DAY", "WTop1 MySQL:" +wordtop1[0]+" WTop2 :" +wordtop1[1]+" WTop3 :" +wordtop1[2]);
+                        Log.d("TEST_SHOW_DAY", "WTop1 SQLite:" +wordtop[0]+" WTop2 :" +wordtop[1]+" WTop3 :" +wordtop[2]);
+                        // Log.e("Data_View", "WTrans1 :" +wordtrans1[0]+" WTrans2 :" +wordtrans1[1]+" WTrans3 :" +wordtrans1[2]);
+
+
+                    }
+
+
+
+                }
+                else{
+                    Log.d("TEST_GET_LISTDATA","Fail:"+response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataWrongword> call, Throwable t) {
+                Log.d("TEST_GET_LISTDATA",t+"");
+            }
+        });
+
+    }
+
+
 
 
 
